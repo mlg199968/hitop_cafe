@@ -19,8 +19,7 @@ class OrderAdapter extends TypeAdapter<Order> {
     return Order(
       items: (fields[0] as List).cast<Item>(),
       tableNumber: fields[1] as int?,
-      atmPayments: (fields[2] as List).cast<num>(),
-      cashPayments: (fields[3] as List).cast<num>(),
+      payments: (fields[2] as List).cast<Payment>(),
       payable: fields[4] as num,
       discount: fields[8] as num,
       orderDate: fields[9] as DateTime,
@@ -29,22 +28,22 @@ class OrderAdapter extends TypeAdapter<Order> {
       dueDate: fields[12] as DateTime?,
       isChecked: fields[13] as bool,
       isDone: fields[14] as bool,
-      description: fields[15] as String,
+      description: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Order obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.items)
       ..writeByte(1)
       ..write(obj.tableNumber)
       ..writeByte(2)
-      ..write(obj.atmPayments)
+      ..write(obj.payments)
       ..writeByte(3)
-      ..write(obj.cashPayments)
+      ..write(obj.description)
       ..writeByte(4)
       ..write(obj.payable)
       ..writeByte(8)
@@ -61,8 +60,6 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..write(obj.isChecked)
       ..writeByte(14)
       ..write(obj.isDone)
-      ..writeByte(15)
-      ..write(obj.description)
       ..writeByte(5)
       ..write(obj.itemsSum)
       ..writeByte(6)

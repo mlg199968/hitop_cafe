@@ -31,6 +31,15 @@ class Item extends HiveObject{
   String? imagePath;
   @HiveField(11)
   String? color;
+ @HiveField(12)
+  num? quantity=1;
+@HiveField(13)
+  num? discount=0;
+@HiveField(14)
+  num get sum {
+    num all=(quantity ?? 1) * sale;
+    return all-((all/100)*(discount ?? 0));
+  }
 
   Item({
     required this.itemName,
@@ -45,7 +54,10 @@ class Item extends HiveObject{
     this.isChecked,
     this.imagePath,
     this.color,
+    this.quantity=0,
+    this.discount=0,
   });
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -61,6 +73,9 @@ class Item extends HiveObject{
       'isChecked': isChecked,
       'imagePath': imagePath,
       'color': color,
+'quantity': quantity,
+'discount': discount,
+
     };
   }
 
@@ -82,6 +97,8 @@ class Item extends HiveObject{
       isChecked: map['isChecked'] == 1 ? true : false,
       imagePath: map['imagePath'] ,
       color: map['color'] ,
+      quantity: map['quantity'] ?? 0,
+      discount: map['discount'] ?? 0,
     );
   }
 

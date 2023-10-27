@@ -8,8 +8,6 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
-
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -20,7 +18,7 @@ class AddIngredientPanel extends StatelessWidget {
   TextEditingController ingredientNameController = TextEditingController();
   TextEditingController demandController = TextEditingController(text: "0");
   RawWare? selectedRawWare;
-  void getWareData(ware) {
+  void getItemData(ware) {
     //setState(() {});
   }
   @override

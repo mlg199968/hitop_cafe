@@ -10,8 +10,8 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 
 
-class WareSuggestionTextField extends StatelessWidget {
-  const WareSuggestionTextField(
+class ItemSuggestionTextField extends StatelessWidget {
+  const ItemSuggestionTextField(
       {Key? key,
       required this.label,
       required this.controller,

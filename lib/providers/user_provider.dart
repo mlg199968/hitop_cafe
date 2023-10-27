@@ -18,7 +18,7 @@ class UserProvider extends ChangeNotifier{
   String? stampImage;
   String shopCode="";
   String currency="تومان";
-  double preTax=0;
+  double preDiscount=0;
   int preBillNumber=1;
 
 
@@ -33,7 +33,7 @@ class UserProvider extends ChangeNotifier{
   //   stampImage=shop.stampImage;
   //   shopCode=shop.shopCode;
   //   currency=shop.currency;
-  //   preTax=shop.preTax ;
+  //   preDiscount=shop.preDiscount ;
   //   preBillNumber=shop.preBillNumber;
   //
   // }

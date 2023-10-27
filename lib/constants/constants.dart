@@ -21,3 +21,9 @@ const List<String> kCurrencyList=["ریال","تومان","دلار","لیر","�
 
 ///text properties
 const String kCustomFont="persian";
+
+
+final kBoxDecoration=BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(5),
+    border: Border.all(color: Colors.blue));

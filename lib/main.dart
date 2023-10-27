@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/order.dart';
+import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
+import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/router.dart';
@@ -21,14 +24,18 @@ Future main() async {
   //Adaptors
   Hive.registerAdapter(RawWareAdapter());
   Hive.registerAdapter(ItemAdapter());
+  Hive.registerAdapter(OrderAdapter());
+  Hive.registerAdapter(PaymentAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db");
   await Hive.openBox<Item>("item_db");
+  await Hive.openBox<Order>("order_db");
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),
     ChangeNotifierProvider(create: (context) => UserProvider()),
+    ChangeNotifierProvider(create: (context) => FilterProvider()),
   ], child: const MyApp()));
 }
 
@@ -39,8 +46,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Hitop Cafe',
       theme: ThemeData(
+        fontFamily: "persian",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

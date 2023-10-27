@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/payment.dart';
 import 'package:hive/hive.dart';
 
 part 'order.g.dart';
@@ -11,17 +12,17 @@ class Order extends HiveObject {
   @HiveField(1)
   int? tableNumber;
   @HiveField(2)
-  List<num> atmPayments = [];
+  List<Payment> payments = [];
   @HiveField(3)
-  List<num> cashPayments = [];
+  String description = "";
   @HiveField(4)
   late num payable;
   @HiveField(5)
-  num get itemsSum => items.map((e) => e.sale).reduce((a, b) => a + b);
+  num get itemsSum => items.isEmpty?0:items.map((e) => e.sale).reduce((a, b) => a + b);
   @HiveField(6)
-  num get cashSum => cashPayments.reduce((a, b) => a + b);
+  num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method=="cash"? e.amount:0).reduce((a, b) => a + b);
   @HiveField(7)
-  num get atmSum => atmPayments.reduce((a, b) => a + b);
+  num get atmSum =>payments.isEmpty?0: payments.map((e) => e.method=="atm"?e.amount:0).reduce((a, b) => a + b);
   @HiveField(8)
   num discount = 0;
   @HiveField(9)
@@ -36,21 +37,19 @@ class Order extends HiveObject {
   bool isChecked = false;
   @HiveField(14)
   bool isDone = false;
-  @HiveField(15)
-  String description = "";
+
 
   Order({
     required this.items,
     this.tableNumber,
-    required this.atmPayments,
-    required this.cashPayments,
+    required this.payments,
     required this.payable,
     required this.discount,
     required this.orderDate,
     required this.orderId,
     required this.modifiedDate,
     this.dueDate,
-    required this.isChecked,
+    this.isChecked=false,
     this.isDone=false,
     required this.description,
   });
@@ -59,8 +58,7 @@ class Order extends HiveObject {
     return {
       'items': items.map((item) => item.toMap()).toList(),
       'tableNumber': tableNumber,
-      'atmPayments': atmPayments,
-      'cashPayments': cashPayments,
+      'payments': payments.map((payment) => payment.toMap()).toList(),
       'payable': payable,
       'discount': discount,
       'orderDate': orderDate.toIso8601String(),
@@ -75,11 +73,11 @@ class Order extends HiveObject {
 
   factory Order.fromMap(Map<String, dynamic> map) {
     List<Item> items=List<Item>.from((map['items'] as List).map((e)=>Item.fromMap(e),),);
+    List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
     return Order(
       items: items,
       tableNumber: map['tableNumber'] ?? 0,
-      atmPayments: map['atmPayments'] ?? [],
-      cashPayments: map['cashPayments'] ?? [],
+      payments: payments,
       payable: map['payable'] ?? 0,
       discount: map['discount'] ?? 0,
       orderDate:DateTime.parse( map['orderDate']) ,

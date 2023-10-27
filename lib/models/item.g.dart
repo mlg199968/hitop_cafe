@@ -29,13 +29,15 @@ class ItemAdapter extends TypeAdapter<Item> {
       isChecked: fields[9] as bool?,
       imagePath: fields[10] as String?,
       color: fields[11] as String?,
+      quantity: fields[12] as num?,
+      discount: fields[13] as num?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Item obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.itemName)
       ..writeByte(1)
@@ -59,7 +61,13 @@ class ItemAdapter extends TypeAdapter<Item> {
       ..writeByte(10)
       ..write(obj.imagePath)
       ..writeByte(11)
-      ..write(obj.color);
+      ..write(obj.color)
+      ..writeByte(12)
+      ..write(obj.quantity)
+      ..writeByte(13)
+      ..write(obj.discount)
+      ..writeByte(14)
+      ..write(obj.sum);
   }
 
   @override
