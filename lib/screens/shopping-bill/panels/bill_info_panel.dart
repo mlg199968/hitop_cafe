@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
+import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/info_panel_row.dart';
+import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 
 
 
 // ignore: must_be_immutable
-class OrderInfoPanel extends StatelessWidget {
-  OrderInfoPanel(this.infoData, {super.key});
-  Order infoData;
+class BillInfoPanel extends StatelessWidget {
+  BillInfoPanel(this.infoData, {super.key});
+  Bill infoData;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +29,16 @@ class OrderInfoPanel extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: <Widget>[
-                  InfoPanelRow(
-                      title: "شماره میز:", infoList: infoData.tableNumber.toString()),
+
 
                   InfoPanelRow(
                       title: "توضیحات:", infoList: infoData.description),
                   InfoPanelRow(
+                      title: "تاریخ ایجاد:",
+                      infoList: infoData.billDate.toPersianDateStr()),
+                   InfoPanelRow(
                       title: "تاریخ تغییر:",
-                      infoList: infoData.orderDate.toPersianDateStr()),
+                      infoList: infoData.modifiedDate.toPersianDateStr()),
                   InfoPanelRow(
                       title: "باقی مانده:", infoList:addSeparator(infoData.payable)),
                    InfoPanelRow(
@@ -64,7 +68,7 @@ class OrderInfoPanel extends StatelessWidget {
                   label: "ویرایش",
                   icon: Icons.drive_file_rename_outline_sharp,
                   onPress: () {
-                    Navigator.pushNamed(context,AddOrderScreen.id,
+                    Navigator.pushNamed(context,AddShoppingBillScreen.id,
                         arguments: infoData);
                   },
                 ),
@@ -81,9 +85,9 @@ class OrderInfoPanel extends StatelessWidget {
 
 
 
-class OrderInfoPanelDesktop extends StatelessWidget {
-  const OrderInfoPanelDesktop({required this.infoData, super.key, required this.onDelete});
-  final Order infoData;
+class BillInfoPanelDesktop extends StatelessWidget {
+  const BillInfoPanelDesktop({required this.infoData, super.key, required this.onDelete});
+  final Bill infoData;
   final VoidCallback onDelete;
 
   @override
@@ -101,14 +105,15 @@ class OrderInfoPanelDesktop extends StatelessWidget {
               child: ListView(
                 controller: ScrollController(),
                 children: <Widget>[
-                  InfoPanelRow(
-                      title: "شماره میز", infoList: infoData.tableNumber.toString()),
 
                   InfoPanelRow(
                       title: "توضیحات:", infoList: infoData.description),
                   InfoPanelRow(
+                      title: "تاریخ ایجاد:",
+                      infoList: infoData.billDate.toPersianDateStr()),
+                  InfoPanelRow(
                       title: "تاریخ تغییر:",
-                      infoList: infoData.orderDate.toPersianDateStr()),
+                      infoList: infoData.modifiedDate.toPersianDateStr()),
                   const SizedBox(height: 50,),
                   InfoPanelRow(
                       title: "باقی مانده:", infoList:addSeparator(infoData.payable)),
@@ -141,7 +146,7 @@ class OrderInfoPanelDesktop extends StatelessWidget {
                   label: "ویرایش",
                   icon: Icons.drive_file_rename_outline_sharp,
                   onPress: () {
-                    Navigator.pushNamed(context, AddOrderScreen.id,
+                    Navigator.pushNamed(context, AddShoppingBillScreen.id,
                         arguments: infoData);
                   },
                 ),

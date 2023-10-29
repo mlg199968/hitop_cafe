@@ -6,7 +6,6 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/item.dart';
-import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 
 

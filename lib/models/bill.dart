@@ -1,16 +1,16 @@
 import 'dart:convert';
-
-import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/payment.dart';
+import 'package:hitop_cafe/models/purchase.dart';
+import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hive/hive.dart';
 
-part 'order.g.dart';
-@HiveType(typeId: 2)
-class Order extends HiveObject {
+part 'bill.g.dart';
+@HiveType(typeId: 4)
+class Bill extends HiveObject {
   @HiveField(0)
-  List<Item> items = [];
+  List<Purchase> purchases = [];
   @HiveField(1)
-  int? tableNumber;
+  int billNumber;
   @HiveField(2)
   List<Payment> payments = [];
   @HiveField(3)
@@ -18,7 +18,7 @@ class Order extends HiveObject {
   @HiveField(4)
   late num payable;
   @HiveField(5)
-  num get itemsSum => items.isEmpty?0:items.map((e) => e.sale).reduce((a, b) => a + b);
+  num get waresSum => purchases.isEmpty?0:purchases.map((e) => e.price).reduce((a, b) => a + b);
   @HiveField(6)
   num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method=="cash"? e.amount:0).reduce((a, b) => a + b);
   @HiveField(7)
@@ -26,9 +26,9 @@ class Order extends HiveObject {
   @HiveField(8)
   num discount = 0;
   @HiveField(9)
-  late DateTime orderDate;
+  late DateTime billDate;
   @HiveField(10)
-  late String orderId;
+  late String billId;
   @HiveField(11)
   DateTime modifiedDate = DateTime.now();
   @HiveField(12)
@@ -37,35 +37,33 @@ class Order extends HiveObject {
   bool isChecked = false;
   @HiveField(14)
   bool isDone = false;
-  @HiveField(15)
-  int? billNumber;
 
 
-  Order({
-    required this.items,
-    this.tableNumber,
+
+
+  Bill({
+    required this.purchases,
     required this.payments,
     required this.payable,
     required this.discount,
-    required this.orderDate,
-    required this.orderId,
+    required this.billDate,
+    required this.billId,
     required this.modifiedDate,
     this.dueDate,
     this.isChecked=false,
     this.isDone=false,
     required this.description,
-    this.billNumber,
+    this.billNumber=0,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'items': items.map((item) => item.toMap()).toList(),
-      'tableNumber': tableNumber,
+      'purchases': purchases.map((purchase) => purchase.toMap()).toList(),
       'payments': payments.map((payment) => payment.toMap()).toList(),
       'payable': payable,
       'discount': discount,
-      'orderDate': orderDate.toIso8601String(),
-      'orderId': orderId,
+      'billDate': billDate.toIso8601String(),
+      'billId': billId,
       'modifiedDate': modifiedDate.toIso8601String(),
       'dueDate': dueDate!=null? dueDate!.toIso8601String():null,
       'isChecked': isChecked?1:0,
@@ -75,17 +73,16 @@ class Order extends HiveObject {
     };
   }
 
-  factory Order.fromMap(Map<String, dynamic> map) {
-    List<Item> items=List<Item>.from((map['items'] as List).map((e)=>Item.fromMap(e),),);
+  factory Bill.fromMap(Map<String, dynamic> map) {
+    List<Purchase> purchases=List<Purchase>.from((map['purchases'] as List).map((e)=>Purchase.fromMap(e),),);
     List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
-    return Order(
-      items: items,
-      tableNumber: map['tableNumber'] ?? 0,
+    return Bill(
+      purchases: purchases,
       payments: payments,
       payable: map['payable'] ?? 0,
       discount: map['discount'] ?? 0,
-      orderDate:DateTime.parse( map['orderDate']) ,
-      orderId: map['orderId'] ?? "",
+      billDate:DateTime.parse( map['billDate']) ,
+      billId: map['billId'] ?? "",
       modifiedDate: DateTime.parse(map['modifiedDate']) ,
       dueDate: map['dueDate']!=null?DateTime.parse(map['dueDate']):null,
       isChecked: map['isChecked']==1?true:false,
@@ -95,7 +92,7 @@ class Order extends HiveObject {
     );
   }
   String toJson()=>jsonEncode(toMap());
-  factory Order.fromJson(String source)=>Order.fromMap(jsonDecode(source));
+  factory Bill.fromJson(String source)=>Bill.fromMap(jsonDecode(source));
 }
 
 

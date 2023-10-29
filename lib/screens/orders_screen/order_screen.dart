@@ -9,7 +9,7 @@ import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/order_info_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
-import 'package:hitop_cafe/screens/orders_screen/widgets/credit_tile.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/order_tile.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/filter_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -24,28 +24,26 @@ class OrderScreen extends StatefulWidget {
 
 class _CustomerListScreenState extends State<OrderScreen> {
   FocusNode focusNode = FocusNode();
-  late final FilterProvider filterProvider;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey filterScreenKey = GlobalKey();
   TextEditingController searchCustomerController = TextEditingController();
   final List<String> sortList = [
     SortItem.modifiedDate.value,
-    SortItem.name.value,
-    SortItem.dueDate.value,
     SortItem.createdDate.value,
+    SortItem.billNumber.value,
+    SortItem.tableNumber.value,
   ];
   String sortItem = SortItem.modifiedDate.value;
   String? keyWord;
 
   @override
   void didChangeDependencies() {
-    filterProvider = Provider.of<FilterProvider>(context, listen: false);
+
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
-    filterProvider.cleanFilterProvider();
     // TODO: implement dispose
     super.dispose();
   }
@@ -54,6 +52,10 @@ class _CustomerListScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      floatingActionButton: CustomFloatActionButton(
+          onPressed: () {
+        Navigator.pushNamed(context, AddOrderScreen.id);
+      }),
       appBar: screenType(context) != ScreenType.mobile
           ? null
           : AppBar(
@@ -66,126 +68,110 @@ class _CustomerListScreenState extends State<OrderScreen> {
             ),
           ),
         ],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
+        leading: const BackButton(),
         flexibleSpace: Container(
           decoration: const BoxDecoration(gradient: kMainGradiant),
         ),
         title: Container(
           padding: const EdgeInsets.only(right: 5),
-          child: Row(
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text("دفتر حساب"),
+            children: [
+              Text("لیست سفارشات"),
             ],
           ),
         ),
         elevation: 5.0,
         automaticallyImplyLeading: false,
       ),
-      body: Scaffold(
-        floatingActionButton: CustomFloatActionButton(onPressed: () {
-          filterProvider.cleanFilterProvider();
-          setState(() {});
-          Navigator.pushNamed(context, AddOrderScreen.id);
-        }),
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ///Search bar customer list
-              Container(
-                  decoration: BoxDecoration(
-                    gradient: kMainGradiant,
-                    borderRadius: screenType(context) == ScreenType.mobile
-                        ? null
-                        : BorderRadius.circular(20),
-                  ),
-                  //margin: const EdgeInsets.only(top: 20),
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CustomSearchBar(
-                            focusNode: focusNode,
-                            controller: searchCustomerController,
-                            hint: "جست و جو حساب",
-                            onChange: (val) {
-                              keyWord = val;
-                              setState(() {});
+      body:Container(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ///Search bar customer list
+                Container(
+                    decoration: BoxDecoration(
+                      gradient: kMainGradiant,
+                      borderRadius: screenType(context) == ScreenType.mobile
+                          ? null
+                          : BorderRadius.circular(20),
+                    ),
+                    //margin: const EdgeInsets.only(top: 20),
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomSearchBar(
+                              focusNode: focusNode,
+                              controller: searchCustomerController,
+                              hint: "جست و جو سفارش",
+                              onChange: (val) {
+                                keyWord = val;
+                                setState(() {});
+                              },
+                              selectedSort: sortItem,
+                              sortList: sortList,
+                              onSort: (val){
+                                sortItem = val;
+                                setState(() {});
+                              }),
+                        ),
+                        Container(
+                          height: 20,
+                          width: 1,
+                          color: Colors.white60,
+                        ),
+                        SizedBox(
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.filter_alt_rounded,
+                              color: Colors.white,
+                            ),
+                            onPressed: () async {
+                              focusNode.unfocus();
+                              searchCustomerController.clear();
+                              keyWord = null;
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => const FilterPanel())
+                                  .then((value) {
+                                setState(() {});
+                              });
                             },
-                            selectedSort: sortItem,
-                            sortList: sortList,
-                            onSort: (val) {
-                              //focusNode.unfocus();
-
-                              sortItem = val;
-                              setState(() {});
-                            }),
-                      ),
-                      Container(
-                        height: 20,
-                        width: 1,
-                        color: Colors.white60,
-                      ),
-                      SizedBox(
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.filter_alt_rounded,
-                            color: Colors.white,
-                          ),
-                          onPressed: () async {
-                            focusNode.unfocus();
-                            searchCustomerController.clear();
-                            keyWord = null;
-                            showDialog(
-                                context: context,
-                                builder: (context) => const FilterPanel())
-                                .then((value) {
-                              setState(() {});
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  )),
-              ValueListenableBuilder<Box<Order>>(
-                  valueListenable: HiveBoxes.getOrders().listenable(),
-                  builder: (context, box, _) {
-                    List<Order> orderList =
-                    box.values.toList().cast<Order>();
-                    print(orderList);
-                    //filter the list in order to the search results
-                    List<Order> filteredList =
-                    OrderTools.filterList(orderList, keyWord, sortItem);
-                    if (filteredList.isNotEmpty) {
-                      return CreditListPart(
-                        orderList: filteredList,
-                        key: widget.key,
-                      );
-                    } else {
-                      return const Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "حسابی یافت نشد!",
-                            textDirection: TextDirection.rtl,
                           ),
                         ),
-                      );
-                    }
-                  }),
-            ],
-          ),
-        ),
-      ),
-    );
+                      ],
+                    )),
+                ValueListenableBuilder<Box<Order>>(
+                    valueListenable: HiveBoxes.getOrders().listenable(),
+                    builder: (context, box, _) {
+                      List<Order> orderList =
+                      box.values.toList().cast<Order>();
+                      //filter the list in order to the search results
+                      List<Order> filteredList =
+                      OrderTools.filterList(orderList, keyWord, sortItem);
+                      if (filteredList.isNotEmpty) {
+                        return CreditListPart(
+                          orderList: filteredList,
+                          key: widget.key,
+                        );
+                      } else {
+                        return const Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "سفارشی یافت نشد!",
+                              textDirection: TextDirection.rtl,
+                            ),
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),
+      ),);
   }
 }
 
@@ -198,7 +184,7 @@ class CreditListPart extends StatefulWidget {
 }
 
 class _CreditListPartState extends State<CreditListPart> {
-  Order? selectedCredit;
+  Order? selectedOrder;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -212,12 +198,12 @@ class _CreditListPartState extends State<CreditListPart> {
                 : Flexible(
               child: SizedBox(
                 width: 400,
-                child: selectedCredit == null
+                child: selectedOrder == null
                     ? null
-                    : CreditInfoPanelDesktop(
-                    infoData: selectedCredit!,
+                    : OrderInfoPanelDesktop(
+                    infoData: selectedOrder!,
                     onDelete: () {
-                      selectedCredit = null;
+                      selectedOrder = null;
                       setState(() {});
                     }),
               ),
@@ -226,6 +212,7 @@ class _CreditListPartState extends State<CreditListPart> {
               child: ListView.builder(
                   itemCount: widget.orderList.length,
                   itemBuilder: (context, index) {
+                    //color condition for tile color
                     final colorCondition = widget.orderList[index].payable <= 0
                         ? (widget.orderList[index].payable == 0
                         ? Colors.green
@@ -238,10 +225,10 @@ class _CreditListPartState extends State<CreditListPart> {
                         widget.orderList[index].orderDate)) {
                       return GestureDetector(
                         onTap: () {
-                          selectedCredit = widget.orderList[index];
+                          selectedOrder = widget.orderList[index];
                           setState(() {});
                         },
-                        child: CreditTile(
+                        child: OrderTile(
                           enabled: !isTablet,
                           orderDetail: widget.orderList[index],
                           color: colorCondition,

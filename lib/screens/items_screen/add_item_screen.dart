@@ -257,6 +257,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
                             height: 20,
                           ),
                           Container(
+                            padding: const EdgeInsets.all(7),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

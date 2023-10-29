@@ -32,6 +32,10 @@ class RawWare extends HiveObject {
   String? imagePath;
   @HiveField(12)
   String? color;
+  @HiveField(13)
+  num get sum =>quantity * cost;
+
+
 
   RawWare({
     required this.wareName,

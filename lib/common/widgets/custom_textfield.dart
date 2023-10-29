@@ -8,7 +8,7 @@ enum TextFormatter { price, normal, number }
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     Key? key,
-    required this.label,
+    this.label,
     required this.controller,
     this.maxLine = 1,
     this.maxLength = 35,
@@ -26,7 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.symbol,
   }) : super(key: key);
 
-  final String label;
+  final String? label;
   final TextEditingController controller;
   final int maxLine;
   final int maxLength;
@@ -103,8 +103,8 @@ class CustomTextField extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             hoverColor: Colors.white70,
-            label: Text(
-              label,
+            label:label==null?null: Text(
+              label!,
               style: const TextStyle(color: kMainColor3),
               maxLines: 1,
               overflow: TextOverflow.fade,

@@ -34,14 +34,14 @@ class PaymentList extends StatelessWidget {
                             Payment pay=payments[index];
 
                               return CustomTile(
-                                  leadingIcon: FontAwesomeIcons.moneyBill1Wave,
+                                  leadingIcon:pay.method=="atm"? FontAwesomeIcons.creditCard:FontAwesomeIcons.moneyBill1Wave,
                                   onDelete: () {
                                     payments.removeAt(index);
                                     onChange();
                                   },
                                   height: 60,
                                   color: Colors.green,
-                                  type: "نقد",
+                                  type: (index+1).toString(),
                                   title:pay.method=="atm"?"پرداخت با کارت": "پرداخت نقدی",
                                   topTrailing: "",
                                   trailing: addSeparator(pay.amount));

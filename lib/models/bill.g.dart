@@ -1,46 +1,45 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'order.dart';
+part of 'bill.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OrderAdapter extends TypeAdapter<Order> {
+class BillAdapter extends TypeAdapter<Bill> {
   @override
-  final int typeId = 2;
+  final int typeId = 4;
 
   @override
-  Order read(BinaryReader reader) {
+  Bill read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Order(
-      items: (fields[0] as List).cast<Item>(),
-      tableNumber: fields[1] as int?,
+    return Bill(
+      purchases: (fields[0] as List).cast<Purchase>(),
       payments: (fields[2] as List).cast<Payment>(),
       payable: fields[4] as num,
       discount: fields[8] as num,
-      orderDate: fields[9] as DateTime,
-      orderId: fields[10] as String,
+      billDate: fields[9] as DateTime,
+      billId: fields[10] as String,
       modifiedDate: fields[11] as DateTime,
       dueDate: fields[12] as DateTime?,
       isChecked: fields[13] as bool,
       isDone: fields[14] as bool,
       description: fields[3] as String,
-      billNumber: fields[15] as int?,
+      billNumber: fields[1] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Order obj) {
+  void write(BinaryWriter writer, Bill obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(15)
       ..writeByte(0)
-      ..write(obj.items)
+      ..write(obj.purchases)
       ..writeByte(1)
-      ..write(obj.tableNumber)
+      ..write(obj.billNumber)
       ..writeByte(2)
       ..write(obj.payments)
       ..writeByte(3)
@@ -50,9 +49,9 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..writeByte(8)
       ..write(obj.discount)
       ..writeByte(9)
-      ..write(obj.orderDate)
+      ..write(obj.billDate)
       ..writeByte(10)
-      ..write(obj.orderId)
+      ..write(obj.billId)
       ..writeByte(11)
       ..write(obj.modifiedDate)
       ..writeByte(12)
@@ -61,10 +60,8 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..write(obj.isChecked)
       ..writeByte(14)
       ..write(obj.isDone)
-      ..writeByte(15)
-      ..write(obj.billNumber)
       ..writeByte(5)
-      ..write(obj.itemsSum)
+      ..write(obj.waresSum)
       ..writeByte(6)
       ..write(obj.cashSum)
       ..writeByte(7)
@@ -77,7 +74,7 @@ class OrderAdapter extends TypeAdapter<Order> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OrderAdapter &&
+      other is BillAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

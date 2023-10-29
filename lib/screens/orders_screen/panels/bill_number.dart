@@ -4,14 +4,14 @@ import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 
-class TableNumber extends StatefulWidget {
-  const TableNumber({Key? key}) : super(key: key);
+class BillNumber extends StatefulWidget {
+  const BillNumber({Key? key}) : super(key: key);
 
   @override
-  State<TableNumber> createState() => _WareToBillPanelState();
+  State<BillNumber> createState() => _WareToBillPanelState();
 }
 
-class _WareToBillPanelState extends State<TableNumber> {
+class _WareToBillPanelState extends State<BillNumber> {
   final _formKey=GlobalKey<FormState>();
   TextEditingController tableNumberController = TextEditingController();
 

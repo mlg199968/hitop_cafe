@@ -2,14 +2,15 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
+import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
-class CreditTile extends StatelessWidget {
-  const CreditTile(
+class OrderTile extends StatelessWidget {
+  const OrderTile(
       {super.key,
       required this.orderDetail,
         this.enabled = true,
@@ -27,10 +28,10 @@ class CreditTile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final String payable = addSeparator(orderDetail.payable);
-    String dueDate = "تعیین نشده";
-    if (orderDetail.dueDate != null || orderDetail.dueDate==DateTime(1999)) {
-      dueDate = orderDetail.dueDate!.toPersianDate();
-    }
+    // String dueDate = "تعیین نشده";
+    // if (orderDetail.dueDate != null || orderDetail.dueDate==DateTime(1999)) {
+    //   dueDate = orderDetail.dueDate!.toPersianDate();
+    // }
     return Directionality(
       textDirection: TextDirection.rtl,
       child: ExpandableNotifier(
@@ -82,13 +83,13 @@ class CreditTile extends StatelessWidget {
                 ///main header
                 header: MyListTile(
                   enable: false,
-                  title: orderDetail.payable==0?"تسویه شده":"تسویه نشده",
+                  title: "سفارش شماره ${(orderDetail.billNumber ?? 0).toString().toPersianDigit()}" ,
                   leadingIcon: FontAwesomeIcons.table,
                   type: orderDetail.tableNumber.toString().toPersianDigit(),
-                  subTitle: orderDetail.orderDate.toPersianDateStr(),
-                  topTrailingLabel: "تاریخ تسویه: ",
-                  topTrailing: dueDate,
-                  trailing: payable,
+                  subTitle: TimeTools.showHour(orderDetail.orderDate),
+                  topTrailingLabel: "تاریخ سفارش: ",
+                  topTrailing: orderDetail.orderDate.toPersianDateStr(),
+                  trailing: orderDetail.payable==0?"تسویه شده":payable,
                 ),
               ),
             ),

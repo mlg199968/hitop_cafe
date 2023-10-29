@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -10,10 +9,7 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class ItemToBillPanel extends StatefulWidget {
  static const String id="/item-to-bill-panel";
@@ -125,6 +121,7 @@ void replaceOldPurchase(Item? old){
                         height: 10,
                       ),
                       CustomTextField(
+                        enable: false,
                         label: "قیمت فروش",
                         controller: salePriceController,
                         width: MediaQuery.of(context).size.width,
@@ -187,7 +184,6 @@ void replaceOldPurchase(Item? old){
                 text:widget.oldItem==null? "افزودن به فاکتور":"ذخیره تغییرات",
                 onPressed: () {
                   if (_formKey.currentState!.validate() && selectedItem!=null) {
-                    num sale = stringToDouble(salePriceController.text);
                     num quantity = double.parse(quantityController.text);
                     num discount = discountController.text == ""
                         ? 0

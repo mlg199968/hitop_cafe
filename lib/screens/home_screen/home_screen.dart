@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
+import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
+import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -61,6 +63,13 @@ class HomeScreen extends StatelessWidget {
                                 Navigator.pushNamed(
                                     context, ItemsScreen.id);
                               })),
+                    ],
+                  ),
+                  Wrap(
+                    children: [
+                      SmallCardButton(label: "فاکتور خرید",image: "profile.png", onTap: (){
+                        Navigator.pushNamed(context, ShoppingBillScreen.id);
+                      }),
                     ],
                   ),
                 ],
