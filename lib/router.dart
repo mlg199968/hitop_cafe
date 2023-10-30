@@ -21,7 +21,7 @@ import 'package:hitop_cafe/screens/ware_house/ware_house_screen.dart';
 Route generateRoute(RouteSettings routeSetting){
   switch(routeSetting.name){
     case HomeScreen.id:
-      return MaterialPageRoute(builder: (_)=>const HomeScreen());
+      return MaterialPageRoute(builder: (_)=> HomeScreen());
     case OrderScreen.id:
       return MaterialPageRoute(builder: (_)=>const OrderScreen());
 

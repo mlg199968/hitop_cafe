@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: (setting) => generateRoute(setting),
-      home: const Directionality(
+      home:  Directionality(
         textDirection: TextDirection.rtl,
           child: HomeScreen()),
     );

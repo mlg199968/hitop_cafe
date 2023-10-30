@@ -37,7 +37,7 @@ class SmallCardButton extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow:  [BoxShadow(spreadRadius: 1,blurRadius: 5,color: Colors.black.withOpacity(.3),offset: const Offset(2, 2))],
                 color: Colors.white,
-                image:image==null?null:DecorationImage(image: AssetImage("assets/icons/$image"),fit: BoxFit.fitWidth) ,
+                image:image==null?null:DecorationImage(image: AssetImage("assets/icons/$image"),fit: BoxFit.cover) ,
               ),
               alignment: Alignment.bottomRight,
             ),
