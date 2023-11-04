@@ -9,7 +9,7 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 
 
 class OrderTools{
-///subtract ware when ware added to credit
+///subtract ware when ware added to order
   static void subtractFromWareStorage(List<Item> items,{Order? oldOrder}){
     List<RawWare> wareList=HiveBoxes.getRawWare().values.toList();
     //if user want to edit the existed bill,at first old bill ware quantity being add to storage in this line
@@ -51,7 +51,7 @@ if(orders.isNotEmpty){
 }
   }
 
-/// search and sort the credit List
+/// search and sort the order List
   static List<Order> filterList(List<Order> list,String? keyWord,String sort){
 
     if(keyWord!=null) {

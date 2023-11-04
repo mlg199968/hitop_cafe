@@ -6,6 +6,7 @@ import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -30,12 +31,14 @@ Future main() async {
   Hive.registerAdapter(PaymentAdapter());
   Hive.registerAdapter(BillAdapter());
   Hive.registerAdapter(PurchaseAdapter());
+  Hive.registerAdapter(ShopAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db");
   await Hive.openBox<Item>("item_db");
   await Hive.openBox<Order>("order_db");
   await Hive.openBox<Bill>("bill_db");
+  await Hive.openBox<Shop>("shop_db");
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),
@@ -53,14 +56,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hitop Cafe',
       theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          foregroundColor: Colors.white,
+            backgroundColor: Colors.deepOrange),
         fontFamily: "persian",
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
       ),
       onGenerateRoute: (setting) => generateRoute(setting),
-      home:  Directionality(
-        textDirection: TextDirection.rtl,
-          child: HomeScreen()),
+      home:  const HomeScreen(),
     );
   }
 }

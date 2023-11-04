@@ -12,7 +12,6 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/orders_screen/panels/discount_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
@@ -49,8 +48,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   late final AddOrderScreen oldState;
   List<Item> items = [];
   List<Payment> payments = [];
-
-  num discount = 0;
   int billNumber = 1;
   bool didStateUpdate = false;
   Jalali date = Jalali.now();
@@ -58,9 +55,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   DateTime modifiedDate = DateTime.now();
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
-  ///animation
-  late Animation<double> _animation;
-  late AnimationController _animationController;
 
   ///calculate payable amount
   num payable() {
@@ -91,6 +85,13 @@ class _AddOrderScreenState extends State<AddOrderScreen>
       ? 0
       : payments
           .map((e) => e.method == "cash" ? e.amount : 0)
+          .reduce((a, b) => a + b);
+
+ ///calculate discount amount
+  num get discount => items.isEmpty
+      ? 0
+      : items
+          .map((e) => e.discount!*.01*e.sum)
           .reduce((a, b) => a + b);
 
   ///create orderBill object with given data
@@ -142,7 +143,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
     items.addAll(oldOrder.items);
     payments.addAll(oldOrder.payments);
     billNumber = oldOrder.billNumber ?? 0;
-    discount = oldOrder.discount;
     date = Jalali.fromDateTime(oldOrder.orderDate);
     modifiedDate = oldOrder.modifiedDate;
     dueDate = oldOrder.dueDate!;
@@ -160,13 +160,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
     }
 
     ///initState animation part
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 260),
-    );
-    final curvedAnimation =
-        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
-    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
     super.initState();
   }
 
@@ -222,6 +215,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
         floatingActionButton: screenType(context) != ScreenType.mobile
             ? null
             : CustomFloatActionButton(
+          label: "ذخیره",
                 icon: Icons.save_outlined,
                 onPressed: () {
                   saveBillOnLocalStorage(
@@ -289,7 +283,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                 children: [
                                   ///invoice number
                                   TitleButton(
-                                    title: "شماره میز:",
+                                    title: "شماره فاکتور:",
                                     value: billNumber.toString(),
                                     onPress: () {
                                       showDialog(
@@ -387,22 +381,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                 // });
                               },
                             ),
-                            BillActionButton(
-                              label: "تخفیف",
-                              icon: Icons.discount_outlined,
-                              bgColor: Colors.orangeAccent,
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const DiscountToBill()).then((value) {
-                                  if (value != null) {
-                                    discount = value;
-                                  }
-                                  setState(() {});
-                                });
-                              },
-                            ),
                           ],
                         ),
                       ),
@@ -441,7 +419,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                               border: Border.all(
                                                   color: Colors.brown)),
                                           child: CustomTextField(
-                                            label: "",
                                             controller: tableNumberController,
                                             textFormat: TextFormatter.number,
                                           ),

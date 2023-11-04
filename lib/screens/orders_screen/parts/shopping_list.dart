@@ -31,9 +31,7 @@ class ShoppingList extends StatelessWidget {
               child: ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {
-                    bool isNegative = false;
                     if (items[index].sum < 0) {
-                      isNegative = true;
                     }
                     return CustomTile(
                       // onInfo: () {
@@ -48,7 +46,7 @@ class ShoppingList extends StatelessWidget {
                         onChange();
                       },
                       height: 55,
-                      color: isNegative ? Colors.red : Colors.blue,
+                      color:Colors.brown.shade200,
                       leadingIcon: FontAwesomeIcons.cartShopping,
                       type: "item",
                       title: items[index].itemName,
@@ -57,7 +55,7 @@ class ShoppingList extends StatelessWidget {
                               .toPersianDigit(),
                       topTrailing: items[index].discount == 0
                           ? "ندارد"
-                          : "${addSeparator(items[index].sale * (items[index].discount ?? 0))} "
+                          : "${addSeparator(items[index].sum * (items[index].discount ?? 0)/100)} "
                               .toPersianDigit(),
                       topTrailingLabel: "تخفیف: ",
                       trailing: addSeparator(items[index].sum),

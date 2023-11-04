@@ -1,4 +1,5 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/time/time.dart';
@@ -11,7 +12,6 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
-import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/discount_to_bill.dart';
@@ -19,7 +19,6 @@ import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart'
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
-import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/bill_action_button.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
@@ -61,9 +60,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
   DateTime modifiedDate = DateTime.now();
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
-  ///animation
-  late Animation<double> _animation;
-  late AnimationController _animationController;
 
   ///calculate payable amount
   num payable() {
@@ -144,7 +140,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
     payments.clear();
     wares.addAll(oldBill.purchases);
     payments.addAll(oldBill.payments);
-    billNumber = oldBill.billNumber ?? 0;
+    billNumber = oldBill.billNumber;
     discount = oldBill.discount;
     date = Jalali.fromDateTime(oldBill.billDate);
     modifiedDate = oldBill.modifiedDate;
@@ -162,13 +158,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
     }
 
     ///initState animation part
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 260),
-    );
-    final curvedAnimation =
-    CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
-    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
     super.initState();
   }
 

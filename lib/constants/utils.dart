@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/shape02.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart'as intl;
 import 'package:path_provider/path_provider.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -178,23 +179,27 @@ Future<File?> pickImage(String imageName) async {
 }
 
 /// condition for pick image from device storage
-Future<File?> pickFile(String imageName) async {
+Future<File?> pickFile(String imageName,{String? root}) async {
   int imageIndex = 0;
   final Directory directory = await getApplicationDocumentsDirectory();
-  final newDirectory = Directory("${directory.path}/cache/images");
+
+  final newDirectory = Directory("${directory.path}${root ?? "/cache/images"}");
   File? copyFile;
   try {
     FilePickerResult? pickedFile = await FilePicker.platform.pickFiles();
     if (pickedFile != null) {
+      File selectedFile=File(pickedFile.files.single.path!);
       //here we create new path for cache images and condition check if directory not exist,create directory
       if (!await newDirectory.exists()) {
         newDirectory.create(recursive: true);
       }
+      //when user want to choose another image,app load the old image name,cause of it new image not being applied
+      //for fix this we give new name to save then delete the old one
       if (!await File("${newDirectory.path}/0 $imageName").exists()) {
-        copyFile = await File(pickedFile.files.single.path!)
+        copyFile = await selectedFile
             .copy("${newDirectory.path}/$imageIndex $imageName");
         imageIndex++;
-        copyFile = await File(pickedFile.files.single.path!)
+        copyFile = await selectedFile
             .copy("${newDirectory.path}/$imageIndex $imageName");
       } else {
         imageIndex++;
@@ -206,7 +211,7 @@ Future<File?> pickFile(String imageName) async {
         await File("${newDirectory.path}/$imageIndex $imageName")
             .delete(recursive: true);
         imageIndex++;
-        copyFile = await File(pickedFile.files.single.path!)
+        copyFile = await selectedFile
             .copy("${newDirectory.path}/$imageIndex $imageName");
       }
       //delete cache file
@@ -216,10 +221,20 @@ Future<File?> pickFile(String imageName) async {
   } catch (e) {
     debugPrint('file picker error:::::: $e');
   }
-  // if(await File("${newDirectory.path}/$imageName").exists()){
-  //   copyFile=File("${newDirectory.path}/$imageName");
-  // }
   return copyFile;
+}
+
+reSizeImage(String iPath,{int width=600})async{
+  await (img.Command()
+  // Read a WebP image from a file.
+    ..decodeJpgFile(iPath)
+  // Resize the image so its width is 120 and height maintains aspect
+  // ratio.
+    ..copyResize(width: width)
+  // Save the image to a PNG file.
+    ..writeToFile(iPath))
+  // Execute the image commands in an isolate thread
+      .executeThread();
 }
 
 /// find max date in the date list

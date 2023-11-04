@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/models/shop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier{
 
-  int userLevel=0;
+  int userLevel=1;
   //ceil count is for how many item you can add to list
   int ceilCount=50;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
@@ -22,21 +23,21 @@ class UserProvider extends ChangeNotifier{
   int preBillNumber=1;
 
 
-  // void getData(ShopHive shop){
-  //   shopName=shop.shopName;
-  //   address=shop.address;
-  //   phoneNumber=shop.phoneNumber;
-  //   phoneNumber2=shop.phoneNumber2;
-  //   description=shop.description;
-  //   logoImage=shop.logoImage;
-  //   signatureImage=shop.signatureImage;
-  //   stampImage=shop.stampImage;
-  //   shopCode=shop.shopCode;
-  //   currency=shop.currency;
-  //   preDiscount=shop.preDiscount ;
-  //   preBillNumber=shop.preBillNumber;
-  //
-  // }
+  void getData(Shop shop){
+    shopName=shop.shopName;
+    address=shop.address;
+    phoneNumber=shop.phoneNumber;
+    phoneNumber2=shop.phoneNumber2;
+    description=shop.description;
+    logoImage=shop.logoImage;
+    signatureImage=shop.signatureImage;
+    stampImage=shop.stampImage;
+    shopCode=shop.shopCode;
+    currency=shop.currency;
+    preDiscount=shop.preTax ;
+    preBillNumber=shop.preBillNumber;
+
+  }
 
   void setUserLevel(int input) async{
     SharedPreferences prefs= await SharedPreferences.getInstance();

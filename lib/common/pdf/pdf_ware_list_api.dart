@@ -13,7 +13,7 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
 class PdfWareListApi {
-  //static ShopHive shopData = HiveBoxes.getShopInfo().get(0)!;
+  //static Shop shopData = HiveBoxes.getShopInfo().get(0)!;
   //static String currency=shopData.currency;
   static Future<File> generate(List<RawWare> wareList,mat.BuildContext context) async {
     UserProvider shopData=Provider.of<UserProvider>(context,listen: false);

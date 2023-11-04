@@ -1,17 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/image_picker_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/panels/add_ingredient_panel.dart';
 import 'package:hitop_cafe/screens/items_screen/panels/create_item_group_panel.dart';
+import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
+import 'package:hitop_cafe/screens/items_screen/widgets/item_image_holder.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,10 +42,12 @@ class _AddWareScreenState extends State<AddItemScreen> {
   TextEditingController salePriceController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   String unitItem = unitList[0];
+  String? imagePath;
   List<RawWare> ingredients = [];
 
+
   ///save ware on local storage
-  void saveItem({String? id}) {
+  void saveItem({String? id}) async{
     Item item = Item(
       itemName: itemNameController.text,
       unit: unitItem,
@@ -49,12 +57,17 @@ class _AddWareScreenState extends State<AddItemScreen> {
           : stringToDouble(salePriceController.text),
       description:
           descriptionController.text.isEmpty ? "" : descriptionController.text,
-      itemId: id ?? const Uuid().v1(),
+      itemId:id ?? const Uuid().v1() ,
       createDate: id != null ? widget.oldItem!.createDate : DateTime.now(),
       modifiedDate: DateTime.now(),
       ingredients: ingredients,
+      imagePath: imagePath,
     );
-    HiveBoxes.getItem().put(item.itemId, item);
+    //save image if exist
+    if(imagePath!=item.imagePath) {
+      item.imagePath=await ItemTools.saveImage(imagePath, item.itemId);
+    }
+     HiveBoxes.getItem().put(item.itemId, item);
   }
 
   void restoreOldItem() {
@@ -64,6 +77,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
     wareProvider.selectedItemCategory = widget.oldItem!.category;
     unitItem = widget.oldItem!.unit;
     ingredients = widget.oldItem!.ingredients;
+    imagePath=widget.oldItem!.imagePath;
   }
 
   ///calculate the how much cost to create each item
@@ -128,9 +142,15 @@ class _AddWareScreenState extends State<AddItemScreen> {
                             ///photo part
                             height: 150,
                             margin: const EdgeInsets.all(5),
-                            child: const Icon(
-                              Icons.add_photo_alternate_outlined,
-                              size: 80,
+                            child: ItemImageHolder(
+                              imagePath: imagePath,
+                              onSet: (path){
+                                imagePath=path;
+                                setState(() {});
+                              },
+                                onEdited: (){
+                                setState(() {});
+                                },
                             ),
                           ),
 

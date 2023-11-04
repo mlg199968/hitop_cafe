@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
-import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hive/hive.dart';
 
 part 'bill.g.dart';
@@ -18,7 +17,7 @@ class Bill extends HiveObject {
   @HiveField(4)
   late num payable;
   @HiveField(5)
-  num get waresSum => purchases.isEmpty?0:purchases.map((e) => e.price).reduce((a, b) => a + b);
+  num get waresSum => purchases.isEmpty?0:purchases.map((e) => e.price*e.quantity).reduce((a, b) => a + b);
   @HiveField(6)
   num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method=="cash"? e.amount:0).reduce((a, b) => a + b);
   @HiveField(7)

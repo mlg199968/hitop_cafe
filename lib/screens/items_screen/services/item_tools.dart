@@ -1,9 +1,28 @@
 
 
+import 'dart:io';
+
 import 'package:hitop_cafe/models/item.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class ItemTools {
+
+  static saveImage(String? path,String idName)async{
+    if(path!=null){
+      final Directory directory = await getApplicationDocumentsDirectory();
+      final newDirectory = Directory("${directory.path}/hitop_cafe/items/images");
+      if (!await newDirectory.exists()) {
+        newDirectory.create(recursive: true);
+      }
+
+      File newFile= await File(path).copy("${newDirectory.path}/$idName.jpg");
+      await File(path).delete();
+      return newFile.path;
+    }
+    return null;
+  }
+
   /// search and sort the ware List
   static List<Item> filterList(
       List<Item> list, String? keyWord, String sort) {

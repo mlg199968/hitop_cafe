@@ -28,10 +28,7 @@ class BillTools{
     for(int i=0;i<wareList.length;i++){
       for(int j=0;j<purchases.length;j++){
         if(purchases[j].wareName==wareList[i].wareName){
-          print( wareList[i].quantity);
           wareList[i].quantity+=purchases[j].quantity;
-          print("بعد از افزودن");
-          print( wareList[i].quantity);
           HiveBoxes.getRawWare().putAt(i, wareList[i]);
         }
       }

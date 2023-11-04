@@ -36,10 +36,7 @@ class Item extends HiveObject{
 @HiveField(13)
   num? discount=0;
 @HiveField(14)
-  num get sum {
-    num all=(quantity ?? 1) * sale;
-    return all-((all/100)*(discount ?? 0));
-  }
+  num get sum =>(quantity ?? 1) * sale;
 
   Item({
     required this.itemName,

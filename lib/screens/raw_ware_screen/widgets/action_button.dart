@@ -8,6 +8,7 @@ class ActionButton extends StatelessWidget {
       this.bgColor = Colors.blue,
       this.label,
       this.height = 35,
+      this.width,
       this.direction = TextDirection.rtl});
 
   final VoidCallback onPress;
@@ -15,6 +16,7 @@ class ActionButton extends StatelessWidget {
   final String? label;
   final Color bgColor;
   final double height;
+  final double? width;
   final TextDirection direction;
 
   @override
@@ -23,6 +25,7 @@ class ActionButton extends StatelessWidget {
       return Directionality(
         textDirection: TextDirection.rtl,
         child: SizedBox(
+          width: width,
           height: height,
           child: ElevatedButton(
             style: ButtonStyle(
@@ -31,13 +34,19 @@ class ActionButton extends StatelessWidget {
                 backgroundColor: MaterialStateProperty.all(bgColor)),
             onPressed: onPress,
             child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 constraint.maxWidth < 100
                     ? const SizedBox()
-                    : Text(
-                        label ?? "",
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                    : Flexible(
+                      child: Text(
+                          label ?? "",
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                    ),
                 constraint.maxWidth < 100
                     ? const SizedBox()
                     : const SizedBox(width: 3,),

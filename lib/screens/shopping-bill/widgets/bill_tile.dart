@@ -1,7 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
@@ -32,9 +31,7 @@ class BillTile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final String payable = addSeparator(billData.payable);
-    String dueDate = "تعیین نشده";
     if (billData.dueDate != null) {
-      dueDate = billData.dueDate!.toPersianDate();
     }
     //final num? billNumber=billData.billNumber;
     return Directionality(
@@ -98,7 +95,7 @@ class BillTile extends StatelessWidget {
             header: Align(
               child: MyListTile(
                 enable: false,
-                title: "فاکتور شماره " +billData.billNumber.toString().toPersianDigit(),
+                title: "فاکتور شماره ${billData.billNumber.toString().toPersianDigit()}",
                 leadingIcon: FontAwesomeIcons.fileInvoiceDollar,
                 type: billData.billNumber.toString().toPersianDigit(),
                 subTitle: billData.description,

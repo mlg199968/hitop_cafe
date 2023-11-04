@@ -5,25 +5,34 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
+import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/add_raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 
 
 import 'package:hitop_cafe/screens/ware_house/ware_house_screen.dart';
 
 Route generateRoute(RouteSettings routeSetting){
   switch(routeSetting.name){
+
     case HomeScreen.id:
-      return MaterialPageRoute(builder: (_)=> HomeScreen());
+      return MaterialPageRoute(builder: (_)=> const HomeScreen());
+
     case OrderScreen.id:
       return MaterialPageRoute(builder: (_)=>const OrderScreen());
+
+    case PresentOrderScreen.id:
+      return MaterialPageRoute(builder: (_)=>const PresentOrderScreen());
 
    case AddOrderScreen.id:
      Order? order=routeSetting.arguments as Order?;
@@ -54,6 +63,16 @@ Route generateRoute(RouteSettings routeSetting){
   case AddWareScreen.id:
     RawWare? rawWare = routeSetting.arguments as RawWare?;
         return MaterialPageRoute(builder: (_)=> AddWareScreen(oldRawWare: rawWare));
+
+  case ShopInfoScreen.id:
+    return MaterialPageRoute(builder: (_) => const ShopInfoScreen());
+
+  case SettingScreen.id:
+    return MaterialPageRoute(builder: (_) => const SettingScreen());
+
+ case AnalyticsScreen.id:
+    return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
+
 
 
 

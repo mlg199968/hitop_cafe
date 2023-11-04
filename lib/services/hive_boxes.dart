@@ -4,6 +4,7 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/models/shop.dart';
 import 'package:hive/hive.dart';
 
 class HiveBoxes{
@@ -22,6 +23,10 @@ class HiveBoxes{
 
 static Box<Bill> getBills(){
     return Hive.box<Bill>("bill_db");
+  }
+
+static Box<Shop> getShopInfo(){
+    return Hive.box<Shop>("shop_db");
   }
 
 
