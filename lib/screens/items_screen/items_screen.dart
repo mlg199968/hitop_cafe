@@ -7,6 +7,7 @@ import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -15,6 +16,7 @@ import 'package:hitop_cafe/screens/items_screen/panels/item_info_panel.dart';
 import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:persian_number_utility/persian_number_utility.dart';
 
 import 'package:provider/provider.dart';
 
@@ -36,7 +38,6 @@ class _WareListScreenState extends State<ItemsScreen> {
     'تاریخ ثبت',
     'تاریخ ویرایش',
     'حروف الفبا',
-    'موجودی کالا',
   ];
   String sortItem = 'تاریخ ویرایش';
   String? keyWord;
@@ -282,9 +283,9 @@ class _ListPartState extends State<ListPart> {
                                       color: selectedItems.contains(index)
                                           ? Colors.blue
                                           : kMainColor,
-                                      leadingIcon: CupertinoIcons.cube_box_fill,
+                                      leadingIcon: Icons.emoji_food_beverage_rounded,
                                       subTitle: ware.category,
-                                      type: "کالا",
+                                      type: (index+1).toString().toPersianDigit(),
                                       title: ware.itemName,
 
                                       trailing: addSeparator(ware.sale), topTrailing: '',

@@ -50,6 +50,45 @@ class PdfInvoiceApi {
         pdf: pdf);
   }
 
+  ///for printing should data be unit8list
+  ///so change pdf format to this format from file to unit8list
+  static Future<Uint8List> generatePrint(
+      Order bill, mat.BuildContext context) async {
+    UserProvider shopData = Provider.of<UserProvider>(context, listen: false);
+    var myTheme = ThemeData.withFont(
+        base: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
+        bold: Font.ttf(await rootBundle.load("assets/fonts/arialbd.ttf")),
+        italic: Font.ttf(await rootBundle.load("assets/fonts/ariali.ttf")),
+        boldItalic: Font.ttf(await rootBundle.load("assets/fonts/arialbi.ttf")),
+        icons: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
+        fontFallback: [
+          Font.ttf(await rootBundle.load("assets/fonts/tahoma.ttf")),
+          Font.ttf(await rootBundle.load("assets/fonts/tahomabd.ttf")),
+        ]);
+    final pdf = Document(theme: myTheme);
+    final totalPart = await buildTotal(bill, shopData);
+    final invoicePart = await buildInvoice(bill, shopData);
+    final titlePart = await buildTitle(bill, shopData);
+    pdf.addPage(MultiPage(
+      build: (context) => [
+        Directionality(textDirection: TextDirection.rtl, child: titlePart),
+        Directionality(
+            textDirection: TextDirection.rtl, child: buildHeader(bill)),
+        SizedBox(height: 1 * PdfPageFormat.cm),
+        invoicePart,
+        Divider(),
+        Directionality(textDirection: TextDirection.rtl, child: totalPart),
+      ],
+      footer: (context) => Directionality(
+          textDirection: TextDirection.rtl, child: buildFooter(shopData)),
+    ));
+    return pdf.save();
+
+    // return PdfApi.saveDocument(
+    // name: "  فاکتور${bill.billNumber}.pdf", pdf: pdf);
+  }
+
+
   static Widget buildHeader(Order bill) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -10,7 +10,7 @@ import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/order_info_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/order_tile.dart';
-import 'package:hitop_cafe/screens/orders_screen/widgets/filter_panel.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/filter_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';

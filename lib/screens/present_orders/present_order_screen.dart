@@ -131,14 +131,14 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                           orderList: filteredList,
                           key: widget.key,
                         );
+                        ///empty screen show
                       } else {
-                        return const Expanded(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "سفارشی یافت نشد!",
-                              textDirection: TextDirection.rtl,
-                            ),
+                        return Container(
+                          height: 400,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "سفارش حاضری یافت نشد!",
+                            textDirection: TextDirection.rtl,
                           ),
                         );
                       }

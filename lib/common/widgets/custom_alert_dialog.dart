@@ -12,13 +12,13 @@ AlertDialog CustomAlertDialog(
       double opacity=.75,
     }) {
   return AlertDialog(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     iconPadding: EdgeInsets.zero,
     contentPadding: EdgeInsets.zero,
     backgroundColor: Colors.white.withOpacity(opacity),
     scrollable: true,
     content: BlurryContainer(
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

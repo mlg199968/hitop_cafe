@@ -4,24 +4,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/shape02.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:intl/intl.dart'as intl;
 import 'package:path_provider/path_provider.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 
-enum SnackType{
-  normal,
-  success,
-  warning,
-  error,
-}
-enum ScreenType{
-  mobile,
-  tablet,
-  desktop
-}
 
 
 /// find out Screen size and return it
@@ -226,15 +217,33 @@ Future<File?> pickFile(String imageName,{String? root}) async {
 
 reSizeImage(String iPath,{int width=600})async{
   await (img.Command()
-  // Read a WebP image from a file.
+  // Read a jpj image from a file.
     ..decodeJpgFile(iPath)
-  // Resize the image so its width is 120 and height maintains aspect
+  // Resize the image so its width is some number and height maintains aspect
   // ratio.
     ..copyResize(width: width)
-  // Save the image to a PNG file.
+  // Save the image to a jpj file.
     ..writeToFile(iPath))
   // Execute the image commands in an isolate thread
       .executeThread();
+  //******
+  //compress image
+  ImageFile input=ImageFile(filePath: iPath,rawBytes: File(iPath).readAsBytesSync()); // set the input image file
+  Configuration config = const Configuration(
+    outputType: ImageOutputType.jpg,
+    // can only be true for Android and iOS while using ImageOutputType.jpg or ImageOutputType.pngÏ
+    useJpgPngNativeCompressor:false,//(Platform.isAndroid || Platform.isIOS) ? true : false,
+    // set quality between 0-100
+    quality: 25,
+  );
+  final param = ImageFileConfiguration(input: input, config: config);
+  final output = await compressor.compress(param);
+  print("Input size : ${input.sizeInBytes}");
+  print("Output size : ${output.sizeInBytes}");
+
+  if(input.sizeInBytes>100100){
+    await img.writeFile(iPath, output.rawBytes);
+  }
 }
 
 /// find max date in the date list
@@ -247,7 +256,6 @@ DateTime findMaxDate(List<DateTime> dateList) {
   }
   return maxDate;
 }
-
 DateTime findMinDate(List<DateTime> dateList) {
   DateTime minDate = dateList[0];
   for (int i = 1; i < dateList.length; i++) {

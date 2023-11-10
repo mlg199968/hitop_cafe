@@ -8,7 +8,7 @@ import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
-import 'package:hitop_cafe/screens/orders_screen/widgets/filter_panel.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/filter_panel.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/panels/bill_info_panel.dart';
 import 'package:hitop_cafe/screens/shopping-bill/services/bill_tools.dart';

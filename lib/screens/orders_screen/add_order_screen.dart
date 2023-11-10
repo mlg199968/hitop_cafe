@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/pdf/pdf_api.dart';
+import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
@@ -7,10 +9,12 @@ import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
+import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
@@ -25,6 +29,7 @@ import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
@@ -42,6 +47,7 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen>
     with SingleTickerProviderStateMixin {
   late UserProvider userProvider;
+  late PrinterProvider printerProvider;
   final tableNumberController = TextEditingController();
   Function eq = const ListEquality().equals;
   TextEditingController billNumberController = TextEditingController();
@@ -96,18 +102,18 @@ class _AddOrderScreenState extends State<AddOrderScreen>
 
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
-    Order orderBill = Order(
-        items: items,
-        payments: payments,
-        discount: discount,
-        payable: payable(),
-        orderDate: id != null ? widget.oldOrder!.orderDate : DateTime.now(),
-        tableNumber: int.parse(tableNumberController.text),
-        billNumber: billNumber,
-        dueDate: dueDate,
-        modifiedDate: DateTime.now(),
-        orderId: id ?? const Uuid().v1(),
-        description: '');
+    Order orderBill = Order()
+        ..items= items
+        ..payments= payments
+        ..discount= discount
+        ..payable= payable()
+        ..orderDate= id != null ? widget.oldOrder!.orderDate : DateTime.now()
+        ..tableNumber= int.parse(tableNumberController.text)
+        ..billNumber= billNumber
+        ..dueDate= dueDate
+        ..modifiedDate= DateTime.now()
+        ..orderId= id ?? const Uuid().v1()
+        ..description= '';
     return orderBill;
   }
 
@@ -131,9 +137,15 @@ class _AddOrderScreenState extends State<AddOrderScreen>
 
   ///export pdf function
   void exportPdf() async {
-    // Order orderBill = createBillObject();
-    // final file = await PdfInvoiceApi.generate(orderBill,context);
-    // PdfApi.openFile(file);
+    Order orderBill = createBillObject();
+   // final file = await PdfInvoiceApi.generate(orderBill,context);
+    //PdfApi.openFile(file);
+    final file =
+    await PdfInvoiceApi.generatePrint(orderBill, context);
+    await Printing.directPrintPdf(
+        printer: printerProvider.getPrinter!,
+        onLayout: (_) => file.buffer.asUint8List());
+
   }
 
   ///replace old  orderBill data for edit
@@ -152,6 +164,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   @override
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    printerProvider = Provider.of<PrinterProvider>(context, listen: false);
     if (widget.oldOrder != null) {
       oldOrderReplace(widget.oldOrder!);
     } else {

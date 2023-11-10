@@ -39,7 +39,7 @@ class DB extends HiveObject {
         List<RawWare>.from(map['wares'].map((e) => RawWare.fromMap(e)));
 
     List<Order> orders = List<Order>.from(
-        map['orders'].map((e) => Order.fromMap(e)));
+        map['orders'].map((e) => Order().fromMap(e)));
 
     List<Bill> bills =
         List<Bill>.from(map['bills'].map((e) => Bill.fromMap(e)));

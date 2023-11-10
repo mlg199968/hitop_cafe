@@ -16,21 +16,20 @@ class OrderAdapter extends TypeAdapter<Order> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Order(
-      items: (fields[0] as List).cast<Item>(),
-      tableNumber: fields[1] as int?,
-      payments: (fields[2] as List).cast<Payment>(),
-      payable: fields[4] as num,
-      discount: fields[8] as num,
-      orderDate: fields[9] as DateTime,
-      orderId: fields[10] as String,
-      modifiedDate: fields[11] as DateTime,
-      dueDate: fields[12] as DateTime?,
-      isChecked: fields[13] as bool,
-      isDone: fields[14] as bool,
-      description: fields[3] as String,
-      billNumber: fields[15] as int?,
-    );
+    return Order()
+      ..items = (fields[0] as List).cast<Item>()
+      ..tableNumber = fields[1] as int?
+      ..payments = (fields[2] as List).cast<Payment>()
+      ..description = fields[3] as String
+      ..payable = fields[4] as num
+      ..discount = fields[8] as num
+      ..orderDate = fields[9] as DateTime
+      ..orderId = fields[10] as String
+      ..modifiedDate = fields[11] as DateTime
+      ..dueDate = fields[12] as DateTime?
+      ..isChecked = fields[13] as bool
+      ..isDone = fields[14] as bool
+      ..billNumber = fields[15] as int?;
   }
 
   @override

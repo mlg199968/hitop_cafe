@@ -79,7 +79,7 @@ void replaceOldPurchase(Item? old){
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
+                          Flexible(
                             flex: 1,
                             child: CustomButton(
                               height: 40,
@@ -132,12 +132,15 @@ void replaceOldPurchase(Item? old){
                         height: 10,
                       ),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CustomTextField(
-                            label: "مقدار",
-                            controller: quantityController,
-                            textFormat: TextFormatter.number,
+                          Flexible(
+                            child: CustomTextField(
+                              label: "مقدار",
+                              controller: quantityController,
+                              textFormat: TextFormatter.number,
+                            ),
                           ),
                           DropListModel(
                               height: 40,

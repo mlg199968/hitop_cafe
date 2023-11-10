@@ -9,6 +9,7 @@ import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';

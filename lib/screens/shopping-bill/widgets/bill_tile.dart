@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/order_tile.dart';

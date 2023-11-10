@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
@@ -40,7 +41,7 @@ class SideBarPanel extends StatelessWidget {
                       height: 150,
                       decoration: const BoxDecoration(
                           image: DecorationImage(
-                              image: AssetImage('assets/images/sidebar.jpg'),
+                              image: AssetImage('assets/images/photo3.jpg'),
                               fit: BoxFit.fitWidth,
                               opacity: .6)),
                     ),
@@ -147,7 +148,7 @@ class AvatarHolder extends StatelessWidget {
           backgroundColor: Colors.white70,
           radius: 50,
           child: CircleAvatar(
-            backgroundColor: Colors.indigo,
+            backgroundColor: kMainColor,
             foregroundImage: logo != null
                 ? FileImage(
                     File(logo),
@@ -221,8 +222,8 @@ class menu_button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //decelerations
-    Color textColor = Colors.black.withOpacity(.8);
-    Color borderColor = Colors.blue;
+    Color textColor = Colors.black.withOpacity(.7);
+    Color borderColor = kMainColor;
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(

@@ -75,6 +75,9 @@ dependencies:
   flutter_svg: ^2.0.8
   flutter_svg_provider: ^1.0.4
   image: ^4.1.3
+  image_compression_flutter: ^1.0.3
+  archive: ^3.4.7
+  printing: ^5.11.1
 
 
 dev_dependencies:

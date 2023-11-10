@@ -3,13 +3,17 @@ import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/extensions.dart';
+import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:printing/printing.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,6 +34,39 @@ class _SettingScreenState extends State<SettingScreen> {
   late String selectedCurrency;
   late UserProvider provider;
 
+
+
+  ///printer
+  // late PrinterProvider? printerProvider;
+  late List<Printer> _printers; // A list of printers to display
+  late String? selectedPrinter;
+  String? namePrinter = Global.storageService.getnamePrinter();
+  // Printer? newPrinter;
+  String? defaultPrinter = Global.storageService.getdefaultPrinter();
+  ///get default printer
+  Future<void> getDefaultPrinter() async {
+    Printing.listPrinters().then((printers) {
+      // Map<dynamic, dynamic> map = jsonDecode(jsonSting);
+      setState(() {
+        // Create a list of printers from the map
+
+// Find the printer that has isDefault: true
+        Printer defaultPrinter = printers.firstWhere((p) => p.isDefault);
+        namePrinter = defaultPrinter.name;
+        Global.storageService.setString(name_printer, namePrinter!);
+        debugPrint(namePrinter);
+// Print the default printer name and model
+        print(defaultPrinter.name); // HP LaserJet 1018
+        print(defaultPrinter.model); // HP LaserJet 1018
+
+        _printers = printers;
+        debugPrint(_printers.toString());
+      });
+    });
+    // return defaultPrinter!.name;
+  }
+
+  ///save part
   void storeInfoShop() async{
     SharedPreferences pref=await _prefs;
     Shop? shopInfo = HiveBoxes.getShopInfo().get(0);
@@ -56,6 +93,7 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     selectedCurrency = kCurrencyList[0];
     getData();
+    getDefaultPrinter();
     super.initState();
   }
 
@@ -80,109 +118,144 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
         title: const Text("تنظیمات"),
       ),
-      body: Stack(
-        children: [
-          Directionality(
-            textDirection: TextDirection.rtl,
-            child: Column(
-              children: [
-                Card(
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    margin: const EdgeInsets.all(15),
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.blue)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomButton(
-                          text: "پشتیبان گیری",
-                          color: Colors.red.withRed(250),
-                          onPressed: () async {
-                            await storagePermission(context, Allow.externalStorage);
-                            // ignore: use_build_context_synchronously
-                            await storagePermission(context, Allow.storage);
-                            if(context.mounted) {
-                              await BackupTools.createBackup(context);
-                            }
-                          },
+      body: Consumer<PrinterProvider>(
+        builder: (context,printerProvider,child) {
+          return Stack(
+            children: [
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  children: [
+                    Card(
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        margin: const EdgeInsets.all(15),
+                        decoration:
+                            BoxDecoration(border: Border.all(color: Colors.blue)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomButton(
+                              text: "پشتیبان گیری",
+                              color: Colors.red.withRed(250),
+                              onPressed: () async {
+                                await storagePermission(context, Allow.externalStorage);
+                                // ignore: use_build_context_synchronously
+                                await storagePermission(context, Allow.storage);
+                                if(context.mounted) {
+                                  await BackupTools.createBackup(context);
+                                }
+                              },
+                            ),
+                            CustomButton(
+                              text: "بارگیری فایل پشتیبان",
+                              color: Colors.green,
+                              onPressed: () async {
+                                await storagePermission(context, Allow.storage);
+                                if(context.mounted) {
+                                  await storagePermission(context, Allow.externalStorage);
+                                }
+                                if(context.mounted) {
+                                 // await BackupTools.restoreBackup(context);
+                                  await BackupTools.readZipFile(context);
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                        CustomButton(
-                          text: "بارگیری فایل پشتیبان",
-                          color: Colors.green,
-                          onPressed: () async {
-                            await storagePermission(context, Allow.storage);
-                            if(context.mounted) {
-                              await storagePermission(context, Allow.externalStorage);
-                            }
-                            if(context.mounted) {
-                              await BackupTools.restoreBackup(context);
-                            }
-                          },
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                DropListItem(
-                    title: "واحد پول",
-                    selectedValue: selectedCurrency,
-                    listItem: kCurrencyList,
-                    onChange: (val) {
-                      selectedCurrency = val;
-                      setState(() {});
-                    }),
-                InputItem(
-                  label: "مالیات پیشفرض :",
-                  inputLabel: "درصد",
-                  controller: taxController,
-                  width: 100,
-                  onChange: (val) {
-                    if (val != "" && stringToDouble(val) > 100) {
-                      taxController.text = 99.toString();
-                      setState(() {});
-                    }
-                  },
-                ),
-                InputItem(
-                  label: "شروع شماره فاکتور:",
-                  inputLabel: "شماره",
-                  controller: billNumberController,
-                )
+                    ///currency unit
+                    DropListItem(
+                        title: "واحد پول",
+                        selectedValue: selectedCurrency,
+                        listItem: kCurrencyList,
+                        onChange: (val) {
+                          selectedCurrency = val;
+                          setState(() {});
+                        }),
+                    /// preTax value
+                    InputItem(
+                      label: "مالیات پیشفرض :",
+                      inputLabel: "درصد",
+                      controller: taxController,
+                      width: 100,
+                      onChange: (val) {
+                        if (val != "" && stringToDouble(val) > 100) {
+                          taxController.text = 99.toString();
+                          setState(() {});
+                        }
+                      },
+                    ),
+                    ///starter bill number
+                    InputItem(
+                      label: "شروع شماره فاکتور:",
+                      inputLabel: "شماره",
+                      controller: billNumberController,
+                    ),
 
-                //SwitchItem(title: "title", onChange: (val) {}),
-              ],
-            ),
-          ),
-          ///condition for:if user not purchase the app,it will see purchase button to buy complete version
-          Provider.of<UserProvider>(context,listen: false).userLevel!=0
-              ? const SizedBox()
-              : Container(
-            padding: const EdgeInsets.all(10),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height ,
-            color: Colors.black87.withOpacity(.7),
-            //height: MediaQuery.of(context).size.height,
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Text(
-                    "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    //SwitchItem(title: "title", onChange: (val) {}),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Show the native printer picker and get the selected printer
+                        final printer = await Printing.pickPrinter(
+                            context: context, title: "پرینتر را انتخاب کنید");
+                        Printer newPrinter = printer!.copyWith(
+                          isDefault: printer.isDefault
+                              ? printer.isDefault
+                              : printer.isAvailable
+                              ? true
+                              : printer.isDefault,
+                          // : true,
+                        );
+                        debugPrint(newPrinter.name);
+                        debugPrint(newPrinter.isDefault.toString());
+                        printerProvider.setPrinterName(newPrinter.name);
+                        printerProvider.setPrinter(newPrinter);
 
-                  ),
+                        // setState(() {
+                        Global.storageService
+                            .setString(default_printer, newPrinter.name);
+                        // defaultPrinter;
+                        debugPrint(defaultPrinter);
+                        // });
+                      },
+                      child: Text(printerProvider.getPrinterName.toString()),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 30,
+              ),
+              ///condition for:if user not purchase the app,it will see purchase button to buy complete version
+              Provider.of<UserProvider>(context,listen: false).userLevel!=0
+                  ? const SizedBox()
+                  : Container(
+                padding: const EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height ,
+                color: Colors.black87.withOpacity(.7),
+                //height: MediaQuery.of(context).size.height,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    PurchaseButton(),
+                  ],
                 ),
-                PurchaseButton(),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        }
       ),
     );
   }

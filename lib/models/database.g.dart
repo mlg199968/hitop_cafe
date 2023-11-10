@@ -6,7 +6,7 @@ part of 'database.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class DatabaseHiveAdapter extends TypeAdapter<DB> {
+class DBAdapter extends TypeAdapter<DB> {
   @override
   final int typeId = 6;
 
@@ -46,7 +46,7 @@ class DatabaseHiveAdapter extends TypeAdapter<DB> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DatabaseHiveAdapter &&
+      other is DBAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

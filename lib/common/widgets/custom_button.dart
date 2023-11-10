@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
       this.width,
       this.height = 40,
         this.fontSize=15,
-        this.radius=5, this.icon,
+        this.radius=5, this.icon, this.replacementIcon,
       })
       : super(key: key);
   final String text;
@@ -22,6 +22,7 @@ class CustomButton extends StatelessWidget {
   final double fontSize;
   final double radius;
   final Icon? icon;
+  final IconData? replacementIcon;
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -44,13 +45,19 @@ class CustomButton extends StatelessWidget {
             ],),
           alignment: Alignment.center,
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AutoSizeText(
-                text,
-                maxFontSize: fontSize,
-                minFontSize: 10,
-                style: const TextStyle(color: Colors.white),
+              Flexible(
+                child: AutoSizeText(
+                  text,
+                  maxFontSize: fontSize,
+                  minFontSize: 10,
+                  maxLines: 1,
+                  overflow:TextOverflow.fade ,
+                  overflowReplacement:replacementIcon==null?null:Icon(replacementIcon),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
               icon!=null?Padding(
                 padding: const EdgeInsets.only(left: 5),

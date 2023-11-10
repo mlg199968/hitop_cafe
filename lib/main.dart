@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
@@ -8,6 +9,7 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
+import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/router.dart';
@@ -16,7 +18,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  Global.init();
   // To turn off landscape mode
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
@@ -27,11 +29,11 @@ Future main() async {
   //Adaptors
   Hive.registerAdapter(RawWareAdapter());
   Hive.registerAdapter(ItemAdapter());
-  Hive.registerAdapter(OrderAdapter());
   Hive.registerAdapter(PaymentAdapter());
   Hive.registerAdapter(BillAdapter());
   Hive.registerAdapter(PurchaseAdapter());
   Hive.registerAdapter(ShopAdapter());
+  Hive.registerAdapter(OrderAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db");
@@ -44,6 +46,7 @@ Future main() async {
     ChangeNotifierProvider(create: (context) => WareProvider()),
     ChangeNotifierProvider(create: (context) => UserProvider()),
     ChangeNotifierProvider(create: (context) => FilterProvider()),
+    ChangeNotifierProvider(create: (context) => PrinterProvider()),
   ], child: const MyApp()));
 }
 
@@ -55,6 +58,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Hitop Cafe',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           foregroundColor: Colors.white,

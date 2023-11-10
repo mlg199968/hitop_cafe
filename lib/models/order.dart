@@ -41,21 +41,7 @@ class Order extends HiveObject {
   int? billNumber;
 
 
-  Order({
-    required this.items,
-    this.tableNumber,
-    required this.payments,
-    required this.payable,
-    required this.discount,
-    required this.orderDate,
-    required this.orderId,
-    required this.modifiedDate,
-    this.dueDate,
-    this.isChecked=false,
-    this.isDone=false,
-    required this.description,
-    this.billNumber,
-  });
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -75,27 +61,27 @@ class Order extends HiveObject {
     };
   }
 
-  factory Order.fromMap(Map<String, dynamic> map) {
+  Order fromMap(Map<String, dynamic> map) {
     List<Item> items=List<Item>.from((map['items'] as List).map((e)=>Item.fromMap(e),),);
     List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
-    return Order(
-      items: items,
-      tableNumber: map['tableNumber'] ?? 0,
-      payments: payments,
-      payable: map['payable'] ?? 0,
-      discount: map['discount'] ?? 0,
-      orderDate:DateTime.parse( map['orderDate']) ,
-      orderId: map['orderId'] ?? "",
-      modifiedDate: DateTime.parse(map['modifiedDate']) ,
-      dueDate: map['dueDate']!=null?DateTime.parse(map['dueDate']):null,
-      isChecked: map['isChecked']==1?true:false,
-      isDone: map['isDone']==1?true:false,
-      description: map['description'] ?? "",
-      billNumber: map['billNumber'] ?? 0,
-    );
+    Order order=Order()
+      ..items= items
+      ..tableNumber= map['tableNumber'] ?? 0
+      ..payments= payments
+      ..payable= map['payable'] ?? 0
+      ..discount= map['discount'] ?? 0
+      ..orderDate=DateTime.parse( map['orderDate'])
+      ..orderId= map['orderId'] ?? ""
+      ..modifiedDate= DateTime.parse(map['modifiedDate'])
+      ..dueDate= map['dueDate']!=null?DateTime.parse(map['dueDate']):null
+      ..isChecked= map['isChecked']==1?true:false
+      ..isDone= map['isDone']==1?true:false
+      ..description= map['description'] ?? ""
+      ..billNumber= map['billNumber'] ?? 0;
+    return order;
   }
   String toJson()=>jsonEncode(toMap());
-  factory Order.fromJson(String source)=>Order.fromMap(jsonDecode(source));
+   Order fromJson(String source)=>fromMap(jsonDecode(source));
 }
 
 

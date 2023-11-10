@@ -7,6 +7,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/common/widgets/image_picker_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -61,10 +62,13 @@ class _AddWareScreenState extends State<AddItemScreen> {
       createDate: id != null ? widget.oldItem!.createDate : DateTime.now(),
       modifiedDate: DateTime.now(),
       ingredients: ingredients,
-      imagePath: imagePath,
+      imagePath: id==null?null:widget.oldItem!.imagePath,
     );
     //save image if exist
-    if(imagePath!=item.imagePath) {
+    print(imagePath);
+    print(item.imagePath);
+    if(imagePath.toString()!=item.imagePath) {
+      print("this part working");
       item.imagePath=await ItemTools.saveImage(imagePath, item.itemId);
     }
      HiveBoxes.getItem().put(item.itemId, item);
@@ -95,6 +99,8 @@ class _AddWareScreenState extends State<AddItemScreen> {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     wareProvider.loadCategories();
     wareNameFocus.requestFocus();
+     // wareNameFocus.addListener(() {if(wareNameFocus.hasFocus){wareNameFocus.unfocus();setState(() {
+     // });}});
     if (widget.oldItem != null) {
       restoreOldItem();
     }
@@ -103,6 +109,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
   @override
   void dispose() {
+    wareNameFocus.dispose();
     itemNameController.dispose();
     salePriceController.dispose();
     descriptionController.dispose();
@@ -148,9 +155,6 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                 imagePath=path;
                                 setState(() {});
                               },
-                                onEdited: (){
-                                setState(() {});
-                                },
                             ),
                           ),
 

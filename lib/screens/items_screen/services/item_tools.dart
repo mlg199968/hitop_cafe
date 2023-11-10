@@ -1,24 +1,25 @@
 
 
 import 'dart:io';
-
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/item.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 
 class ItemTools {
 
   static saveImage(String? path,String idName)async{
     if(path!=null){
-      final Directory directory = await getApplicationDocumentsDirectory();
-      final newDirectory = Directory("${directory.path}/hitop_cafe/items/images");
-      if (!await newDirectory.exists()) {
-        newDirectory.create(recursive: true);
-      }
+      //get image directory from consts_class file in constants folder
+      final String directory = await Address.itemsImage();
 
-      File newFile= await File(path).copy("${newDirectory.path}/$idName.jpg");
-      await File(path).delete();
+      File newFile= await File(path).copy("$directory/$idName.jpg");
+      //delete file picker cache file in android and ios because windows show orginal path file so when you delete it's delete orginal file
+      if(Platform.isAndroid || Platform.isIOS) {
+        await File(path).delete();
+      }
       return newFile.path;
+
     }
     return null;
   }

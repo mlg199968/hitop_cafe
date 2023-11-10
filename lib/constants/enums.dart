@@ -13,4 +13,15 @@
 }
 
 
+  enum SnackType{
+    normal,
+    success,
+    warning,
+    error,
+  }
+  enum ScreenType{
+    mobile,
+    tablet,
+    desktop
+  }
 

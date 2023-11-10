@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
@@ -94,25 +95,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     ///order button card
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          flex: 2,
-                          fit: FlexFit.tight,
                           child: CardButton(
                               label: "تاریخچه سفارشات",
-                              width: 100,
+                              width: 200,
                               image: "trending1",
                               onTap: () {
                                 Navigator.pushNamed(context, OrderScreen.id);
                               }),
                         ),
                         Flexible(
-                          fit: FlexFit.tight,
-                          flex: 3,
                           child: CardButton(
                               label: "سفارشات فعال",
-                              width: 100,
+                              width: 300,
                               image: "trending2",
                               onTap: () {
                                 Navigator.pushNamed(context, PresentOrderScreen.id);

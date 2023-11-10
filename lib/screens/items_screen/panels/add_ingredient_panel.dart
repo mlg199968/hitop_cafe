@@ -45,8 +45,7 @@ class AddIngredientPanel extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              flex: 1,
+                            Flexible(
                               child: CustomButton(
                                 height: 40,
                                 text: "انتخاب",
