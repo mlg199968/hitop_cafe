@@ -83,8 +83,10 @@ class CustomTextField extends StatelessWidget {
                   )
                 ]
               : null,
+
           onTap: () {
             if (!isPressed) {
+              //logic:when user tap on the textfield ,text get selected
               controller.selection = TextSelection(
                   baseOffset: 0, extentOffset: controller.value.text.length);
             }

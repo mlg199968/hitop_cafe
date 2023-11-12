@@ -24,8 +24,6 @@ class _ItemImageHolderState extends State<ItemImageHolder> {
 
   @override
   Widget build(BuildContext context) {
-    print("image holder path");
-    print(widget.imagePath);
     ///condition for,if is image processing show circle indicator
     if (isLoading) {
       ///circle indicator part
@@ -62,9 +60,9 @@ class _ItemImageHolderState extends State<ItemImageHolder> {
                   FilePickerResult? pickedFile =
                       await FilePicker.platform.pickFiles();
                   if (pickedFile != null) {
-                    print("Start resizing");
+                    debugPrint("Start resizing");
                     await reSizeImage(pickedFile.files.single.path!);
-                    print("after resizing");
+                    debugPrint("after resizing");
                     isLoading = false;
                     widget.onSet(pickedFile.files.single.path!);
                   }else{

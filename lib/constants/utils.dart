@@ -107,8 +107,12 @@ Divider customDivider({required BuildContext context, Color? color}) {
 double stringToDouble(String text) {
   String englishText = text.toEnglishDigit();
 
-  return double.parse(englishText.replaceAll(RegExp(r'[^0-9.-]'), ''))
-      .toDouble();
+  if(englishText!="" && englishText!="." && englishText!="-" && englishText!=","){
+    return double.parse(englishText.replaceAll(RegExp(r'[^0-9.-]'), ''))
+        .toDouble();
+  }else{
+    return 0;
+  }
 }
 
 ///add separator for show price number and persian number

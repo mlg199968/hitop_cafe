@@ -17,9 +17,9 @@ class StorageService {
   }
 
   String getnamePrinter() {
-    return _prefs.getString(name_printer) ?? "";
+    return _prefs.getString(printerName) ?? "";
   }
   String getdefaultPrinter() {
-    return _prefs.getString(default_printer) ?? "";
+    return _prefs.getString(printerDefault) ?? "";
   }
 }

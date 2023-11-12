@@ -53,7 +53,7 @@ class _SettingScreenState extends State<SettingScreen> {
 // Find the printer that has isDefault: true
         Printer defaultPrinter = printers.firstWhere((p) => p.isDefault);
         namePrinter = defaultPrinter.name;
-        Global.storageService.setString(name_printer, namePrinter!);
+        Global.storageService.setString(printerName, namePrinter!);
         debugPrint(namePrinter);
 // Print the default printer name and model
         print(defaultPrinter.name); // HP LaserJet 1018
@@ -215,7 +215,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
                         // setState(() {
                         Global.storageService
-                            .setString(default_printer, newPrinter.name);
+                            .setString(printerDefault, newPrinter.name);
                         // defaultPrinter;
                         debugPrint(defaultPrinter);
                         // });

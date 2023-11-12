@@ -19,7 +19,7 @@ class _WareToBillPanelState extends State<DiscountToBill> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAlertDialog(
+    return customAlertDialog(
       context: context,
         title: "تعیین تخفیف",
         child: Column(

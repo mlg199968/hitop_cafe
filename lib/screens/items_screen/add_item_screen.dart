@@ -1,11 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
-import 'package:hitop_cafe/common/widgets/image_picker_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -18,7 +16,6 @@ import 'package:hitop_cafe/screens/items_screen/widgets/item_image_holder.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 
 import 'package:hitop_cafe/services/hive_boxes.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -48,39 +45,37 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
 
   ///save ware on local storage
-  void saveItem({String? id}) async{
-    Item item = Item(
-      itemName: itemNameController.text,
-      unit: unitItem,
-      category: wareProvider.selectedItemCategory,
-      sale: salePriceController.text.isEmpty
+  saveItem({String? id}) async{
+    Item item = Item()
+     ..itemName= itemNameController.text
+     ..unit= unitItem
+     ..category= wareProvider.selectedItemCategory
+     ..sale= salePriceController.text.isEmpty
           ? 0
-          : stringToDouble(salePriceController.text),
-      description:
-          descriptionController.text.isEmpty ? "" : descriptionController.text,
-      itemId:id ?? const Uuid().v1() ,
-      createDate: id != null ? widget.oldItem!.createDate : DateTime.now(),
-      modifiedDate: DateTime.now(),
-      ingredients: ingredients,
-      imagePath: id==null?null:widget.oldItem!.imagePath,
-    );
-    //save image if exist
-    print(imagePath);
-    print(item.imagePath);
-    if(imagePath.toString()!=item.imagePath) {
-      print("this part working");
+          : stringToDouble(salePriceController.text)
+      ..description=
+          descriptionController.text.isEmpty ? "" : descriptionController.text
+      ..itemId=id ?? const Uuid().v1()
+      ..createDate= id != null ? widget.oldItem!.createDate : DateTime.now()
+      ..modifiedDate= DateTime.now()
+      ..ingredients= ingredients
+      ..imagePath= id==null?null:widget.oldItem!.imagePath;
+
+    // save image if exist
+    if(imagePath!=item.imagePath) {
       item.imagePath=await ItemTools.saveImage(imagePath, item.itemId);
     }
      HiveBoxes.getItem().put(item.itemId, item);
   }
 
   void restoreOldItem() {
+    ingredients=[];
     itemNameController.text = widget.oldItem!.itemName;
     salePriceController.text = addSeparator(widget.oldItem!.sale);
     descriptionController.text = widget.oldItem!.description;
     wareProvider.selectedItemCategory = widget.oldItem!.category;
     unitItem = widget.oldItem!.unit;
-    ingredients = widget.oldItem!.ingredients;
+    ingredients.addAll(widget.oldItem!.ingredients);
     imagePath=widget.oldItem!.imagePath;
   }
 
@@ -99,12 +94,15 @@ class _AddWareScreenState extends State<AddItemScreen> {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     wareProvider.loadCategories();
     wareNameFocus.requestFocus();
-     // wareNameFocus.addListener(() {if(wareNameFocus.hasFocus){wareNameFocus.unfocus();setState(() {
-     // });}});
     if (widget.oldItem != null) {
       restoreOldItem();
     }
     super.initState();
+  }
+  @override
+  void didChangeDependencies() {
+    wareNameFocus.unfocus();
+    super.didChangeDependencies();
   }
 
   @override
@@ -228,40 +226,44 @@ class _AddWareScreenState extends State<AddItemScreen> {
                           ),
 
                           ///ingredients part
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "مواد تشکیل دهنده",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              ActionButton(
-                                  label: "افزودن ماده جدید",
-                                  bgColor: Colors.brown,
-                                  onPress: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            AddIngredientPanel()).then((value) {
-                                      if (value != null) {
-                                        ingredients.add(value);
-                                        setState(() {});
-                                      }
-                                    });
-                                  },
-                                  icon: FontAwesomeIcons.plus),
-                            ],
-                          ),
+
                           Directionality(
                             textDirection: TextDirection.rtl,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  border: Border.all(color: kMainColor)),
-                              padding: const EdgeInsets.all(9),
-                              child: Column(
-                                children: [
-                                  Wrap(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "مواد تشکیل دهنده",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    ActionButton(
+                                      height: 30,
+                                        label:"افزودن ماده جدید",
+                                      icon:FontAwesomeIcons.plus,
+                                        bgColor: kMainColor,
+                                        onPress: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                              const AddIngredientPanel()).then((value) {
+                                            if (value != null) {
+                                              ingredients.add(value);
+                                              setState(() {});
+                                            }
+                                          });
+                                        },
+                                        ),
+                                  ],
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  decoration: ingredients.isEmpty?null: BoxDecoration(
+                                      borderRadius:BorderRadius.circular(15).copyWith(topLeft: const Radius.circular(0)),
+                                      border: Border.all(color: kMainColor)),
+                                  padding: const EdgeInsets.all(9),
+                                  child: Wrap(
                                     spacing: 20,
                                     children: List.generate(
                                         ingredients.length,
@@ -273,8 +275,8 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                               },
                                             )),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(
@@ -312,19 +314,23 @@ class _AddWareScreenState extends State<AddItemScreen> {
                             if (widget.oldItem != null) {
                               saveItem(id: widget.oldItem!.itemId);
                               Navigator.pop(context, false);
+                              Navigator.pop(context, false);
                             } else {
                               ///condition for demo mode
                               if (HiveBoxes.getItem().values.length <
                                   userProvider.ceilCount) {
                                 saveItem();
-                                showSnackBar(context, "آیتم به لیست افزوده شد!",
-                                    type: SnackType.success);
-                                itemNameController.clear();
-                                salePriceController.clear();
-                                descriptionController.clear();
-                                ingredients.clear();
-                                FocusScope.of(context)
-                                    .requestFocus(wareNameFocus);
+                                  showSnackBar(
+                                      context, "آیتم به لیست افزوده شد!",
+                                      type: SnackType.success);
+                                  itemNameController.clear();
+                                  salePriceController.clear();
+                                  descriptionController.clear();
+                                  imagePath = null;
+                                ingredients=[];
+                                  // FocusScope.of(context)
+                                  //     .requestFocus(wareNameFocus);
+
                                 setState(() {});
                                 // Navigator.pop(context,false);
                               } else {

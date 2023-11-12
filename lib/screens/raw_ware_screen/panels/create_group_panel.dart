@@ -14,7 +14,7 @@ class CreateGroupPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAlertDialog(
+    return customAlertDialog(
       context: context,
       title: 'افزودن گروه جدید',
       height: 250,

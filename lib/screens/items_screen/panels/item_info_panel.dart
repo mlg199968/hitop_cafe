@@ -14,10 +14,11 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 
 
 itemInfoPanel({required BuildContext context, required Item wareInfo}) {
-  return CustomAlertDialog(
+  return customAlertDialog(
     height: MediaQuery.of(context).size.height * .5,
     context: context,
     title: "مشخصات کالا",
+    image: wareInfo.imagePath,
     child: Column(
       children: [
         Expanded(

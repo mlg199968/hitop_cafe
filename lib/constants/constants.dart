@@ -29,5 +29,5 @@ final kBoxDecoration=BoxDecoration(
     border: Border.all(color: Colors.blue));
 
 
-const String name_printer = "hp";
-const String default_printer = "hp";
+const String printerName = "hp";
+const String printerDefault = "hp";

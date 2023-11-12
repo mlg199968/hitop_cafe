@@ -34,7 +34,7 @@ class DB extends HiveObject {
 
   DB fromMap(Map<String, dynamic> map) {
     List<Item> items = List<Item>.from(
-        map['items'].map((e) => Item.fromMap(e)));
+        map['items'].map((e) => Item().fromMap(e)));
     List<RawWare> wares =
         List<RawWare>.from(map['wares'].map((e) => RawWare.fromMap(e)));
 

@@ -18,6 +18,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   Global.init();
   // To turn off landscape mode
   await SystemChrome.setPreferredOrientations(
