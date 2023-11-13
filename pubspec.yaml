@@ -78,6 +78,12 @@ dependencies:
   image_compression_flutter: ^1.0.3
   archive: ^3.4.7
   printing: ^5.11.1
+  #this plugin min sdk is 21 and we change the project minsdk from 19 to 21
+  flutter_simple_bluetooth_printer:
+    git:
+      url: https://github.com/xiaozhizhong/flutter_simple_bluetooth_printer.git
+      ref: 4b56a03
+
 
 
 dev_dependencies:

@@ -1,10 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/constants.dart';
-import 'package:hitop_cafe/constants/extensions.dart';
-import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
@@ -28,7 +28,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  final Future<SharedPreferences> _prefs=SharedPreferences.getInstance();
   final TextEditingController taxController = TextEditingController();
   final TextEditingController billNumberController = TextEditingController();
   late String selectedCurrency;
@@ -37,47 +36,18 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
   ///printer
-  // late PrinterProvider? printerProvider;
-  late List<Printer> _printers; // A list of printers to display
-  late String? selectedPrinter;
-  String? namePrinter = Global.storageService.getnamePrinter();
-  // Printer? newPrinter;
-  String? defaultPrinter = Global.storageService.getdefaultPrinter();
-  ///get default printer
-  Future<void> getDefaultPrinter() async {
-    Printing.listPrinters().then((printers) {
-      // Map<dynamic, dynamic> map = jsonDecode(jsonSting);
-      setState(() {
-        // Create a list of printers from the map
-
-// Find the printer that has isDefault: true
-        Printer defaultPrinter = printers.firstWhere((p) => p.isDefault);
-        namePrinter = defaultPrinter.name;
-        Global.storageService.setString(printerName, namePrinter!);
-        debugPrint(namePrinter);
-// Print the default printer name and model
-        print(defaultPrinter.name); // HP LaserJet 1018
-        print(defaultPrinter.model); // HP LaserJet 1018
-
-        _printers = printers;
-        debugPrint(_printers.toString());
-      });
-    });
-    // return defaultPrinter!.name;
-  }
+  Printer? selectedPrinter;
 
   ///save part
-  void storeInfoShop() async{
-    SharedPreferences pref=await _prefs;
+  void storeInfoShop() {
     Shop? shopInfo = HiveBoxes.getShopInfo().get(0);
-    if (shopInfo != null) {
-      shopInfo.currency = selectedCurrency;
-      shopInfo.preTax = stringToDouble(taxController.text);
-      shopInfo.preBillNumber = stringToDouble(billNumberController.text).toInt();
-      pref.setInt("billNumber", stringToDouble(billNumberController.text).toInt());
-      provider.getData(shopInfo);
-      HiveBoxes.getShopInfo().put(0, shopInfo);
-    }
+    shopInfo??=Shop();
+    shopInfo..currency = selectedCurrency
+      ..preTax = stringToDouble(taxController.text)
+      ..preBillNumber = stringToDouble(billNumberController.text).toInt()
+      ..printer=selectedPrinter==null?null:selectedPrinter!.toMap();
+    provider.getData(shopInfo);
+    HiveBoxes.getShopInfo().put(0, shopInfo);
   }
 
   void getData() {
@@ -86,6 +56,7 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedCurrency = shopInfo.currency;
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
+      selectedPrinter=shopInfo.printer!=null?Printer.fromMap(shopInfo.printer!):null;
     }
   }
 
@@ -93,7 +64,6 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     selectedCurrency = kCurrencyList[0];
     getData();
-    getDefaultPrinter();
     super.initState();
   }
 
@@ -105,7 +75,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   void dispose() {
+
     storeInfoShop();
+    print("dispose");
     super.dispose();
   }
 
@@ -193,38 +165,20 @@ class _SettingScreenState extends State<SettingScreen> {
                       inputLabel: "شماره",
                       controller: billNumberController,
                     ),
-
-                    //SwitchItem(title: "title", onChange: (val) {}),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Show the native printer picker and get the selected printer
-                        final printer = await Printing.pickPrinter(
-                            context: context, title: "پرینتر را انتخاب کنید");
-                        Printer newPrinter = printer!.copyWith(
-                          isDefault: printer.isDefault
-                              ? printer.isDefault
-                              : printer.isAvailable
-                              ? true
-                              : printer.isDefault,
-                          // : true,
-                        );
-                        debugPrint(newPrinter.name);
-                        debugPrint(newPrinter.isDefault.toString());
-                        printerProvider.setPrinterName(newPrinter.name);
-                        printerProvider.setPrinter(newPrinter);
-
-                        // setState(() {
-                        Global.storageService
-                            .setString(printerDefault, newPrinter.name);
-                        // defaultPrinter;
-                        debugPrint(defaultPrinter);
-                        // });
-                      },
-                      child: Text(printerProvider.getPrinterName.toString()),
-                    ),
+                    if(Platform.isWindows)
+                    ButtonTile(onPress: () async {
+                      // Show the native printer picker and get the selected printer
+                      final printer = await Printing.pickPrinter(
+                          context: context, title: "پرینتر را انتخاب کنید");
+                      if(printer!=null) {
+                        selectedPrinter=printer;
+                      }
+                      setState(() {});
+                    }, label:"انتخاب پرینتر" , buttonLabel: selectedPrinter==null?"پرینتری یافت نشد":selectedPrinter!.name)
                   ],
                 ),
               ),
+              ///**************************************************************************************************
               ///condition for:if user not purchase the app,it will see purchase button to buy complete version
               Provider.of<UserProvider>(context,listen: false).userLevel!=0
                   ? const SizedBox()
@@ -364,6 +318,48 @@ class InputItem extends StatelessWidget {
                 width: width,
                 textFormat: TextFormatter.number,
                 onChange: onChange)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+///text field field
+class ButtonTile extends StatelessWidget {
+  const ButtonTile(
+      {Key? key,
+      required this.onPress,
+
+      this.width = 150,
+        required this.label,
+        required this.buttonLabel,
+      })
+      : super(key: key);
+
+  final String label;
+  final String buttonLabel;
+  final VoidCallback onPress;
+  final double width;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+             Text(label),
+            ElevatedButton(
+              onPressed: onPress,
+              child: Text(buttonLabel),
+            ),
           ],
         ),
       ),

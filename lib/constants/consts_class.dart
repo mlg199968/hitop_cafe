@@ -5,7 +5,23 @@ import 'package:path_provider/path_provider.dart';
 
 class PayMethod{
   static const cash="cash";
+  static const cashPersian="نقدی";
   static const atm="atm";
+  static const atmPersian="کارتخوان";
+  static const discount="discount";
+  static const discountPersian="تخفیف";
+
+  String persianToEnglish(String persian){
+    switch(persian){
+      case cashPersian:
+        return cash;
+      case atmPersian:
+        return atm;
+      case discountPersian:
+        return discount;
+    }
+    return "";
+  }
 }
 
 

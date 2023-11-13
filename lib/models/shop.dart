@@ -28,6 +28,8 @@ class Shop extends HiveObject {
   double preTax=0;
   @HiveField(11)
   int preBillNumber=0;
+  @HiveField(12)
+  Map? printer;
 }
 
 

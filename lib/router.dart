@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -16,72 +14,79 @@ import 'package:hitop_cafe/screens/raw_ware_screen/add_raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 
-
 import 'package:hitop_cafe/screens/ware_house/ware_house_screen.dart';
 
-Route generateRoute(RouteSettings routeSetting){
-  switch(routeSetting.name){
-
+Route generateRoute(RouteSettings routeSetting) {
+  switch (routeSetting.name) {
     case HomeScreen.id:
-      return MaterialPageRoute(builder: (_)=> const HomeScreen());
+      return MaterialPageRoute(builder: (_) => const HomeScreen());
 
     case OrderScreen.id:
-      return MaterialPageRoute(builder: (_)=>const OrderScreen());
+      return MaterialPageRoute(builder: (_) => const OrderScreen());
 
     case PresentOrderScreen.id:
-      return MaterialPageRoute(builder: (_)=>const PresentOrderScreen());
+      return MaterialPageRoute(builder: (_) => const PresentOrderScreen());
 
-   case AddOrderScreen.id:
-     Order? order=routeSetting.arguments as Order?;
-        return MaterialPageRoute(builder: (_)=> AddOrderScreen(oldOrder: order,));
+    case AddOrderScreen.id:
+      Order? order = routeSetting.arguments as Order?;
+      return MaterialPageRoute(
+          builder: (_) => AddOrderScreen(
+                oldOrder: order,
+              ));
 
     case AddShoppingBillScreen.id:
-     Bill? bill=routeSetting.arguments as Bill?;
-        return MaterialPageRoute(builder: (_)=> AddShoppingBillScreen(oldBill: bill,));
+      Bill? bill = routeSetting.arguments as Bill?;
+      return MaterialPageRoute(
+          builder: (_) => AddShoppingBillScreen(
+                oldBill: bill,
+              ));
 
-   case WareHouseScreen.id:
-        return MaterialPageRoute(builder: (_)=>const WareHouseScreen());
+    case WareHouseScreen.id:
+      return MaterialPageRoute(builder: (_) => const WareHouseScreen());
 
-   case ShoppingBillScreen.id:
-     Key? key = routeSetting.arguments as Key?;
-        return MaterialPageRoute(builder: (_)=> ShoppingBillScreen(key: key));
+    case ShoppingBillScreen.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => ShoppingBillScreen(key: key));
 
-   case WareListScreen.id:
-     Key? key = routeSetting.arguments as Key?;
-        return MaterialPageRoute(builder: (_)=> WareListScreen(key: key));
+    case WareListScreen.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => WareListScreen(key: key));
 
-   case ItemsScreen.id:
-     Key? key = routeSetting.arguments as Key?;
-        return MaterialPageRoute(builder: (_)=> ItemsScreen(key: key));
- case AddItemScreen.id:
-   Item? item=routeSetting.arguments as Item?;
-        return MaterialPageRoute(builder: (_)=> AddItemScreen(oldItem:item ));
+    case ItemsScreen.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => ItemsScreen(key: key));
+    case AddItemScreen.id:
+      Item? item = routeSetting.arguments as Item?;
+      return MaterialPageRoute(builder: (_) => AddItemScreen(oldItem: item));
 
-  case AddWareScreen.id:
-    RawWare? rawWare = routeSetting.arguments as RawWare?;
-        return MaterialPageRoute(builder: (_)=> AddWareScreen(oldRawWare: rawWare));
+    case AddWareScreen.id:
+      RawWare? rawWare = routeSetting.arguments as RawWare?;
+      return MaterialPageRoute(
+          builder: (_) => AddWareScreen(oldRawWare: rawWare));
 
-  case ShopInfoScreen.id:
-    return MaterialPageRoute(builder: (_) => const ShopInfoScreen());
+    case ShopInfoScreen.id:
+      return MaterialPageRoute(builder: (_) => const ShopInfoScreen());
 
-  case SettingScreen.id:
-    return MaterialPageRoute(builder: (_) => const SettingScreen());
+    case SettingScreen.id:
+      return MaterialPageRoute(builder: (_) => const SettingScreen());
 
- case AnalyticsScreen.id:
-    return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
+    case AnalyticsScreen.id:
+      return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
 
-
-
+    case PrinterPage.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => PrinterPage(key: key));
 
     default:
       return MaterialPageRoute(
           builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('the Screen is not exist.'),
-            ),
-          ));
+                body: Center(
+                  child: Text('the Screen is not exist.'),
+                ),
+              ));
   }
 }

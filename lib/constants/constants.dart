@@ -26,7 +26,7 @@ const String kCustomFont="persian";
 final kBoxDecoration=BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(5),
-    border: Border.all(color: Colors.blue));
+    border: Border.all(color: kMainColor));
 
 
 const String printerName = "hp";

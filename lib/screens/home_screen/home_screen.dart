@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
@@ -12,6 +13,7 @@ import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
+import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,10 +26,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
+  ///get start up data
+  getInitData(){
+    Provider.of<WareProvider>(context, listen: false).loadCategories();
+    if(HiveBoxes.getShopInfo().values.isNotEmpty){
+      Shop? shop = HiveBoxes.getShopInfo().values.first;
+      Provider.of<UserProvider>(context, listen: false).getData(shop);
+    }
+  }
+@override
+  void initState() {
+    super.initState();
+    getInitData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<WareProvider>(context, listen: false).loadCategories();
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(

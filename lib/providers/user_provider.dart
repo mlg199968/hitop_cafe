@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier{
@@ -21,7 +22,9 @@ class UserProvider extends ChangeNotifier{
   String currency="تومان";
   double preDiscount=0;
   int preBillNumber=1;
+  Printer? _selectedPrinter;
 
+  Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
 
   void getData(Shop shop){
     shopName=shop.shopName;
@@ -36,6 +39,7 @@ class UserProvider extends ChangeNotifier{
     currency=shop.currency;
     preDiscount=shop.preTax ;
     preBillNumber=shop.preBillNumber;
+    _selectedPrinter=shop.printer==null?null:Printer.fromMap(shop.printer!);
 
   }
 
@@ -63,4 +67,13 @@ class UserProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+
+  Printer? getDefaultPrinter() {
+    Printing.listPrinters().then((printers) {
+// Find the printer that has isDefault: true
+      Printer defaultPrinter = printers.firstWhere((p) => p.isDefault);
+      return defaultPrinter;
+    });
+    return null;
+  }
 }

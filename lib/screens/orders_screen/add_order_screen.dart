@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
-import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -135,16 +134,21 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 
   ///export pdf function
-  void exportPdf() async {
+  void printPdf() async {
     Order orderBill = createBillObject();
    // final file = await PdfInvoiceApi.generate(orderBill,context);
     //PdfApi.openFile(file);
     final file =
     await PdfInvoiceApi.generatePrint(orderBill, context);
-    await Printing.directPrintPdf(
-        printer: printerProvider.getPrinter!,
-        onLayout: (_) => file.buffer.asUint8List());
-
+    if(userProvider.selectedPrinter!=null) {
+      await Printing.directPrintPdf(
+          printer: userProvider.selectedPrinter!,
+          onLayout: (_) => file.buffer.asUint8List());
+    }else{
+     if (context.mounted) {
+       showSnackBar(context, "پرینتری یافت نشد",type: SnackType.error);
+     }
+    }
   }
 
   ///replace old  orderBill data for edit
@@ -248,18 +252,18 @@ class _AddOrderScreenState extends State<AddOrderScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CustomButton(
-                  text: "چاپ",
+                ActionButton(
+                  label: "چاپ",
                   width: 70,
-                  onPressed: () {
+                  onPress: () {
                     saveBillOnLocalStorage(
                         id: widget.oldOrder == null
                             ? null
                             : widget.oldOrder!.orderId);
-                    exportPdf();
+                    printPdf();
                     Navigator.pop(context, false);
                   },
-                  color: Colors.red,
+                  bgColor: Colors.red, icon: Icons.local_printshop_outlined,
                 ),
               ],
             ),

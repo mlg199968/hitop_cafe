@@ -9,9 +9,10 @@ class ActionButton extends StatelessWidget {
       this.label,
       this.height = 35,
       this.width,
-      this.direction = TextDirection.rtl});
+      this.direction = TextDirection.rtl, this.onLongPress});
 
   final VoidCallback onPress;
+  final VoidCallback? onLongPress;
   final IconData icon;
   final String? label;
   final Color bgColor;
@@ -33,6 +34,7 @@ class ActionButton extends StatelessWidget {
                     EdgeInsets.symmetric(horizontal: 5, vertical: 0)),
                 backgroundColor: MaterialStateProperty.all(bgColor)),
             onPressed: onPress,
+            onLongPress: onLongPress,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,

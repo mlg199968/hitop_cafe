@@ -3,6 +3,7 @@ import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -25,11 +26,12 @@ class _CashToBillState extends State<PaymentToBill> {
   final TextEditingController cashController = TextEditingController();
 
   final List<String> payMethods = [
-    "atm",
-    "cash",
+    PayMethod.atmPersian,
+    PayMethod.cashPersian,
+    PayMethod.discountPersian,
   ];
 
-  String pMethod = "cash";
+  String pMethod =PayMethod.atmPersian ;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class _CashToBillState extends State<PaymentToBill> {
                       selectedValue: pMethod,
                       onChanged: (val) {
                         pMethod=val;
+                        setState(() {});
                       }),
                 ],
               ),
@@ -71,7 +74,7 @@ class _CashToBillState extends State<PaymentToBill> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       Payment payment = Payment(
-                          method: pMethod,
+                          method: PayMethod().persianToEnglish(pMethod),
                           amount: stringToDouble(cashController.text),
                           deliveryDate: DateTime.now(),
                         paymentId: const Uuid().v1(),

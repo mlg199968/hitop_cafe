@@ -16,10 +16,10 @@ class StorageService {
     return await _prefs.setString(key, value);
   }
 
-  String getnamePrinter() {
+  String getPrinterName() {
     return _prefs.getString(printerName) ?? "";
   }
-  String getdefaultPrinter() {
+  String getDefaultPrinter() {
     return _prefs.getString(printerDefault) ?? "";
   }
 }
