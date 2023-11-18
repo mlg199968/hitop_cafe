@@ -158,7 +158,7 @@ class AvatarHolder extends StatelessWidget {
             child: logo != null
                 ? null
                 : Image.asset(
-              'assets/images/hitop.png',
+              'assets/icons/hitop-white.png',
               height: 60,
             ),
           ),

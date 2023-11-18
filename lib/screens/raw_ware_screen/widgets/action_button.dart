@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ActionButton extends StatelessWidget {
   const ActionButton(
       {super.key,
-      required this.onPress,
+      this.onPress,
       required this.icon,
       this.bgColor = Colors.blue,
       this.label,
@@ -11,7 +11,7 @@ class ActionButton extends StatelessWidget {
       this.width,
       this.direction = TextDirection.rtl, this.onLongPress});
 
-  final VoidCallback onPress;
+  final VoidCallback? onPress;
   final VoidCallback? onLongPress;
   final IconData icon;
   final String? label;

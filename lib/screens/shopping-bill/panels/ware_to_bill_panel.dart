@@ -61,8 +61,7 @@ class _WareToBillPanelState extends State<WareToBillPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-      context: context,
+    return CustomDialog(
       height: MediaQuery.of(context).size.height * .5,
       title: "افزودن کالا به فاکتور",
       child: Column(

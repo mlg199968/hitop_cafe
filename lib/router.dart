@@ -17,11 +17,16 @@ import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
+import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 
 import 'package:hitop_cafe/screens/ware_house/ware_house_screen.dart';
 
 Route generateRoute(RouteSettings routeSetting) {
   switch (routeSetting.name) {
+
+    case SplashScreen.id:
+      return MaterialPageRoute(builder: (_) =>  const SplashScreen());
+
     case HomeScreen.id:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
 

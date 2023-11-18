@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 class CustomRadioButton extends StatelessWidget {
   const CustomRadioButton(
@@ -21,6 +22,7 @@ class CustomRadioButton extends StatelessWidget {
                   onTap: () {
                     ButtonLogic butt =
                         ButtonLogic.setVal(false, true, false, false);
+
                     //condition for active or deActive the button
                     if (setVal.all) {
                       butt = ButtonLogic.setVal(false, true, false, false);
@@ -34,7 +36,7 @@ class CustomRadioButton extends StatelessWidget {
                     padding: const EdgeInsets.all(5),
                     height: 40,
                     decoration: const BoxDecoration(
-                        color: Colors.blue,
+                        color: kMainColor,
                         borderRadius:
                             BorderRadius.horizontal(left: Radius.circular(10))),
                     child: const Text(
@@ -68,7 +70,7 @@ class CustomRadioButton extends StatelessWidget {
                     padding: const EdgeInsets.all(5),
                     height: 40,
                     decoration: const BoxDecoration(
-                      color: Colors.blue,
+                      color: kMainColor,
                     ),
                     child: const Text(
                       "تسویه شده",
@@ -83,11 +85,12 @@ class CustomRadioButton extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Opacity(
-              opacity: setVal.creditor ? 1 : .6,
+              opacity: setVal.creditor ? 1 : .5,
               child: InkWell(
                 onTap: () {
                   ButtonLogic butt =
                       ButtonLogic.setVal(false, false, true, false);
+
                   //condition for active or deActive the button
                   if (setVal.all) {
                     butt = ButtonLogic.setVal(false, false, true, false);
@@ -100,8 +103,8 @@ class CustomRadioButton extends StatelessWidget {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(5),
                   height: 40,
-                  decoration: const BoxDecoration(
-                      color: Colors.blue,
+                  decoration:  const BoxDecoration(
+                      color: kMainColor,
                       borderRadius:
                           BorderRadius.horizontal(right: Radius.circular(10))),
                   child: const Text(

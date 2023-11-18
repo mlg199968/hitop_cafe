@@ -35,8 +35,7 @@ class _CashToBillState extends State<PaymentToBill> {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-        context: context,
+    return CustomDialog(
         title: "پرداخت جدید",
         child: Form(
           key: _formKey,

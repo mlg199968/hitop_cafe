@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
@@ -59,7 +61,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   DateTime modifiedDate = DateTime.now();
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
-
   ///calculate payable amount
   num payable() {
     num payable = 0;
@@ -91,63 +92,65 @@ class _AddOrderScreenState extends State<AddOrderScreen>
           .map((e) => e.method == "cash" ? e.amount : 0)
           .reduce((a, b) => a + b);
 
- ///calculate discount amount
+  ///calculate discount amount
   num get discount => items.isEmpty
       ? 0
-      : items
-          .map((e) => e.discount!*.01*e.sum)
-          .reduce((a, b) => a + b);
+      : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
 
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
     Order orderBill = Order()
-        ..items= items
-        ..payments= payments
-        ..discount= discount
-        ..payable= payable()
-        ..orderDate= id != null ? widget.oldOrder!.orderDate : DateTime.now()
-        ..tableNumber= int.parse(tableNumberController.text)
-        ..billNumber= billNumber
-        ..dueDate= dueDate
-        ..modifiedDate= DateTime.now()
-        ..orderId= id ?? const Uuid().v1()
-        ..description= '';
+      ..items = items
+      ..payments = payments
+      ..discount = discount
+      ..payable = payable()
+      ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
+      ..tableNumber = int.parse(tableNumberController.text)
+      ..billNumber = billNumber
+      ..dueDate = dueDate
+      ..modifiedDate = DateTime.now()
+      ..orderId = id ?? const Uuid().v1()
+      ..description = '';
     return orderBill;
   }
 
   ///Hive Database Save function
   void saveBillOnLocalStorage({String? id}) async {
     //condition for limitation of free version
-    if ( HiveBoxes.getOrders().values.length < userProvider.ceilCount) {
-      if(items.isNotEmpty){
+    if (HiveBoxes.getOrders().values.length < userProvider.ceilCount) {
+      if (items.isNotEmpty) {
         Order orderBill = createBillObject(id: id);
         OrderTools.subtractFromWareStorage(items, oldOrder: widget.oldOrder);
         HiveBoxes.getOrders().put(orderBill.orderId, orderBill);
         Navigator.pop(context, false);
-      }else {
+      } else {
         showSnackBar(context, "لیست آیتم ها خالی است!", type: SnackType.error);
       }
-    }
-    else {
+    } else {
       showSnackBar(context, ceilCountMessage, type: SnackType.error);
     }
   }
 
   ///export pdf function
   void printPdf() async {
-    Order orderBill = createBillObject();
-   // final file = await PdfInvoiceApi.generate(orderBill,context);
-    //PdfApi.openFile(file);
-    final file =
-    await PdfInvoiceApi.generatePrint(orderBill, context);
-    if(userProvider.selectedPrinter!=null) {
-      await Printing.directPrintPdf(
-          printer: userProvider.selectedPrinter!,
-          onLayout: (_) => file.buffer.asUint8List());
-    }else{
-     if (context.mounted) {
-       showSnackBar(context, "پرینتری یافت نشد",type: SnackType.error);
-     }
+    try {
+      var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
+      Order orderBill = createBillObject();
+      // final file = await PdfInvoiceApi.generate(orderBill,context);
+      //PdfApi.openFile(file);
+      final file = await PdfInvoiceApi.generatePrint(orderBill, context);
+      if (userProvider.selectedPrinter != null) {
+        await Printing.directPrintPdf(
+            printer: userProvider.selectedPrinter!,
+            onLayout: (_) => file.buffer.asUint8List());
+      } else {
+        await bluetoothManager.writeRawData(file.buffer.asUint8List());
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (context.mounted) {
+        showSnackBar(context, "پرینتری یافت نشد", type: SnackType.error);
+      }
     }
   }
 
@@ -207,7 +210,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
           saveBillOnLocalStorage(
               id: widget.oldOrder == null ? null : widget.oldOrder!.orderId);
 
-
           Navigator.pop(context, false);
         },
         onNo: () {
@@ -221,17 +223,18 @@ class _AddOrderScreenState extends State<AddOrderScreen>
     // TODO: implement dispose
     super.dispose();
   }
-
+///********************************** widget *********************************************
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: didUpdateData() ? willPop : null,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         ///save float action button
         floatingActionButton: screenType(context) != ScreenType.mobile
             ? null
             : CustomFloatActionButton(
-          label: "ذخیره",
+                label: "ذخیره",
                 icon: Icons.save_outlined,
                 onPressed: () {
                   saveBillOnLocalStorage(
@@ -241,33 +244,28 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                   );
                 }),
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: const Text(
             "فاکتور فروش",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          flexibleSpace: Container(
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.bottomRight,
-            decoration: const BoxDecoration(gradient: kMainGradiant),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ActionButton(
-                  label: "چاپ",
-                  width: 70,
-                  onPress: () {
-                    saveBillOnLocalStorage(
-                        id: widget.oldOrder == null
-                            ? null
-                            : widget.oldOrder!.orderId);
-                    printPdf();
-                    Navigator.pop(context, false);
-                  },
-                  bgColor: Colors.red, icon: Icons.local_printshop_outlined,
-                ),
-              ],
+          actions: [
+            ActionButton(
+              label: "چاپ",
+              width: 70,
+              onPress: () {
+                saveBillOnLocalStorage(
+                    id: widget.oldOrder == null
+                        ? null
+                        : widget.oldOrder!.orderId);
+                printPdf();
+                Navigator.pop(context, false);
+              },
+              bgColor: Colors.red,
+              icon: Icons.local_printshop_outlined,
             ),
-          ),
+            const SizedBox(width: 10,),
+          ],
         ),
         body: Directionality(
           textDirection: TextDirection.rtl,
@@ -353,8 +351,9 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               ),
                             ),
                             const Expanded(child: SizedBox()),
+
                             BillActionButton(
-                              label: "افزودن کالا",
+                              label: "افزودن آیتم",
                               icon: Icons.add_shopping_cart_sharp,
                               onPress: () {
                                 showDialog(
@@ -369,32 +368,19 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               },
                             ),
                             BillActionButton(
-                              label: "پرداخت چکی",
+                              label: "پرداخت جدید",
                               icon: Icons.featured_play_list_outlined,
                               bgColor: Colors.green,
                               onPress: () {
-                                // showDialog(
-                                //     context: context,
-                                //     builder: (context) => const ChequeToBill()).then((value) {
-                                //   if (value != null) {
-                                //     atmPayments.add(value);
-                                //   }
-                                //   setState(() {});
-                                // });
-                              },
-                            ),
-                            BillActionButton(
-                              label: "پرداخت نقدی",
-                              icon: Icons.monetization_on_outlined,
-                              bgColor: Colors.green,
-                              onPress: () {
-                                // showDialog(context: context, builder: (context) => PaymentToBill())
-                                //     .then((value) {
-                                //   if (value != null) {
-                                //     cashPayments.add(value);
-                                //   }
-                                //   setState(() {});
-                                // });
+                                showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const PaymentToBill()).then((value) {
+                                  if (value != null) {
+                                    payments.add(value);
+                                  }
+                                  setState(() {});
+                                });
                               },
                             ),
                           ],
@@ -495,7 +481,49 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   ],
                                 ),
                               ),
+                        ///quick action button like add items and add payments
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ActionButton(
+                                label: "افزودن آیتم",
+                                icon: CupertinoIcons.cart_badge_plus,
+                                bgColor: Colors.blueGrey,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                      const ItemToBillPanel())
+                                      .then((value) {
+                                    if (value != null) {
+                                      items.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
+                              ActionButton(
+                                label: "پرداخت جدید",
+                                icon: Icons.add_card_rounded,
+                                bgColor: Colors.teal,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                      const PaymentToBill()).then((value) {
+                                    if (value != null) {
+                                      payments.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
 
+                            ],
+                          ),
+                        ),
                         ///final data of orderBill like sale total
                         Container(
                           padding: const EdgeInsets.symmetric(

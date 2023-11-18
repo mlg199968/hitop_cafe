@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/time/time.dart';
@@ -203,16 +204,18 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
     // TODO: implement dispose
     super.dispose();
   }
-
+///******************************************* widget ***************************************************
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: didUpdateData() ? willPop : null,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         ///save float action button
         floatingActionButton: screenType(context) != ScreenType.mobile
             ? null
             : CustomFloatActionButton(
+          label: "ذخیره",
             icon: Icons.save_outlined,
             onPressed: () {
               saveBillOnLocalStorage(
@@ -222,33 +225,22 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
               );
             }),
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: const Text(
             "فاکتور خرید",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          flexibleSpace: Container(
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.bottomRight,
-            decoration: const BoxDecoration(gradient: kMainGradiant),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                CustomButton(
-                  text: "چاپ",
-                  width: 70,
-                  onPressed: () {
-                    saveBillOnLocalStorage(
-                        id: widget.oldBill == null
-                            ? null
-                            : widget.oldBill!.billId);
-                    exportPdf();
-                    Navigator.pop(context, false);
-                  },
-                  color: Colors.red,
-                ),
-              ],
+          actions: [
+            ActionButton(
+              label: "چاپ",
+              width: 70,
+              onPress: () {
+              },
+              bgColor: Colors.red,
+              icon: Icons.local_printshop_outlined,
             ),
-          ),
+            const SizedBox(width: 10,),
+          ],
         ),
         body: Directionality(
           textDirection: TextDirection.rtl,
@@ -444,7 +436,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                                 ],
                               ),
                               const SizedBox(width: 10),
-
                               ///top left
                               SizedBox(
                                 width: 150,
@@ -454,6 +445,26 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceEvenly,
                                   children: [
+                                    ///invoice number
+                                    TitleButton(
+                                      title: "شماره فاکتور:",
+                                      value: billNumber.toString(),
+                                      onPress: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                            const BillNumber()).then((value) {
+                                          if (value != null) {
+                                            billNumber = value.round();
+                                          }
+                                          setState(() {});
+                                        });
+                                      },
+                                    ),
+                                    const Divider(
+                                      thickness: 1,
+                                      height: 5,
+                                    ),
                                     ///choose orderBill date
                                     TitleButton(
                                       title: "تاریخ فاکتور:",
@@ -479,6 +490,50 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                             ],
                           ),
                         ),
+                        ///quick action button like add items and add payments
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ActionButton(
+                                label: "افزودن آیتم",
+                                icon: CupertinoIcons.cart_badge_plus,
+                                bgColor: Colors.blueGrey,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                      const WareToBillPanel())
+                                      .then((value) {
+                                    if (value != null) {
+                                      wares.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
+                              ActionButton(
+                                label: "پرداخت جدید",
+                                icon: Icons.add_card_rounded,
+                                bgColor: Colors.teal,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                      const PaymentToBill()).then((value) {
+                                    if (value != null) {
+                                      payments.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
+
+                            ],
+                          ),
+                        ),
+
                         ///final data of orderBill like sale total
                         Container(
                           padding: const EdgeInsets.symmetric(

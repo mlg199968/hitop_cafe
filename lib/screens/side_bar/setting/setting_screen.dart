@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -11,12 +12,11 @@ import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:printing/printing.dart';
-
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingScreen extends StatefulWidget {
   static const String id = "/SettingScreen";
@@ -33,19 +33,21 @@ class _SettingScreenState extends State<SettingScreen> {
   late String selectedCurrency;
   late UserProvider provider;
 
-
-
   ///printer
   Printer? selectedPrinter;
+
+  ///android printer
+  BluetoothDevice? selectedBluetoothPrinter;
 
   ///save part
   void storeInfoShop() {
     Shop? shopInfo = HiveBoxes.getShopInfo().get(0);
-    shopInfo??=Shop();
-    shopInfo..currency = selectedCurrency
+    shopInfo ??= Shop();
+    shopInfo
+      ..currency = selectedCurrency
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
-      ..printer=selectedPrinter==null?null:selectedPrinter!.toMap();
+      ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap();
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
@@ -56,8 +58,50 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedCurrency = shopInfo.currency;
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
-      selectedPrinter=shopInfo.printer!=null?Printer.fromMap(shopInfo.printer!):null;
+      selectedPrinter =
+          shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
     }
+  }
+
+  var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
+ // var _isScanning = false;
+  var devices = <BluetoothDevice>[];
+  final _isBle = true;
+
+  void _scan() async {
+    devices.clear();
+    try {
+      setState(() {
+       // _isScanning = true;
+      });
+      if (_isBle) {
+        final results =
+            await bluetoothManager.scan(timeout: const Duration(seconds: 10));
+        devices.addAll(results);
+        setState(() {});
+      } else {
+        final bondedDevices = await bluetoothManager.getAndroidPairedDevices();
+        devices.addAll(bondedDevices);
+        setState(() {});
+      }
+    } on BTException catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      setState(() {
+       // _isScanning = false;
+      });
+    }
+  }
+
+  void selectDevice(BluetoothDevice device) async {
+    if (selectedBluetoothPrinter != null) {
+      if (device.address != selectedBluetoothPrinter!.address) {
+        await bluetoothManager.disconnect();
+      }
+    }
+
+    selectedBluetoothPrinter = device;
+    setState(() {});
   }
 
   @override
@@ -75,9 +119,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   void dispose() {
-
     storeInfoShop();
-    print("dispose");
     super.dispose();
   }
 
@@ -90,134 +132,170 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
         title: const Text("تنظیمات"),
       ),
-      body: Consumer<PrinterProvider>(
-        builder: (context,printerProvider,child) {
-          return Stack(
-            children: [
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: Column(
-                  children: [
-                    Card(
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        margin: const EdgeInsets.all(15),
-                        decoration:
-                            BoxDecoration(border: Border.all(color: Colors.blue)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            CustomButton(
-                              text: "پشتیبان گیری",
-                              color: Colors.red.withRed(250),
-                              onPressed: () async {
-                                await storagePermission(context, Allow.externalStorage);
-                                // ignore: use_build_context_synchronously
-                                await storagePermission(context, Allow.storage);
-                                if(context.mounted) {
-                                  await BackupTools.createBackup(context);
-                                }
-                              },
-                            ),
-                            CustomButton(
-                              text: "بارگیری فایل پشتیبان",
-                              color: Colors.green,
-                              onPressed: () async {
-                                await storagePermission(context, Allow.storage);
-                                if(context.mounted) {
-                                  await storagePermission(context, Allow.externalStorage);
-                                }
-                                if(context.mounted) {
-                                 // await BackupTools.restoreBackup(context);
-                                  await BackupTools.readZipFile(context);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
+      body:
+          Consumer<PrinterProvider>(builder: (context, printerProvider, child) {
+        return Stack(
+          children: [
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Column(
+                children: [
+                  Card(
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      margin: const EdgeInsets.all(15),
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.blue)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CustomButton(
+                            text: "پشتیبان گیری",
+                            color: Colors.red.withRed(250),
+                            onPressed: () async {
+                              await storagePermission(
+                                  context, Allow.externalStorage);
+                              // ignore: use_build_context_synchronously
+                              await storagePermission(context, Allow.storage);
+                              if (context.mounted) {
+                                await BackupTools.createBackup(context);
+                              }
+                            },
+                          ),
+                          CustomButton(
+                            text: "بارگیری فایل پشتیبان",
+                            color: Colors.green,
+                            onPressed: () async {
+                              await storagePermission(context, Allow.storage);
+                              if (context.mounted) {
+                                await storagePermission(
+                                    context, Allow.externalStorage);
+                              }
+                              if (context.mounted) {
+                                // await BackupTools.restoreBackup(context);
+                                await BackupTools.readZipFile(context);
+                              }
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    ///currency unit
-                    DropListItem(
-                        title: "واحد پول",
-                        selectedValue: selectedCurrency,
-                        listItem: kCurrencyList,
-                        onChange: (val) {
-                          selectedCurrency = val;
-                          setState(() {});
-                        }),
-                    /// preTax value
-                    InputItem(
-                      label: "مالیات پیشفرض :",
-                      inputLabel: "درصد",
-                      controller: taxController,
-                      width: 100,
-                      onChange: (val) {
-                        if (val != "" && stringToDouble(val) > 100) {
-                          taxController.text = 99.toString();
-                          setState(() {});
-                        }
-                      },
-                    ),
-                    ///starter bill number
-                    InputItem(
-                      label: "شروع شماره فاکتور:",
-                      inputLabel: "شماره",
-                      controller: billNumberController,
-                    ),
-                    if(Platform.isWindows)
-                    ButtonTile(onPress: () async {
-                      // Show the native printer picker and get the selected printer
-                      final printer = await Printing.pickPrinter(
-                          context: context, title: "پرینتر را انتخاب کنید");
-                      if(printer!=null) {
-                        selectedPrinter=printer;
-                      }
-                      setState(() {});
-                    }, label:"انتخاب پرینتر" , buttonLabel: selectedPrinter==null?"پرینتری یافت نشد":selectedPrinter!.name)
-                  ],
-                ),
-              ),
-              ///**************************************************************************************************
-              ///condition for:if user not purchase the app,it will see purchase button to buy complete version
-              Provider.of<UserProvider>(context,listen: false).userLevel!=0
-                  ? const SizedBox()
-                  : Container(
-                padding: const EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height ,
-                color: Colors.black87.withOpacity(.7),
-                //height: MediaQuery.of(context).size.height,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
 
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    PurchaseButton(),
-                  ],
-                ),
+                  ///currency unit
+                  DropListItem(
+                      title: "واحد پول",
+                      selectedValue: selectedCurrency,
+                      listItem: kCurrencyList,
+                      onChange: (val) {
+                        selectedCurrency = val;
+                        setState(() {});
+                      }),
+
+                  /// preTax value
+                  InputItem(
+                    label: "تخفیف پیشفرض :",
+                    inputLabel: "درصد",
+                    controller: taxController,
+                    width: 100,
+                    onChange: (val) {
+                      if (val != "" && stringToDouble(val) > 100) {
+                        taxController.text = 99.toString();
+                        setState(() {});
+                      }
+                    },
+                  ),
+
+                  ///starter bill number
+                  InputItem(
+                    label: "شروع شماره فاکتور:",
+                    inputLabel: "شماره",
+                    controller: billNumberController,
+                  ),
+                  if (Platform.isWindows)
+                    ButtonTile(
+                        onPress: () async {
+                          // Show the native printer picker and get the selected printer
+                          final printer = await Printing.pickPrinter(
+                              context: context, title: "پرینتر را انتخاب کنید");
+                          if (printer != null) {
+                            selectedPrinter = printer;
+                          }
+                          setState(() {});
+                        },
+                        label: "انتخاب پرینتر",
+                        buttonLabel: selectedPrinter == null
+                            ? "پرینتری یافت نشد"
+                            : selectedPrinter!.name),
+                  if (Platform.isAndroid || Platform.isIOS )
+                    ButtonTile(
+                        onPress: () async {
+                          // Show the native printer picker and get the selected printer
+                          _scan();
+                          setState(() {});
+                          Column(
+                              children: devices
+                                  .map(
+                                    (device) => ListTile(
+                                      title: Text(device.name),
+                                      subtitle: Text(device.address),
+                                      onTap: () {
+                                        // do something
+                                        selectDevice(device);
+                                      },
+                                    ),
+                                  )
+                                  .toList());
+                        },
+                        label: "انتخاب پرینتر",
+                        buttonLabel: selectedBluetoothPrinter == null
+                            ? "پرینتری یافت نشد"
+                            : selectedBluetoothPrinter!.name),
+                  if (Platform.isAndroid || Platform.isIOS )
+                  ButtonTile(
+                      onPress: () {
+                        Navigator.pushNamed(context, PrinterPage.id);
+                      },
+                      label: "جست و جو با بلوتوث",
+                      buttonLabel: "جست و جو"),
+                ],
               ),
-            ],
-          );
-        }
-      ),
+            ),
+
+            ///**************************************************************************************************
+            ///condition for:if user not purchase the app,it will see purchase button to buy complete version
+            Provider.of<UserProvider>(context, listen: false).userLevel != 0
+                ? const SizedBox()
+                : Container(
+                    padding: const EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    color: Colors.black87.withOpacity(.7),
+                    //height: MediaQuery.of(context).size.height,
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
+                            textDirection: TextDirection.rtl,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        PurchaseButton(),
+                      ],
+                    ),
+                  ),
+          ],
+        );
+      }),
     );
   }
 }
-
-
-
-
 
 ///switch field
 class SwitchItem extends StatelessWidget {
@@ -248,6 +326,7 @@ class SwitchItem extends StatelessWidget {
     );
   }
 }
+
 ///drop list field
 class DropListItem extends StatelessWidget {
   const DropListItem({
@@ -287,13 +366,16 @@ class DropListItem extends StatelessWidget {
     );
   }
 }
+
 ///text field field
 class InputItem extends StatelessWidget {
   const InputItem(
       {Key? key,
       required this.controller,
       this.onChange,
-      this.width = 150, required this.label, required this.inputLabel})
+      this.width = 150,
+      required this.label,
+      required this.inputLabel})
       : super(key: key);
 
   final String label;
@@ -311,7 +393,7 @@ class InputItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             Text(label),
+            Text(label),
             CustomTextField(
                 label: inputLabel,
                 controller: controller,
@@ -325,26 +407,20 @@ class InputItem extends StatelessWidget {
   }
 }
 
-
-
-
 ///text field field
 class ButtonTile extends StatelessWidget {
-  const ButtonTile(
-      {Key? key,
-      required this.onPress,
-
-      this.width = 150,
-        required this.label,
-        required this.buttonLabel,
-      })
-      : super(key: key);
+  const ButtonTile({
+    Key? key,
+    required this.onPress,
+    this.width = 150,
+    required this.label,
+    required this.buttonLabel,
+  }) : super(key: key);
 
   final String label;
   final String buttonLabel;
   final VoidCallback onPress;
   final double width;
-
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +431,7 @@ class ButtonTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             Text(label),
+            Text(label),
             ElevatedButton(
               onPressed: onPress,
               child: Text(buttonLabel),

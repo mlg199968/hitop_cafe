@@ -16,154 +16,85 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:path_provider/path_provider.dart';
 
-
 class BackupTools {
+  static const String _outPutName = "data-file.mlg";
 
-static const String _outPutName="data-file.mlg";
 
-  static Future<void> createBackup(context) async{
+
+  static Future<void> _restoreJsonData(File json, context) async {
     try {
-      List<Bill> bills = HiveBoxes
-          .getBills()
-          .values
-          .toList();
-      List<Item> items = HiveBoxes
-          .getItem()
-          .values
-          .toList();
-      List<RawWare> wares = HiveBoxes
-          .getRawWare()
-          .values
-          .toList();
-      List<Order> orders = HiveBoxes
-          .getOrders()
-          .values
-          .toList();
+      String jsonFile = await json.readAsString();
+      DB restoredDb = DB().fromJson(jsonFile);
 
-      DB database = DB()
-        ..wares = wares
-        ..items = items
-        ..orders = orders
-        ..bills = bills;
+      for (int i = 0; i < restoredDb.wares.length; i++) {
+        HiveBoxes.getRawWare()
+            .put(restoredDb.wares[i].wareId, restoredDb.wares[i]);
+      }
+      for (int i = 0; i < restoredDb.items.length; i++) {
+        HiveBoxes.getItem()
+            .put(restoredDb.items[i].itemId, restoredDb.items[i]);
+      }
+      for (int i = 0; i < restoredDb.orders.length; i++) {
+        HiveBoxes.getOrders()
+            .put(restoredDb.orders[i].orderId, restoredDb.orders[i]);
+      }
+      for (int i = 0; i < restoredDb.bills.length; i++) {
+        HiveBoxes.getBills()
+            .put(restoredDb.bills[i].billId, restoredDb.bills[i]);
+      }
 
-     // await _saveJson(database.toJson(),context);
-      await createZipFile(await Address.itemsImage(), database.toJson(),context);
-
-    }catch(e){
-      print("create backup error");
-      print(e);
-      if(context.mounted) {
-        showSnackBar(context, e.toString(),type: SnackType.error);
+      showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",
+          type: SnackType.success);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      if (context.mounted) {
+        showSnackBar(context, e.toString(), type: SnackType.error);
       }
     }
   }
 
-  static Future<void> restoreBackup(context) async {
+  static readZipFile(context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null) {
-        File backupFile = File(result.files.single.path!);
-        String jsonFile = await backupFile.readAsString();
-        DB restoredDb = DB().fromJson(jsonFile);
-
-        for (int i = 0; i < restoredDb.wares.length; i++) {
-          HiveBoxes.getRawWare().put(
-              restoredDb.wares[i].wareId, restoredDb.wares[i]);
+        String directory = (await getApplicationDocumentsDirectory()).path;
+        String path = result.files.single.path!;
+        final bytes = File(path).readAsBytesSync();
+        // Decode the Zip file
+        final archive = ZipDecoder().decodeBytes(bytes);
+        // Extract the contents of the Zip archive to disk.
+        for (final file in archive) {
+          final filename = file.name;
+          if (file.isFile) {
+            final data = file.content as List<int>;
+            File extractedFile = File('$directory/$filename')
+              ..createSync(recursive: true)
+              ..writeAsBytesSync(data);
+            if (filename == _outPutName) {
+              await _restoreJsonData(extractedFile, context);
+            } else {
+              print("images file extracted");
+              print(filename);
+              print(extractedFile.path);
+              String imagesPath = await Address.itemsDirectory();
+              await extractedFile.copy("$imagesPath/$filename");
+            }
+          } else {
+            print("is Directory");
+            await Directory('$directory/$filename').create(recursive: true);
+          }
         }
-        for (int i = 0; i < restoredDb.items.length; i++) {
-          HiveBoxes.getItem().put(
-              restoredDb.items[i].itemId, restoredDb.items[i]);
-        }
-        for (int i = 0; i < restoredDb.orders.length; i++) {
-          HiveBoxes.getOrders().put(
-              restoredDb.orders[i].orderId, restoredDb.orders[i]);
-        }
-        for (int i = 0; i < restoredDb.bills.length; i++) {
-          HiveBoxes.getBills().put(
-              restoredDb.bills[i].billId, restoredDb.bills[i]);
-        }
-
-          showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",type: SnackType.success);
-
       }
     }catch(e){
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      if(context.mounted) {
-
-        showSnackBar(context, e.toString(),type: SnackType.error);
-      }
+      debugPrint(e.toString());
+      showSnackBar(context, e.toString(),type: SnackType.error) ;
     }
   }
-  static Future<void> _restoreJsonData(File json ,context) async {
+
+  static createZipFile(String imagesDir, String json, context) async {
     try {
-        String jsonFile = await json.readAsString();
-        DB restoredDb = DB().fromJson(jsonFile);
-
-        for (int i = 0; i < restoredDb.wares.length; i++) {
-          HiveBoxes.getRawWare().put(
-              restoredDb.wares[i].wareId, restoredDb.wares[i]);
-        }
-        for (int i = 0; i < restoredDb.items.length; i++) {
-          HiveBoxes.getItem().put(
-              restoredDb.items[i].itemId, restoredDb.items[i]);
-        }
-        for (int i = 0; i < restoredDb.orders.length; i++) {
-          HiveBoxes.getOrders().put(
-              restoredDb.orders[i].orderId, restoredDb.orders[i]);
-        }
-        for (int i = 0; i < restoredDb.bills.length; i++) {
-          HiveBoxes.getBills().put(
-              restoredDb.bills[i].billId, restoredDb.bills[i]);
-        }
-
-          showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",type: SnackType.success);
-
-    }catch(e){
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      if(context.mounted) {
-
-        showSnackBar(context, e.toString(),type: SnackType.error);
-      }
-    }
-  }
-
-  static readZipFile(context)async{
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-    String directory=(await getApplicationDocumentsDirectory()).path;
-    String path=result.files.single.path!;
-    final bytes = File(path).readAsBytesSync();
-    // Decode the Zip file
-    final archive = ZipDecoder().decodeBytes(bytes);
-    // Extract the contents of the Zip archive to disk.
-    for (final file in archive) {
-      final filename = file.name;
-      if (file.isFile) {
-        final data = file.content as List<int>;
-        File extractedFile= File('$directory/$filename')
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(data);
-        if(filename==_outPutName) {
-          await _restoreJsonData(extractedFile,context);
-        }else{
-          print("images file extracted");
-          print(filename);
-          print(extractedFile.path);
-         String imagesPath=await Address.itemsDirectory();
-        await extractedFile.copy("$imagesPath/$filename");
-        }
-      } else {
-        print("is Directory");
-      await Directory('$directory/$filename').create(recursive: true);
-      }
-    }}}
-
-  static createZipFile(String imagesDir,String json,context) async {
-    try{
       String formattedDate =
           intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
       //select a directory to save zip file
@@ -182,42 +113,103 @@ static const String _outPutName="data-file.mlg";
         encoder.addFile(jsonFile);
         encoder.close();
         await jsonFile.delete(recursive: true);
+        showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
+            type: SnackType.success);
       }
-    }catch(e){
-      if (kDebugMode) {
-        print("create zip file error\n$e");
-      }
-      showSnackBar(context, e.toString(),type: SnackType.error);
+    } catch (e) {
+        debugPrint("create zip file error\n$e");
+      showSnackBar(context, e.toString(), type: SnackType.error);
     }
   }
 
-
-  static Future<File> _createJsonFile(String json,String path) async {
-      File createdFile =
-      File("$path/$_outPutName");
-      await createdFile.create(recursive: true);
-      await createdFile.writeAsString(json);
-      return createdFile;
+  static Future<File> _createJsonFile(String json, String path) async {
+    File createdFile = File("$path/$_outPutName");
+    await createdFile.create(recursive: true);
+    await createdFile.writeAsString(json);
+    return createdFile;
   }
 
-  static Future<void> _saveJson(String json,context) async {
-    String formattedDate= intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
 
-    String? result = await FilePicker.platform.getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
+
+
+
+  static Future<void> createBackup(context) async {
+    try {
+      List<Bill> bills = HiveBoxes.getBills().values.toList();
+      List<Item> items = HiveBoxes.getItem().values.toList();
+      List<RawWare> wares = HiveBoxes.getRawWare().values.toList();
+      List<Order> orders = HiveBoxes.getOrders().values.toList();
+
+      DB database = DB()
+        ..wares = wares
+        ..items = items
+        ..orders = orders
+        ..bills = bills;
+
+      // await _saveJson(database.toJson(),context);
+      await createZipFile(
+          await Address.itemsImage(), database.toJson(), context);
+    } catch (e) {
+      print("create backup error");
+      print(e);
+      if (context.mounted) {
+        showSnackBar(context, e.toString(), type: SnackType.error);
+      }
+    }
+  }
+
+  static Future<void> restoreBackup(context) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        File backupFile = File(result.files.single.path!);
+        String jsonFile = await backupFile.readAsString();
+        DB restoredDb = DB().fromJson(jsonFile);
+
+        for (int i = 0; i < restoredDb.wares.length; i++) {
+          HiveBoxes.getRawWare()
+              .put(restoredDb.wares[i].wareId, restoredDb.wares[i]);
+        }
+        for (int i = 0; i < restoredDb.items.length; i++) {
+          HiveBoxes.getItem()
+              .put(restoredDb.items[i].itemId, restoredDb.items[i]);
+        }
+        for (int i = 0; i < restoredDb.orders.length; i++) {
+          HiveBoxes.getOrders()
+              .put(restoredDb.orders[i].orderId, restoredDb.orders[i]);
+        }
+        for (int i = 0; i < restoredDb.bills.length; i++) {
+          HiveBoxes.getBills()
+              .put(restoredDb.bills[i].billId, restoredDb.bills[i]);
+        }
+
+        showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",
+            type: SnackType.success);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      if (context.mounted) {
+        showSnackBar(context, e.toString(), type: SnackType.error);
+      }
+    }
+  }
+
+  static Future<void> _saveJson(String json, context) async {
+    String formattedDate =
+        intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
+
+    String? result = await FilePicker.platform
+        .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
     if (result != null) {
       String path = result;
-      File createdFile =
-      File("$path/$formattedDate.mlg");
+      File createdFile = File("$path/$formattedDate.mlg");
       createdFile.create(recursive: true);
       createdFile.writeAsString(json);
 
-      showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",type: SnackType.success);
-
+      showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
+          type: SnackType.success);
     }
   }
-
-  }
-
-
-
-
+}

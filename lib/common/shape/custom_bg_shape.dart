@@ -3,40 +3,48 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 
 class BackgroundClipper extends StatelessWidget {
   const BackgroundClipper({super.key,
     required this.child,
-     this.color=Colors.blue,
-     this.height=80,
+     this.color=kMainColor,
+     this.height=80,this.width,
+    this.borderRadius=10
   });
   final Widget child;
 final Color color;
 final double height;
+final double? width;
+final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomRight,
-      children: [
-      ClipPath(
-        clipper: CustomShape(),
-        child: Container(
-          color: color.withOpacity(.1),
-          height: height,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+        ClipPath(
+          clipper: CustomShape(),
+          child: Container(
+            color: color.withOpacity(.8),
+            width:width ?? MediaQuery.of(context).size.width*.7,
+            height: height*.7,
+          ),
         ),
-      ),
-      ClipPath(
-        clipper: CustomShape(),
-        child: Container(
-          color: color.withOpacity(.8),
-          width: MediaQuery.of(context).size.width*.7,
-          height: height*.7,
+        ClipPath(
+          clipper: CustomShape(),
+          child: Container(
+            color: color.withOpacity(.25),
+            height: height,
+            width: width,
+          ),
         ),
-      ),
-      child
-    ],);
+        child
+      ],),
+    );
   }
 
 

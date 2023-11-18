@@ -292,11 +292,11 @@ class _ListPartState extends State<ListPart> {
                                       onDelete: () {},
                                       height: 50,
                                       color: selectedItems.contains(index)
-                                          ? Colors.blue
-                                          : Colors.deepPurple.withBlue(250),
+                                          ? Theme.of(context).primaryColorLight
+                                          : Theme.of(context).primaryColor,
                                       leadingIcon: CupertinoIcons.cube_box_fill,
                                       subTitle: ware.category,
-                                      type: "کالا",
+                                      type: (index+1).toString().toPersianDigit(),
                                       title: ware.wareName,
                                       topTrailing:
                                       ("${ware.quantity}  ".toPersianDigit() +

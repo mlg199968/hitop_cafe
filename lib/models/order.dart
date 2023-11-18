@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hive/hive.dart';
@@ -20,9 +21,9 @@ class Order extends HiveObject {
   @HiveField(5)
   num get itemsSum => items.isEmpty?0:items.map((e) => e.sale).reduce((a, b) => a + b);
   @HiveField(6)
-  num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method=="cash"? e.amount:0).reduce((a, b) => a + b);
+  num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method==PayMethod.cash? e.amount:0).reduce((a, b) => a + b);
   @HiveField(7)
-  num get atmSum =>payments.isEmpty?0: payments.map((e) => e.method=="atm"?e.amount:0).reduce((a, b) => a + b);
+  num get atmSum =>payments.isEmpty?0: payments.map((e) => e.method==PayMethod.atm? e.amount:0).reduce((a, b) => a + b);
   @HiveField(8)
   num discount = 0;
   @HiveField(9)

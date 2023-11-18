@@ -14,6 +14,7 @@ import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,47 +44,65 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Scaffold(
-        key: mainScaffoldKey,
-        extendBodyBehindAppBar: true,
-        drawer: const SideBarPanel(),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-              color: Colors.white54,
-              onPressed: () {
-                mainScaffoldKey.currentState!.openDrawer();
-              },
-              icon: const Icon(
-                FontAwesomeIcons.bars,
-                size: 30,
-              )),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Provider.of<UserProvider>(context, listen: false).userLevel == 1
-                  ? const Icon(
-                      FontAwesomeIcons.crown,
-                      color: Colors.orangeAccent,
-                    )
-                  : const SizedBox(),
-              const SizedBox(
-                width: 5,
-              ),
-              const Text(
-                "HITOP Cafe ",
-                style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
+    return Scaffold(
+      key: mainScaffoldKey,
+      extendBodyBehindAppBar: true,
+      drawer: const SideBarPanel(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+            color: Colors.white54,
+            onPressed: () {
+              mainScaffoldKey.currentState!.openDrawer();
+            },
+            icon: const Icon(
+              FontAwesomeIcons.bars,
+              size: 30,
+            )),
+        title: Row(
+          textBaseline:TextBaseline.alphabetic,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Provider.of<UserProvider>(context, listen: false).userLevel == 1
+                ? const Icon(
+                    FontAwesomeIcons.crown,
+                    color: Colors.orangeAccent,
+                  )
+                : const SizedBox(),
+            const SizedBox(
+              width: 5,
+            ),
+            const Text(
+              "HITOP Cafe ",
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
-        body: SingleChildScrollView(
+        actions: [
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: 0),
+            child: GestureDetector(
+              onTap: () {
+                //Navigator.pushNamed(context, SignInScreen.id);
+              },
+              child: Image.asset(
+                'assets/icons/hitop-white.png',
+                width: 100,
+                height: 40,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
           child: Stack(
             children: [
               ///home screen header
@@ -94,8 +113,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   gradient: kMainGradiant,
                   borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
                 ),
-                child: const Center(
-                  child: Text("home Screen"),
+                child:  Center(
+                  child: Wrap(
+                    children: [
+                      Text("امروز: ${DateTime.now().toPersianDateStr()}",style: const TextStyle(color: Colors.white,fontSize: 17),),
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -113,21 +136,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
+                          flex: 3,
                           child: CardButton(
-                              label: "تاریخچه سفارشات",
-                              width: 200,
-                              image: "trending1",
+                              label: "سفارشات حاضر",
+                              width: 300,
+                              image: "active-orders",
                               onTap: () {
-                                Navigator.pushNamed(context, OrderScreen.id);
+                                Navigator.pushNamed(context, PresentOrderScreen.id);
                               }),
                         ),
                         Flexible(
+                          flex: 2,
                           child: CardButton(
-                              label: "سفارشات فعال",
-                              width: 300,
-                              image: "trending2",
+                              label: "تاریخچه سفارشات",
+                              width: 200,
+                              image: "orders-history",
                               onTap: () {
-                                Navigator.pushNamed(context, PresentOrderScreen.id);
+                                Navigator.pushNamed(context, OrderScreen.id);
                               }),
                         ),
                       ],
@@ -139,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: "لیست آیتم ها ",
                         width: 400,
                         height: 100,
-                        image: "trending3",
+                        image: "items",
                         verticalDirection: false,
                         onTap: () {
                           Navigator.pushNamed(context, ItemsScreen.id);
@@ -148,30 +173,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: "لیست مواد خام ",
                         width: 400,
                         height: 100,
-                        image: "trending2",
+                        image: "raw-wares",
                         verticalDirection: false,
                         onTap: () {
                           Navigator.pushNamed(context, WareListScreen.id);
                         }),
 
-                    Wrap(
-                      children: [
-                        SmallCardButton(
-                            label: "فاکتور خرید",
-                            image: "photo2.jpg",
-                            onTap: () {
-                              Navigator.pushNamed(context, ShoppingBillScreen.id);
-                            }),
-                        SmallCardButton(
-                            label: "آنالیز",
-                            image: "photo3.jpg",
-                            onTap: () {
-                              Navigator.pushNamed(context, AnalyticsScreen.id);
-                            }),
-                      ],
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Wrap(
+                        children: [
+                          SmallCardButton(
+                              label: "فاکتور خرید",
+                              image: "bills.jpg",
+                              onTap: () {
+                                Navigator.pushNamed(context, ShoppingBillScreen.id);
+                              }),
+                          SmallCardButton(
+                              label: "آنالیز",
+                              image: "analytics.png",
+                              onTap: () {
+                                Navigator.pushNamed(context, AnalyticsScreen.id);
+                              }),
+                        ],
+                      ),
                     ),
                     const SizedBox(
-                      height: 600,
+                      height: 100,
                     ),
                   ],
                 )),

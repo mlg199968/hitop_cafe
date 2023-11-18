@@ -10,10 +10,10 @@ import 'package:provider/provider.dart';
 
 
 class PrinterPage extends StatefulWidget {
-  Order? orderBill;
+  static const String id = "/printer-screen";
+  const PrinterPage({Key? key, this.orderBill}) : super(key: key);
 
-  PrinterPage({Key? key, this.orderBill}) : super(key: key);
-  static const String id = "/Printer-screen";
+  final Order? orderBill;
 
   @override
   State<PrinterPage> createState() => _PrinterPageState();
@@ -28,7 +28,7 @@ class _PrinterPageState extends State<PrinterPage> {
   var _isConnected = false;
   var devices = <BluetoothDevice>[];
   StreamSubscription<BTConnectState>? _subscriptionBtStatus;
-  BTConnectState _currentStatus = BTConnectState.disconnect;
+ // BTConnectState _currentStatus = BTConnectState.disconnect;
 
   BluetoothDevice? selectedPrinter;
   @override
@@ -46,8 +46,8 @@ class _PrinterPageState extends State<PrinterPage> {
 
     // subscription to listen change status of bluetooth connection
     _subscriptionBtStatus = bluetoothManager.connectState.listen((status) {
-      print(' ----------------- status bt $status ------------------ ');
-      _currentStatus = status;
+      debugPrint(' ----------------- status bt $status ------------------ ');
+     // _currentStatus = status;
       if (status == BTConnectState.connected) {
         setState(() {
           _isConnected = true;
@@ -85,7 +85,7 @@ class _PrinterPageState extends State<PrinterPage> {
         setState(() {});
       }
     } on BTException catch (e) {
-      print(e);
+      debugPrint(e.toString());
     } finally {
       setState(() {
         _isScanning = false;
@@ -101,7 +101,7 @@ class _PrinterPageState extends State<PrinterPage> {
         setState(() {});
       });
     } on BTException catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -129,11 +129,11 @@ class _PrinterPageState extends State<PrinterPage> {
         await bluetoothManager.disconnect();
       }
     } on BTException catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
-  void _pdffile() async {
+  void _pdfFile() async {
     if (selectedPrinter == null) return;
 
     try {
@@ -147,7 +147,7 @@ class _PrinterPageState extends State<PrinterPage> {
         await bluetoothManager.disconnect();
       }
     } on BTException catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -157,7 +157,7 @@ class _PrinterPageState extends State<PrinterPage> {
       _isConnected = await bluetoothManager.connect(
           address: selectedPrinter!.address, isBLE: selectedPrinter!.isLE);
     } on BTException catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -260,7 +260,7 @@ class _PrinterPageState extends State<PrinterPage> {
                                 ? null
                                 : () async {
                               _print2X1();
-                              _pdffile();
+                              _pdfFile();
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(

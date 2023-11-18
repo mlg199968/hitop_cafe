@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:printing/printing.dart';
@@ -69,11 +71,13 @@ class UserProvider extends ChangeNotifier{
 
 
   Printer? getDefaultPrinter() {
-    Printing.listPrinters().then((printers) {
+    if(Platform.isWindows) {
+      Printing.listPrinters().then((printers) {
 // Find the printer that has isDefault: true
       Printer defaultPrinter = printers.firstWhere((p) => p.isDefault);
       return defaultPrinter;
     });
+    }
     return null;
   }
 }

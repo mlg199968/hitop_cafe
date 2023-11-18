@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -10,10 +11,11 @@ import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
+import 'package:hitop_cafe/providers/setting_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/router.dart';
-import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
+import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -47,6 +49,7 @@ Future main() async {
     ChangeNotifierProvider(create: (context) => WareProvider()),
     ChangeNotifierProvider(create: (context) => UserProvider()),
     ChangeNotifierProvider(create: (context) => FilterProvider()),
+    ChangeNotifierProvider(create: (context) => SettingProvider()),
     ChangeNotifierProvider(create: (context) => PrinterProvider()),
   ], child: const MyApp()));
 }
@@ -63,13 +66,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           foregroundColor: Colors.white,
-            backgroundColor: Colors.deepOrange),
+            backgroundColor: kMainColor),
         fontFamily: "persian",
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: kMainColor),
         useMaterial3: true,
       ),
       onGenerateRoute: (setting) => generateRoute(setting),
-      home:  const HomeScreen(),
+      home:  const SplashScreen(),
     );
   }
 }

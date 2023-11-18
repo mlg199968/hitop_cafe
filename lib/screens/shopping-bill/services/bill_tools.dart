@@ -9,6 +9,7 @@ import 'package:hitop_cafe/models/bill.dart';
 import '../../../services/hive_boxes.dart';
 
 class BillTools{
+
 ///subtract ware from storage when ware has been added to bill
   static void addToWareStorage(List<Purchase> purchases,{Bill? oldBill}){
 
@@ -29,6 +30,21 @@ class BillTools{
       for(int j=0;j<purchases.length;j++){
         if(purchases[j].wareName==wareList[i].wareName){
           wareList[i].quantity+=purchases[j].quantity;
+          HiveBoxes.getRawWare().putAt(i, wareList[i]);
+        }
+      }
+    }
+
+  }
+///add ware to storage when ware has been deleted
+  static void subtractFromWareHouse(List<Purchase> purchases){
+
+    List<RawWare> wareList=HiveBoxes.getRawWare().values.toList();
+    //find the purchase  in the ware storage then subtracted from storage quantity
+    for(int i=0;i<wareList.length;i++){
+      for(int j=0;j<purchases.length;j++){
+        if(purchases[j].wareName==wareList[i].wareName){
+          wareList[i].quantity-=purchases[j].quantity;
           HiveBoxes.getRawWare().putAt(i, wareList[i]);
         }
       }

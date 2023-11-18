@@ -40,7 +40,26 @@ class OrderTools{
     }
   }
 
-  ///get tableNumber
+
+///subtract ware when ware added to order
+  static void addToWareStorage(List<Item> items,){
+    List<RawWare> wareList=HiveBoxes.getRawWare().values.toList();
+
+    //find the item  in the ware storage then add to storage quantity
+    for(int i=0;i<wareList.length;i++){
+      for(int j=0;j<items.length;j++){
+        List<RawWare> wares=items[j].ingredients;
+        for(int k=0;k<wares.length;k++) {
+          if (wares[k].wareId == wareList[i].wareId) {
+            wareList[i].quantity += wares[k].demand*(items[j].quantity ?? 1);
+            HiveBoxes.getRawWare().putAt(i, wareList[i]);
+          }
+        }
+      }
+    }
+  }
+
+  ///get order Number
  static int getOrderNumber() {
 List<Order> orders=HiveBoxes.getOrders().values.toList();
 if(orders.isNotEmpty){

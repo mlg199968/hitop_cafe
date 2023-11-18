@@ -14,8 +14,7 @@ class CreateItemCategoryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-      context: context,
+    return CustomDialog(
       title: 'افزودن گروه جدید',
       height: 250,
       child: Consumer<WareProvider>(

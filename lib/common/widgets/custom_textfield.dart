@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart'
     as formatter;
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 enum TextFormatter { price, normal, number }
 
@@ -45,8 +47,10 @@ class CustomTextField extends StatelessWidget {
   final bool enable;
   final bool obscure;
 
+
   @override
   Widget build(BuildContext context) {
+    String currency=Provider.of<UserProvider>(context,listen: false).currency;
     bool isPressed = false;
     return SizedBox(
       width: width,
@@ -98,7 +102,7 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           decoration: InputDecoration(
             prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
-            suffixIcon: suffixIcon,
+            suffixIcon:suffixIcon,
             isDense: true,
             contentPadding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
             counterText: "",
@@ -106,7 +110,8 @@ class CustomTextField extends StatelessWidget {
             fillColor: Colors.white,
             hoverColor: Colors.white70,
             label:label==null?null: Text(
-              label!,
+              textFormat == TextFormatter.price?
+              "${label!} ($currency)":label!,
               style: const TextStyle(color: kMainColor3),
               maxLines: 1,
               overflow: TextOverflow.fade,

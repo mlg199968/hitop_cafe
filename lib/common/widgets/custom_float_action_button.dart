@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 class CustomFloatActionButton extends StatelessWidget {
   const CustomFloatActionButton(
       {Key? key,
       required this.onPressed,
       this.icon,
-      this.bgColor,
-      this.fgColor,
+      this.bgColor=kMainColor,
+      this.fgColor=Colors.white,
       this.label})
       : super(key: key);
 
@@ -30,8 +31,8 @@ class CustomFloatActionButton extends StatelessWidget {
         isExtended: label==null?false:true,
         elevation: 4,
         onPressed: onPressed,
-        backgroundColor: bgColor ?? Colors.brown,
-        foregroundColor: fgColor ?? Colors.white,
+        backgroundColor: bgColor,
+        foregroundColor: fgColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );

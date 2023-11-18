@@ -17,8 +17,7 @@ class BillInfoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-      context: context,
+    return CustomDialog(
       height: MediaQuery.of(context).size.height * .6,
       title: "مشخصات مشتری",
       child: SafeArea(

@@ -41,8 +41,7 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-      context: context,
+    return CustomDialog(
       title: 'افزودن ماده تشکیل دهنده جدید',
       height: 300,
       child: Consumer<WareProvider>(builder: (context, wareProvider, child) {

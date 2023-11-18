@@ -41,7 +41,7 @@ class Address{
   //items  directory
   static Future<String> itemsDirectory()async{
     final Directory directory = await getApplicationDocumentsDirectory();
-    final newDirectory = Directory("${directory.path}/hitop_cafe/items");
+    Directory newDirectory = Directory("${directory.path}/hitop_cafe/items");
     if (!await newDirectory.exists()) {
       newDirectory.create(recursive: true);
     }

@@ -63,7 +63,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         if(pay.method==PayMethod.cash) {
           ChartData cashPays =
               ChartData(value: pay.amount, date: pay.deliveryDate);
-          atmData.add(cashPays);
+          cashData.add(cashPays);
         }
       }
       ///get order purchases sum

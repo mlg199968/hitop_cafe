@@ -50,6 +50,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       key: scaffoldKey,
       floatingActionButton: CustomFloatActionButton(
           onPressed: () {
@@ -71,14 +72,13 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
         ],
         leading: const BackButton(),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: kMainGradiant),
         ),
         title: Container(
           padding: const EdgeInsets.only(right: 5),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("سفارشات فعال"),
+              Text("سفارشات حاضر"),
             ],
           ),
         ),
@@ -94,26 +94,29 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
             children: <Widget>[
               ///Search bar customer list
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                height: 200,
+                padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 40),
                 decoration: const BoxDecoration(
                     gradient: kMainGradiant,
                   borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(100, 20))
                 ),
-                height: 150,
-                child: CustomSearchBar(
-                    focusNode: focusNode,
-                    controller: searchCustomerController,
-                    hint: "جست و جو سفارش",
-                    onChange: (val) {
-                      keyWord = val;
-                      setState(() {});
-                    },
-                    selectedSort: sortItem,
-                    sortList: sortList,
-                    onSort: (val){
-                      sortItem = val;
-                      setState(() {});
-                    }),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CustomSearchBar(
+                      focusNode: focusNode,
+                      controller: searchCustomerController,
+                      hint: "جست و جو سفارش",
+                      onChange: (val) {
+                        keyWord = val;
+                        setState(() {});
+                      },
+                      selectedSort: sortItem,
+                      sortList: sortList,
+                      onSort: (val){
+                        sortItem = val;
+                        setState(() {});
+                      }),
+                ),
               ),
               Container(
                 padding: const EdgeInsets.only(top: 10),

@@ -48,7 +48,7 @@ class ShoppingList extends StatelessWidget {
                       height: 55,
                       color:Colors.brown.shade200,
                       leadingIcon: FontAwesomeIcons.cartShopping,
-                      type: "item",
+                      type: index.toString().toPersianDigit(),
                       title: items[index].itemName,
                       subTitle:
                           "${items[index].quantity} ${items[index].unit} * ${addSeparator(items[index].sale)} "

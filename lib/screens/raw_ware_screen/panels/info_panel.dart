@@ -13,9 +13,8 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 import '../widgets/info_panel_row.dart';
 
 InfoPanel({required BuildContext context, required RawWare wareInfo}) {
-  return customAlertDialog(
+  return CustomDialog(
     height: MediaQuery.of(context).size.height * .5,
-    context: context,
     title: "مشخصات کالا",
     child: Column(
       children: [

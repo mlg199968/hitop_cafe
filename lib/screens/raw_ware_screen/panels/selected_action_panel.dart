@@ -31,8 +31,7 @@ class _SelectedWareActionPanelState extends State<SelectedWareActionPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return customAlertDialog(
-        context: context,
+    return CustomDialog(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

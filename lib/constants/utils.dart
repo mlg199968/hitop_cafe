@@ -242,8 +242,8 @@ reSizeImage(String iPath,{int width=600})async{
   );
   final param = ImageFileConfiguration(input: input, config: config);
   final output = await compressor.compress(param);
-  print("Input size : ${input.sizeInBytes}");
-  print("Output size : ${output.sizeInBytes}");
+  debugPrint("Input size : ${input.sizeInBytes}");
+  debugPrint("Output size : ${output.sizeInBytes}");
 
   if(input.sizeInBytes>100100){
     await img.writeFile(iPath, output.rawBytes);
