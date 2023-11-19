@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
@@ -139,7 +141,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
       // final file = await PdfInvoiceApi.generate(orderBill,context);
       //PdfApi.openFile(file);
       final file = await PdfInvoiceApi.generatePrint(orderBill, context);
-      if (userProvider.selectedPrinter != null) {
+      if (userProvider.selectedPrinter != null && Platform.isWindows) {
         await Printing.directPrintPdf(
             printer: userProvider.selectedPrinter!,
             onLayout: (_) => file.buffer.asUint8List());
