@@ -16,7 +16,6 @@ class CreateGroupPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomDialog(
       title: 'افزودن گروه جدید',
-      height: 250,
       child: Consumer<WareProvider>(
         builder: (context,wareProvider,child) {
           return Container(
@@ -35,7 +34,7 @@ class CreateGroupPanel extends StatelessWidget {
                               label: "نام گروه",
                               controller: groupPanelTextFieldController,
                               validate: true,
-                              maxLength: 20,
+                              maxLength: 30,
                               width: MediaQuery.of(context).size.width,
                               extraValidate: (val){
                                 for (var element in wareProvider.rawWareCategories) {

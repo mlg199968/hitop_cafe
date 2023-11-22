@@ -182,7 +182,7 @@ class MyListTile extends StatelessWidget {
                 ),
               )
             ,
-        subtitle: Text(subTitle ?? ""),
+        subtitle: Text(subTitle ?? "",style: const TextStyle(fontSize: 11,color: Colors.black45),),
         trailing: constraint.maxWidth < 300
             ? null
             : Column(

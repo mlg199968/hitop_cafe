@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -39,11 +40,11 @@ Future main() async {
   Hive.registerAdapter(OrderAdapter());
 
   //create box for store data
-  await Hive.openBox<RawWare>("ware_db");
-  await Hive.openBox<Item>("item_db");
-  await Hive.openBox<Order>("order_db");
-  await Hive.openBox<Bill>("bill_db");
-  await Hive.openBox<Shop>("shop_db");
+  await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Item>("item_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Order>("order_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Bill>("bill_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Shop>("shop_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),
@@ -67,7 +68,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           foregroundColor: Colors.white,
             backgroundColor: kMainColor),
-        fontFamily: "persian",
+        fontFamily: context.watch<UserProvider>().fontFamily,
         colorScheme: ColorScheme.fromSeed(seedColor: kMainColor),
         useMaterial3: true,
       ),

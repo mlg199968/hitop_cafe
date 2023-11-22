@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 class ActionButton extends StatelessWidget {
   const ActionButton(
       {super.key,
       this.onPress,
       required this.icon,
-      this.bgColor = Colors.blue,
+      this.bgColor = kMainColor,
       this.label,
       this.height = 35,
       this.width,

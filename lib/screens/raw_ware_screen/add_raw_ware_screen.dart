@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -9,6 +10,7 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/panels/create_group_panel.dart';
+import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -109,24 +111,29 @@ class _AddWareScreenState extends State<AddWareScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        //TODO:select group dropdown list and add group
+                        ///select group dropdown list and add group
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CustomButton(
-                                text: "افزودن گروه",
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => CreateGroupPanel());
-                                }),
-                            DropListModel(
-                                listItem: wareProvider.rawWareCategories,
-                                selectedValue:
-                                    wareProvider.selectedRawWareCategory,
-                                onChanged: (val) {
-                                  wareProvider.updateSelectedRawCategory(val);
-                                }),
+                            Flexible(
+                              child: ActionButton(
+                                  label: "افزودن گروه",
+                                  icon: Icons.add,
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => CreateGroupPanel());
+                                  }),
+                            ),
+                            Flexible(
+                              child: DropListModel(
+                                  listItem: wareProvider.rawWareCategories,
+                                  selectedValue:
+                                      wareProvider.selectedRawWareCategory,
+                                  onChanged: (val) {
+                                    wareProvider.updateSelectedRawCategory(val);
+                                  }),
+                            ),
                           ],
                         ),
                         const SizedBox(
@@ -146,22 +153,27 @@ class _AddWareScreenState extends State<AddWareScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            DropListModel(
-                              height: 35,
-                              selectedValue: unitItem,
-                              listItem: unitList,
-                              onChanged: (val) {
-                                unitItem = val;
-                                setState(() {});
-                              },
+                            Flexible(
+                              child: DropListModel(
+                                height: 35,
+                                width: 100,
+                                selectedValue: unitItem,
+                                listItem: unitList,
+                                onChanged: (val) {
+                                  unitItem = val;
+                                  setState(() {});
+                                },
+                              ),
                             ),
                             const SizedBox(
                               width: 20,
                             ),
-                            CustomTextField(
-                              label: "مقدار",
-                              controller: quantityController,
-                              textFormat: TextFormatter.number,
+                            Flexible(
+                              child: CustomTextField(
+                                label: "مقدار",
+                                controller: quantityController,
+                                textFormat: TextFormatter.number,
+                              ),
                             ),
                           ],
                         ),

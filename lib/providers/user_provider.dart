@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +10,7 @@ class UserProvider extends ChangeNotifier{
 
   int userLevel=1;
   //ceil count is for how many item you can add to list
-  int ceilCount=50;
+  int ceilCount=1000;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
   //*****
   String shopName="نام فروشگاه";
@@ -24,6 +25,7 @@ class UserProvider extends ChangeNotifier{
   String currency="تومان";
   double preDiscount=0;
   int preBillNumber=1;
+  String fontFamily=kFonts[0];
   Printer? _selectedPrinter;
 
   Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
@@ -79,5 +81,10 @@ class UserProvider extends ChangeNotifier{
     });
     }
     return null;
+  }
+
+  getFontFamily(String font){
+    fontFamily=font;
+    notifyListeners();
   }
 }

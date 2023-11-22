@@ -164,22 +164,27 @@ class _AddWareScreenState extends State<AddItemScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              DropListModel(
-                                  listItem: wareProvider.itemCategories,
-                                  selectedValue:
-                                      wareProvider.selectedItemCategory,
-                                  onChanged: (val) {
-                                    wareProvider
-                                        .updateSelectedItemCategory(val);
-                                  }),
-                              CustomButton(
-                                  text: "افزودن گروه",
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            CreateItemCategoryPanel());
-                                  }),
+                              Flexible(
+                                child: DropListModel(
+                                    listItem: wareProvider.itemCategories,
+                                    selectedValue:
+                                        wareProvider.selectedItemCategory,
+                                    onChanged: (val) {
+                                      wareProvider
+                                          .updateSelectedItemCategory(val);
+                                    }),
+                              ),
+                              Flexible(
+                                child: ActionButton(
+                                    label: "افزودن گروه",
+                                    icon: Icons.add,
+                                    onPress: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              CreateItemCategoryPanel());
+                                    }),
+                              ),
                             ],
                           ),
                           const SizedBox(
@@ -197,20 +202,25 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
                           ///unit dropdown list selection
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              DropListModel(
-                                height: 35,
-                                selectedValue: unitItem,
-                                listItem: unitList,
-                                onChanged: (val) {
-                                  unitItem = val;
-                                  setState(() {});
-                                },
-                              ),
+                              const Text("واحد"),
                               const SizedBox(
                                 width: 20,
                               ),
+                              Flexible(
+                                child: DropListModel(
+                                  height: 35,
+                                  selectedValue: unitItem,
+                                  listItem: unitList,
+                                  onChanged: (val) {
+                                    unitItem = val;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+
+
                             ],
                           ),
                           const SizedBox(
@@ -234,27 +244,31 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      "مواد تشکیل دهنده",
-                                      style: TextStyle(fontSize: 16),
+                                    const Flexible(
+                                      child: Text(
+                                        "مواد تشکیل دهنده",
+                                        style: TextStyle(fontSize: 15),
+                                      ),
                                     ),
-                                    ActionButton(
-                                      height: 30,
-                                        label:"افزودن ماده جدید",
-                                      icon:FontAwesomeIcons.plus,
-                                        bgColor: kMainColor,
-                                        onPress: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                              const AddIngredientPanel()).then((value) {
-                                            if (value != null) {
-                                              ingredients.add(value);
-                                              setState(() {});
-                                            }
-                                          });
-                                        },
-                                        ),
+                                    Flexible(
+                                      child: ActionButton(
+                                        height: 30,
+                                          label:"افزودن ماده جدید",
+                                        icon:FontAwesomeIcons.plus,
+                                          bgColor: kMainColor,
+                                          onPress: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                const AddIngredientPanel()).then((value) {
+                                              if (value != null) {
+                                                ingredients.add(value);
+                                                setState(() {});
+                                              }
+                                            });
+                                          },
+                                          ),
+                                    ),
                                   ],
                                 ),
                                 Container(
@@ -287,7 +301,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text("قیمت تمام شده :"),
+                                const Flexible(child: Text("قیمت تمام شده :")),
                                 Text(calculateCost(ingredients)),
                               ],
                             ),

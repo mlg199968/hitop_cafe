@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 // ignore: must_be_immutable
 class DropListModel extends StatelessWidget {
@@ -32,8 +33,8 @@ class DropListModel extends StatelessWidget {
         elevation: icon==null?elevation:0,
         child: DropdownButtonHideUnderline(
           child: DropdownButton2(
-            iconDisabledColor: Colors.blue,
-            iconEnabledColor: Colors.blue,
+            iconDisabledColor: Colors.black26,
+            iconEnabledColor: kMainColor,
             icon: const Icon(Icons.keyboard_arrow_down),
             iconOnClick: const Icon(Icons.keyboard_arrow_up),
 
@@ -57,7 +58,7 @@ class DropListModel extends StatelessWidget {
             ),
             hint: const Text(
               'no Group',
-              style: TextStyle(fontSize: 20, color: Colors.blueGrey),
+              style: TextStyle(fontSize: 20, color: Colors.black38),
             ),
             items: listItem
                 .map((item) => DropdownMenuItem<String>(
@@ -65,7 +66,7 @@ class DropListModel extends StatelessWidget {
                       value: item,
                       child: Container(
                         alignment: Alignment.centerRight,
-                        color:icon!=null?(selectedValue==item?Colors.blue.shade50:null):null,
+                        color:icon!=null?(selectedValue==item?kMainColor:null):null,
                         padding: const EdgeInsets.only(right: 5),
                         width: width *.7,
                         child: Text(

@@ -21,7 +21,8 @@ const kMainColor3=Colors.black87;
 
 
 
-const List<String> unitList=['عدد','متر','کیلو','متر مربع','متر مکعب','لیتر','سی سی','گرم','شاخه','بسته'];
+const List<String> unitList=['عدد','متر','کیلو','متر مربع','متر مکعب','لیتر','سی سی','گرم','شاخه','بسته','فنجان','لیوان','بسته'];
+const List<String> kFonts=['Shabnam','Koodak','Roya','Terafik','Elham','Titr',];
 const List<String> sortList=['تاریخ تسویه','حروف الفبا','تاریخ ثبت'];
 const List<String> kCurrencyList=["ریال","تومان","دلار","لیر","درهم"];
 
@@ -34,6 +35,3 @@ final kBoxDecoration=BoxDecoration(
     borderRadius: BorderRadius.circular(5),
     border: Border.all(color: kMainColor));
 
-
-const String printerName = "hp";
-const String printerDefault = "hp";

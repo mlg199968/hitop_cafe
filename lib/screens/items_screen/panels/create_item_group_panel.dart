@@ -16,7 +16,7 @@ class CreateItemCategoryPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomDialog(
       title: 'افزودن گروه جدید',
-      height: 250,
+      opacity: .9,
       child: Consumer<WareProvider>(
         builder: (context,wareProvider,child) {
           return Container(

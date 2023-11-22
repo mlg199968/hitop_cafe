@@ -1,9 +1,11 @@
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
@@ -140,11 +142,15 @@ class _AddOrderScreenState extends State<AddOrderScreen>
       Order orderBill = createBillObject();
       // final file = await PdfInvoiceApi.generate(orderBill,context);
       //PdfApi.openFile(file);
-      final file = await PdfInvoiceApi.generatePrint(orderBill, context);
+      final file = await PdfInvoiceApi.generatePdfA4(orderBill, context);
+
       if (userProvider.selectedPrinter != null && Platform.isWindows) {
         await Printing.directPrintPdf(
+          usePrinterSettings: true,
             printer: userProvider.selectedPrinter!,
-            onLayout: (_) => file.buffer.asUint8List());
+            onLayout: (_) => file);
+        // await Printing.layoutPdf(
+        //     onLayout: (_) => file);
       } else {
         await bluetoothManager.writeRawData(file.buffer.asUint8List());
       }
@@ -154,6 +160,12 @@ class _AddOrderScreenState extends State<AddOrderScreen>
         showSnackBar(context, "پرینتری یافت نشد", type: SnackType.error);
       }
     }
+  }
+  void viewPdf()async{
+    Order orderBill = createBillObject();
+    final uni8file = await PdfInvoiceApi.generatePdfA4(orderBill, context);
+   File file= await PdfApi.saveUni8File(name: "cache pdf",uni8file: uni8file);
+    await PdfApi.openFile(file);
   }
 
   ///replace old  orderBill data for edit
@@ -252,19 +264,28 @@ class _AddOrderScreenState extends State<AddOrderScreen>
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           actions: [
+            ///print button action
             ActionButton(
               label: "چاپ",
-              width: 70,
               onPress: () {
-                saveBillOnLocalStorage(
-                    id: widget.oldOrder == null
-                        ? null
-                        : widget.oldOrder!.orderId);
+                // saveBillOnLocalStorage(
+                //     id: widget.oldOrder == null
+                //         ? null
+                //         : widget.oldOrder!.orderId);
                 printPdf();
-                Navigator.pop(context, false);
+              },
+              bgColor: Colors.indigoAccent,
+              icon: Icons.local_printshop_outlined,
+            ),
+            const SizedBox(width: 5,),
+            ///view button action
+            ActionButton(
+              label: "نمایش",
+              onPress: () {
+                viewPdf();
               },
               bgColor: Colors.red,
-              icon: Icons.local_printshop_outlined,
+              icon: Icons.picture_as_pdf_outlined,
             ),
             const SizedBox(width: 10,),
           ],

@@ -29,13 +29,14 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..currency = fields[9] as String
       ..preTax = fields[10] as double
       ..preBillNumber = fields[11] as int
-      ..printer = (fields[12] as Map?)?.cast<dynamic, dynamic>();
+      ..printer = (fields[12] as Map?)?.cast<dynamic, dynamic>()
+      ..fontFamily = fields[13] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Shop obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.shopName)
       ..writeByte(1)
@@ -61,7 +62,9 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..writeByte(11)
       ..write(obj.preBillNumber)
       ..writeByte(12)
-      ..write(obj.printer);
+      ..write(obj.printer)
+      ..writeByte(13)
+      ..write(obj.fontFamily);
   }
 
   @override

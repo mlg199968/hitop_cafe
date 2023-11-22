@@ -43,7 +43,6 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
   Widget build(BuildContext context) {
     return CustomDialog(
       title: 'افزودن ماده تشکیل دهنده جدید',
-      height: 300,
       child: Consumer<WareProvider>(builder: (context, wareProvider, child) {
         return Container(
           padding: const EdgeInsetsDirectional.all(20),

@@ -29,6 +29,16 @@ class PayMethod{
 
 ///documents directory to save and get data
 class Address{
+
+  //items image directory
+  static Future<String> hiveDirectory()async{
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final newDirectory = Directory("${directory.path}/hitop_cafe/db");
+    if (!await newDirectory.exists()) {
+      newDirectory.create(recursive: true);
+    }
+    return newDirectory.path;
+  }
   //items image directory
   static Future<String> itemsImage()async{
     final Directory directory = await getApplicationDocumentsDirectory();

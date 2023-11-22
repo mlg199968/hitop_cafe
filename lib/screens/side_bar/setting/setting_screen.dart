@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -11,7 +12,9 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
@@ -31,6 +34,7 @@ class _SettingScreenState extends State<SettingScreen> {
   final TextEditingController taxController = TextEditingController();
   final TextEditingController billNumberController = TextEditingController();
   late String selectedCurrency;
+  String selectedFont = kFonts[0];
   late UserProvider provider;
 
   ///printer
@@ -38,13 +42,18 @@ class _SettingScreenState extends State<SettingScreen> {
 
   ///android printer
   BluetoothDevice? selectedBluetoothPrinter;
+  final bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
+  bool isBtScanning = false;
+  final devices = <BluetoothDevice>[];
+  final _isBle = true;
 
-  ///save part
+  ///save setting
   void storeInfoShop() {
     Shop? shopInfo = HiveBoxes.getShopInfo().get(0);
     shopInfo ??= Shop();
     shopInfo
       ..currency = selectedCurrency
+      ..fontFamily = selectedFont
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
       ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap();
@@ -52,44 +61,16 @@ class _SettingScreenState extends State<SettingScreen> {
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
 
+  ///get stored data to show
   void getData() {
     Shop? shopInfo = HiveBoxes.getShopInfo().get(0);
     if (shopInfo != null) {
       selectedCurrency = shopInfo.currency;
+      selectedFont = shopInfo.fontFamily ?? kFonts[0];
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
       selectedPrinter =
           shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
-    }
-  }
-
-  var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
- // var _isScanning = false;
-  var devices = <BluetoothDevice>[];
-  final _isBle = true;
-
-  void _scan() async {
-    devices.clear();
-    try {
-      setState(() {
-       // _isScanning = true;
-      });
-      if (_isBle) {
-        final results =
-            await bluetoothManager.scan(timeout: const Duration(seconds: 10));
-        devices.addAll(results);
-        setState(() {});
-      } else {
-        final bondedDevices = await bluetoothManager.getAndroidPairedDevices();
-        devices.addAll(bondedDevices);
-        setState(() {});
-      }
-    } on BTException catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      setState(() {
-       // _isScanning = false;
-      });
     }
   }
 
@@ -132,8 +113,7 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
         title: const Text("تنظیمات"),
       ),
-      body:
-          Consumer<PrinterProvider>(builder: (context, printerProvider, child) {
+      body: Consumer<UserProvider>(builder: (context, userProvider, child) {
         return Stack(
           children: [
             Directionality(
@@ -206,12 +186,26 @@ class _SettingScreenState extends State<SettingScreen> {
                     },
                   ),
 
-                  ///starter bill number
-                  InputItem(
-                    label: "شروع شماره فاکتور:",
-                    inputLabel: "شماره",
-                    controller: billNumberController,
+                  ///change font family entire app
+                  DropListItem(
+                    title: "نوع فونت نمایشی",
+                    selectedValue: selectedFont,
+                    listItem: kFonts,
+                    dropWidth: 120,
+                    onChange: (val) {
+                      selectedFont = val;
+                      userProvider.getFontFamily(val);
+                      setState(() {});
+                    },
                   ),
+
+                  ///printers setting parts
+                  const Text(
+                    "تنظیمات پرینتر",
+                    style: TextStyle(fontSize: 17),
+                  ),
+
+                  ///list of windows printers when platform is windows
                   if (Platform.isWindows)
                     ButtonTile(
                         onPress: () async {
@@ -227,44 +221,58 @@ class _SettingScreenState extends State<SettingScreen> {
                         buttonLabel: selectedPrinter == null
                             ? "پرینتری یافت نشد"
                             : selectedPrinter!.name),
-                  if (Platform.isAndroid || Platform.isIOS )
+
+                  ///list of bluetooth devices in android and ios if exist
+                  if (Platform.isAndroid || Platform.isIOS)
                     ButtonTile(
-                        onPress: () async {
-                          // Show the native printer picker and get the selected printer
-                          _scan();
-                          setState(() {});
-                          Column(
-                              children: devices
-                                  .map(
-                                    (device) => ListTile(
-                                      title: Text(device.name),
-                                      subtitle: Text(device.address),
-                                      onTap: () {
-                                        // do something
-                                        selectDevice(device);
-                                      },
-                                    ),
-                                  )
-                                  .toList());
-                        },
-                        label: "انتخاب پرینتر",
-                        buttonLabel: selectedBluetoothPrinter == null
-                            ? "پرینتری یافت نشد"
-                            : selectedBluetoothPrinter!.name),
-                  if (Platform.isAndroid || Platform.isIOS )
-                  ButtonTile(
-                      onPress: () {
-                        Navigator.pushNamed(context, PrinterPage.id);
+                      label: "انتخاب پرینتر بلوتوثی",
+                      buttonLabel: isBtScanning
+                          ? "درحال اسکن"
+                          : selectedBluetoothPrinter == null
+                              ? "پرینتری یافت نشد"
+                              : selectedBluetoothPrinter!.name,
+                      extra: isBtScanning
+                          ? const CircularProgressIndicator()
+                          : ActionButton(
+                              bgColor: Colors.white70,
+                              icon: Icons.search,
+                              onPress: () {
+                                Navigator.pushNamed(context, PrinterPage.id);
+                              },
+                            ),
+                      onPress: () async {
+                        // Show the native printer picker and get the selected printer
+                        isBtScanning = true;
+                        await PrintServices.scanSimpleBluetoothDevices(_isBle,
+                            onChange: (btList, scanning) {
+                          isBtScanning = scanning!;
+                          if (btList != null) {
+                            devices.addAll(btList);
+                            setState(() {});
+                          }
+                        });
+                        Column(
+                            children: devices
+                                .map(
+                                  (device) => ListTile(
+                                    title: Text(device.name),
+                                    subtitle: Text(device.address),
+                                    onTap: () {
+                                      // do something
+                                      selectDevice(device);
+                                    },
+                                  ),
+                                )
+                                .toList());
                       },
-                      label: "جست و جو با بلوتوث",
-                      buttonLabel: "جست و جو"),
+                    ),
                 ],
               ),
             ),
 
             ///**************************************************************************************************
             ///condition for:if user not purchase the app,it will see purchase button to buy complete version
-            Provider.of<UserProvider>(context, listen: false).userLevel != 0
+            userProvider.userLevel != 0
                 ? const SizedBox()
                 : Container(
                     padding: const EdgeInsets.all(10),
@@ -335,12 +343,14 @@ class DropListItem extends StatelessWidget {
     required this.selectedValue,
     required this.listItem,
     required this.onChange,
+    this.dropWidth = 80,
   });
 
   final String title;
   final String selectedValue;
   final List<String> listItem;
   final void Function(String) onChange;
+  final double dropWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +365,7 @@ class DropListItem extends StatelessWidget {
             Text(title),
             DropListModel(
                 elevation: 0,
-                width: 80,
+                width: dropWidth,
                 height: 30,
                 listItem: listItem,
                 selectedValue: selectedValue,
@@ -415,12 +425,14 @@ class ButtonTile extends StatelessWidget {
     this.width = 150,
     required this.label,
     required this.buttonLabel,
+    this.extra,
   }) : super(key: key);
 
   final String label;
   final String buttonLabel;
   final VoidCallback onPress;
   final double width;
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) {
@@ -432,6 +444,9 @@ class ButtonTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label),
+            SizedBox(
+              child: extra,
+            ),
             ElevatedButton(
               onPressed: onPress,
               child: Text(buttonLabel),

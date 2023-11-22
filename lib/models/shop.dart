@@ -30,6 +30,9 @@ class Shop extends HiveObject {
   int preBillNumber=0;
   @HiveField(12)
   Map? printer;
+  @HiveField(13)
+  String? fontFamily;
+
 }
 
 

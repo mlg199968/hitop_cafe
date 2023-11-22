@@ -12,76 +12,48 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
 class PdfInvoiceApi {
-  //static Shop shopData = HiveBoxes.getShopInfo().get(0)!;
-  //static String currency=shopData.currency;
-  static Future<File> generate(Order bill,mat.BuildContext context) async {
-    UserProvider shopData=Provider.of<UserProvider>(context,listen: false);
-    var myTheme = ThemeData.withFont(
-        base: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
-        bold: Font.ttf(await rootBundle.load("assets/fonts/arialbd.ttf")),
-        italic: Font.ttf(await rootBundle.load("assets/fonts/ariali.ttf")),
-        boldItalic: Font.ttf(await rootBundle.load("assets/fonts/arialbi.ttf")),
-        icons: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
-        fontFallback: [
-          Font.ttf(await rootBundle.load("assets/fonts/tahoma.ttf")),
-          Font.ttf(await rootBundle.load("assets/fonts/tahomabd.ttf")),
-        ]);
-    final pdf = Document(theme: myTheme);
-    final totalPart = await buildTotal(bill,shopData);
-    final invoicePart=await buildInvoice(bill,shopData);
-    final titlePart=await buildTitle(bill,shopData);
-    pdf.addPage(MultiPage(
-      build: (context) => [
-        Directionality(
-            textDirection: TextDirection.rtl, child:titlePart ),
-        Directionality(
-            textDirection: TextDirection.rtl, child: buildHeader(bill)),
-        SizedBox(height: 1 * PdfPageFormat.cm),
-        invoicePart,
-        Divider(),
-        Directionality(textDirection: TextDirection.rtl, child: totalPart),
-      ],
-      footer: (context) => Directionality(
-          textDirection: TextDirection.rtl, child: buildFooter(shopData)),
-    ));
+static  _customTheme()async{
+  return ThemeData.withFont(
+      base: Font.ttf(await rootBundle.load("assets/fonts/koodak.ttf")),
+      bold: Font.ttf(await rootBundle.load("assets/fonts/titr.ttf")),
+      italic: Font.ttf(await rootBundle.load("assets/fonts/ariali.ttf")),
+      boldItalic: Font.ttf(await rootBundle.load("assets/fonts/arialbi.ttf")),
+      icons: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
+      fontFallback: [
+        Font.ttf(await rootBundle.load("assets/fonts/tahoma.ttf")),
+        Font.ttf(await rootBundle.load("assets/fonts/tahomabd.ttf")),
+      ]);
+}
 
-    return PdfApi.saveDocument(
-        name: "  فاکتور${bill.billNumber}.pdf",
-        pdf: pdf);
-  }
 
-  ///for printing should data be unit8list
-  ///so change pdf format to this format from file to unit8list
-  static Future<Uint8List> generatePrint(
+
+  //for printing should data be unit8list
+  //so change pdf format to this format from file to unit8list
+  ///paper size A4
+  static Future<Uint8List> generatePdfA4(
       Order bill, mat.BuildContext context) async {
     UserProvider shopData = Provider.of<UserProvider>(context, listen: false);
-    var myTheme = ThemeData.withFont(
-        base: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
-        bold: Font.ttf(await rootBundle.load("assets/fonts/arialbd.ttf")),
-        italic: Font.ttf(await rootBundle.load("assets/fonts/ariali.ttf")),
-        boldItalic: Font.ttf(await rootBundle.load("assets/fonts/arialbi.ttf")),
-        icons: Font.ttf(await rootBundle.load("assets/fonts/arial.ttf")),
-        fontFallback: [
-          Font.ttf(await rootBundle.load("assets/fonts/tahoma.ttf")),
-          Font.ttf(await rootBundle.load("assets/fonts/tahomabd.ttf")),
-        ]);
-    final pdf = Document(theme: myTheme);
+
+    final pdf = Document(theme:await _customTheme());
+
+
     final totalPart = await buildTotal(bill, shopData);
     final invoicePart = await buildInvoice(bill, shopData);
     final titlePart = await buildTitle(bill, shopData);
     pdf.addPage(MultiPage(
+      textDirection: TextDirection.rtl,
+      pageFormat: PdfPageFormat.a4,
       build: (context) => [
-        Directionality(textDirection: TextDirection.rtl, child: titlePart),
-        Directionality(
-            textDirection: TextDirection.rtl, child: buildHeader(bill)),
+        titlePart,
+        buildHeader(bill),
         SizedBox(height: 1 * PdfPageFormat.cm),
         invoicePart,
         Divider(),
-        Directionality(textDirection: TextDirection.rtl, child: totalPart),
+        totalPart,
       ],
-      footer: (context) => Directionality(
-          textDirection: TextDirection.rtl, child: buildFooter(shopData)),
+      footer: (context) => buildFooter(shopData),
     ));
+
     return pdf.save();
 
     // return PdfApi.saveDocument(
@@ -89,6 +61,14 @@ class PdfInvoiceApi {
   }
 
 
+
+
+
+
+
+
+
+  ///********* widgets part *************
   static Widget buildHeader(Order bill) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -104,25 +84,6 @@ class PdfInvoiceApi {
           ),
         ],
       );
-
-  // static Widget buildCustomerAddress(CustomerHive customer) => Expanded(child:Column(
-  //       crossAxisAlignment: CrossAxisAlignment.end,
-  //       children: [
-  //         buildText(
-  //             title: "نام مشتری:",
-  //             valueStyle: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),
-  //             axisAlignment: MainAxisAlignment.end,
-  //             value: "${customer.firstName} ${customer.lastName} (${customer.nickName})",
-  //         ),
-  //         buildText(
-  //             title: "شماره تماس:",
-  //             valueStyle: const TextStyle(fontSize: 15),
-  //             axisAlignment: MainAxisAlignment.end,
-  //             value: customer.phoneNumber,
-  //         ),
-  //         Text(customer.description.toPersianDigit()),
-  //       ],
-  //     ));
 
   static Widget buildInvoiceInfo(Order bill) {
     //final paymentTerms = '${info.dueDate.difference(info.date).inDays} days';
@@ -150,18 +111,12 @@ class PdfInvoiceApi {
     );
   }
 
-  // static Widget buildSupplierAddress(Shop supplier) => Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(supplier.shopName),
-  //         SizedBox(height: 1 * PdfPageFormat.mm),
-  //         Text(supplier.address),
-  //       ],
-  //     );
-
-  static Future<Widget> buildTitle(Order bill,UserProvider shopData) async{
-    File? logoImageFile=shopData.logoImage != null
-        ? (await File(shopData.logoImage!).exists()?File(shopData.logoImage!):null):null;
+  static Future<Widget> buildTitle(Order bill, UserProvider shopData) async {
+    File? logoImageFile = shopData.logoImage != null
+        ? (await File(shopData.logoImage!).exists()
+            ? File(shopData.logoImage!)
+            : null)
+        : null;
 
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Container(
@@ -199,11 +154,15 @@ class PdfInvoiceApi {
     ]);
   }
 
-  static Future<Widget> buildInvoice(Order bill,UserProvider shopData) async{
-    String currency=shopData.currency;
-    final headers = ['#','نام محصول', 'تعداد','قیمت واحد ($currency)','جمع ($currency)']
-        .reversed
-        .toList();
+  static Future<Widget> buildInvoice(Order bill, UserProvider shopData) async {
+    String currency = shopData.currency;
+    final headers = [
+      '#',
+      'نام محصول',
+      'تعداد',
+      'قیمت واحد ($currency)',
+      'جمع ($currency)'
+    ].reversed.toList();
     final data = bill.items.map((item) {
       return [
         "${bill.items.indexOf(item) + 1}".toPersianDigit(),
@@ -214,47 +173,68 @@ class PdfInvoiceApi {
       ].reversed.toList();
     }).toList();
 
-    return Directionality(
-        textDirection: TextDirection.rtl,
-        child: pw.TableHelper.fromTextArray(
-          headers: headers,
-          data: data,
-          border: null,
-          headerStyle: const TextStyle(
-            fontSize: 12,
-          ),
-          headerDecoration: const BoxDecoration(
-            color: PdfColors.grey300,
-          ),
-          cellHeight: 30,
-          cellStyle: const TextStyle(),
-          cellAlignments: {
-            0: Alignment.centerLeft,
-            1: Alignment.centerRight,
-            2: Alignment.centerRight,
-            3: Alignment.centerRight,
-            4: Alignment.centerRight,
-          },
-          oddCellStyle:const TextStyle(),
-        ));
+    return pw.TableHelper.fromTextArray(
+      headers: headers,
+      data: data,
+      border: null,
+      headerStyle: const TextStyle(
+        fontSize: 12,
+      ),
+      headerDecoration: const BoxDecoration(
+        color: PdfColors.grey300,
+      ),
+      cellHeight: 30,
+      cellStyle: const TextStyle(),
+      cellAlignments: {
+        0: Alignment.centerLeft,
+        1: Alignment.centerRight,
+        2: Alignment.centerRight,
+        3: Alignment.centerRight,
+        4: Alignment.centerRight,
+      },
+      oddCellStyle: const TextStyle(),
+    );
   }
 
-  static Future<Widget> buildTotal(Order bill,UserProvider shopData) async {
-    String currency=shopData.currency;
+  static Future<Widget> buildTotal(Order bill, UserProvider shopData) async {
+    String currency = shopData.currency;
     File? signatureImageFile = shopData.signatureImage != null
-        ?(await File(shopData.signatureImage!).exists()?File(shopData.signatureImage!):null)
-        :null ;
-    File? stampImageFile =
-        shopData.stampImage != null
-            ?(await File(shopData.stampImage!).exists() ? File(shopData.stampImage!) :null )
-            :null;
+        ? (await File(shopData.signatureImage!).exists()
+            ? File(shopData.signatureImage!)
+            : null)
+        : null;
+    File? stampImageFile = shopData.stampImage != null
+        ? (await File(shopData.stampImage!).exists()
+            ? File(shopData.stampImage!)
+            : null)
+        : null;
 
-    final payments = bill.cashSum +bill.atmSum;
+    final payments = bill.cashSum + bill.atmSum;
     return Container(
       alignment: Alignment.centerRight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Expanded(
+            flex: 6,
+            child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Container(
+                  height: 100,
+                  width: 100,
+                  child: stampImageFile == null
+                      ? SizedBox()
+                      : Image(pw.MemoryImage(stampImageFile.readAsBytesSync()),
+                          fit: BoxFit.fill)),
+              Container(
+                  height: 100,
+                  width: 100,
+                  child: signatureImageFile == null
+                      ? SizedBox()
+                      : Image(
+                          pw.MemoryImage(signatureImageFile.readAsBytesSync()),
+                          fit: BoxFit.fill)),
+            ]),
+          ),
           Expanded(
             flex: 4,
             child: Column(
@@ -295,33 +275,12 @@ class PdfInvoiceApi {
                   unite: true,
                 ),
                 Text("  ${addSeparator(bill.payable).toWord()} $currency "),
-
                 SizedBox(height: 2 * PdfPageFormat.mm),
                 Container(height: 1, color: PdfColors.grey400),
                 SizedBox(height: 0.5 * PdfPageFormat.mm),
                 Container(height: 1, color: PdfColors.grey400),
               ],
             ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              Container(
-                  height: 100,
-                  width: 100,
-                  child: stampImageFile == null
-                      ? SizedBox()
-                      : Image(pw.MemoryImage(stampImageFile.readAsBytesSync()),
-                          fit: BoxFit.fill)),
-              Container(
-                  height: 100,
-                  width: 100,
-                  child: signatureImageFile == null
-                      ? SizedBox()
-                      : Image(
-                          pw.MemoryImage(signatureImageFile.readAsBytesSync()),
-                          fit: BoxFit.fill)),
-            ]),
           ),
         ],
       ),
@@ -366,22 +325,23 @@ class PdfInvoiceApi {
     double width = double.infinity,
     TextStyle? titleStyle,
     TextStyle? valueStyle,
-    MainAxisAlignment axisAlignment= MainAxisAlignment.spaceBetween,
+    MainAxisAlignment axisAlignment = MainAxisAlignment.spaceBetween,
     bool unite = false,
   }) {
-
-    final style = titleStyle ?? const TextStyle(color: PdfColors.black );
+    final style = titleStyle ?? const TextStyle(color: PdfColors.black);
 
     return SizedBox(
-      width: width,
-      child:Expanded(child: Row(
-        mainAxisAlignment: axisAlignment,
-        children: [
-          Text(value.toPersianDigit(), style: unite ? style : valueStyle,maxLines: 3),
-          SizedBox(width: 5),
-          Text(title.toPersianDigit(), style: style,maxLines: 3)
-        ],
-      ),)
-    );
+        width: width,
+        child: Expanded(
+          child: Row(
+            mainAxisAlignment: axisAlignment,
+            children: [
+              Text(title.toPersianDigit(), style: style, maxLines: 3),
+              SizedBox(width: 5),
+              Text(value.toPersianDigit(),
+                  style: unite ? style : valueStyle, maxLines: 3),
+            ],
+          ),
+        ));
   }
 }

@@ -151,8 +151,24 @@ flutter:
     - family: Helvtica
       fonts:
         - asset: assets/fonts/OpenSans-Regular.ttf
-    - family: Persian
+    - family: Shabnam
       fonts:
         - asset: assets/fonts/shabnam.ttf
+    - family: Roya
+      fonts:
+        - asset: assets/fonts/roya.ttf
+        - asset: assets/fonts/royab.ttf
+    - family: Koodak
+      fonts:
+        - asset: assets/fonts/koodak.ttf
+    - family: Terafik
+      fonts:
+        - asset: assets/fonts/terafik.ttf
+    - family: Titr
+      fonts:
+        - asset: assets/fonts/titr.ttf
+    - family: Elham
+      fonts:
+        - asset: assets/fonts/elham.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

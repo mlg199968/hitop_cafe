@@ -18,6 +18,19 @@ class PdfApi {
     return file;
   }
 
+ static Future<File> saveUni8File({
+    required String name,
+    required List<int> uni8file,
+  }) async {
+
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$name');
+
+    await file.writeAsBytes(uni8file);
+
+    return file;
+  }
+
   static Future openFile(File file) async {
     final url = file.path;
 
