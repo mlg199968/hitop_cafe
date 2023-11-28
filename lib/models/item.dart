@@ -32,7 +32,7 @@ class Item extends HiveObject{
   @HiveField(11)
   String? color;
  @HiveField(12)
-  num? quantity=1;
+  num quantity=1;
 @HiveField(13)
   num? discount=0;
 @HiveField(14)

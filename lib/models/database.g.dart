@@ -8,7 +8,7 @@ part of 'database.dart';
 
 class DBAdapter extends TypeAdapter<DB> {
   @override
-  final int typeId = 6;
+  final int typeId = 7;
 
   @override
   DB read(BinaryReader reader) {

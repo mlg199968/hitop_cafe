@@ -125,7 +125,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
       }
     }
     else {
-      showSnackBar(context, ceilCountMessage, type: SnackType.error);
+      showSnackBar(context, userProvider.ceilCountMessage, type: SnackType.error);
     }
   }
 

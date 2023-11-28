@@ -84,6 +84,9 @@ dependencies:
       url: https://github.com/xiaozhizhong/flutter_simple_bluetooth_printer.git
       ref: 4b56a03
   flutter_esc_pos_utils: ^1.0.0
+  zarinpal: ^1.0.5
+  fluttertoast: ^8.2.4
+  device_info_plus: ^9.1.1
 
 
 

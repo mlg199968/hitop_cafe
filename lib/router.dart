@@ -9,11 +9,14 @@ import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
+import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/add_raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
-import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
+import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
@@ -43,6 +46,10 @@ Route generateRoute(RouteSettings routeSetting) {
                 oldOrder: order,
               ));
 
+    case QuickAddScreen.id:
+      return MaterialPageRoute(
+          builder: (_) => QuickAddScreen());
+
     case AddShoppingBillScreen.id:
       Bill? bill = routeSetting.arguments as Bill?;
       return MaterialPageRoute(
@@ -64,6 +71,7 @@ Route generateRoute(RouteSettings routeSetting) {
     case ItemsScreen.id:
       Key? key = routeSetting.arguments as Key?;
       return MaterialPageRoute(builder: (_) => ItemsScreen(key: key));
+
     case AddItemScreen.id:
       Item? item = routeSetting.arguments as Item?;
       return MaterialPageRoute(builder: (_) => AddItemScreen(oldItem: item));
@@ -81,6 +89,13 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case AnalyticsScreen.id:
       return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
+
+    case PurchaseAppScreen.id:
+      Map? args = routeSetting.arguments as Map?;
+      return MaterialPageRoute(builder: (_) => PurchaseAppScreen(phone: args?["phone"],level: args?["level"],));
+
+    case AuthorityScreen.id:
+      return MaterialPageRoute(builder: (_) =>  const AuthorityScreen());
 
     case PrinterPage.id:
       Key? key = routeSetting.arguments as Key?;

@@ -11,7 +11,7 @@ import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
-import 'package:hitop_cafe/screens/shopping-bill/shoping-bill-screen.dart';
+import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';

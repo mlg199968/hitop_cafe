@@ -25,6 +25,7 @@ import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
+import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/bill_action_button.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
@@ -64,7 +65,24 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   DateTime dueDate = DateTime.now();
   DateTime modifiedDate = DateTime.now();
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
+  
+  
+///logic for add selected items to the list
+addToItemList(List<Item> iList){
+  bool existedItem = false;
+  for (var i in iList) {
+    for (var element in items) {
+      if(element.itemName==i.itemName){
+        element.quantity+=i.quantity;
+        existedItem=true;
+      }
+    }
+    if (!existedItem){
+      items.add(i);
+    }
+  }
 
+}
   ///calculate payable amount
   num payable() {
     num payable = 0;
@@ -131,7 +149,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
         showSnackBar(context, "لیست آیتم ها خالی است!", type: SnackType.error);
       }
     } else {
-      showSnackBar(context, ceilCountMessage, type: SnackType.error);
+      showSnackBar(context, userProvider.ceilCountMessage, type: SnackType.error);
     }
   }
 
@@ -528,6 +546,20 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                 },
                               ),
                               ActionButton(
+                                label: "افزودن سریع",
+                                icon: CupertinoIcons.cart_badge_plus,
+                                bgColor: Colors.deepOrangeAccent,
+                                onPress: () {
+                                  Navigator.pushNamed(context, QuickAddScreen.id).then((value) {
+                                    if(value!=null){
+                                      value as List<Item>;
+                                      addToItemList(value);
+                                      setState(() {});
+                                    }
+                                  });
+                                },
+                              ),
+                              ActionButton(
                                 label: "پرداخت جدید",
                                 icon: Icons.add_card_rounded,
                                 bgColor: Colors.teal,
@@ -580,34 +612,12 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                             )),
 
                         ///Product List Part
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "لیست خرید",
-                                style: TextStyle(
-                                    fontSize: 17, color: Colors.white),
-                              ),
-                              ActionButton(
-                                label: "افزودن آیتم",
-                                icon: FontAwesomeIcons.plus,
-                                bgColor: Colors.orange.shade800,
-                                onPress: () {
-                                  showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              const ItemToBillPanel())
-                                      .then((value) {
-                                    if (value != null) {
-                                      items.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                            ],
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "لیست خرید",
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.white),
                           ),
                         ),
                         ShoppingList(
@@ -618,33 +628,12 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                         ),
 
                         ///Payment List Part
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "لیست پرداخت",
-                                style: TextStyle(
-                                    fontSize: 17, color: Colors.white),
-                              ),
-                              ActionButton(
-                                label: "پرداخت جدید",
-                                icon: FontAwesomeIcons.plus,
-                                bgColor: Colors.orange.shade800,
-                                onPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const PaymentToBill()).then((value) {
-                                    if (value != null) {
-                                      payments.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                            ],
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "لیست پرداخت",
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.white),
                           ),
                         ),
                         screenType(context) == ScreenType.desktop

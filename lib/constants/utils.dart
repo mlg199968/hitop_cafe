@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:blurrycontainer/blurrycontainer.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/shape02.dart';
@@ -269,7 +270,23 @@ DateTime findMinDate(List<DateTime> dateList) {
   }
   return minDate;
 }
-
+/// get device id for copy right
+Future<String> getDeviceInfo()async{
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  if(Platform.isAndroid) {
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.id;
+  }
+  if(Platform.isWindows) {
+    WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
+    return windowsInfo.deviceId;
+  }
+  if(Platform.isIOS){
+    IosDeviceInfo iosInfo=await deviceInfo.iosInfo;
+    return iosInfo.model;
+  }
+  return "public info";
+}
 
 ///custom target focus for coach mark tutorial
 // TargetFocus customTargetFocus({

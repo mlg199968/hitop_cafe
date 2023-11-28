@@ -10,6 +10,7 @@ import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/setting_provider.dart';
@@ -38,6 +39,7 @@ Future main() async {
   Hive.registerAdapter(PurchaseAdapter());
   Hive.registerAdapter(ShopAdapter());
   Hive.registerAdapter(OrderAdapter());
+  Hive.registerAdapter(SubscriptionAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());

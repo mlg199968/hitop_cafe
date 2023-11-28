@@ -29,7 +29,7 @@ class ItemAdapter extends TypeAdapter<Item> {
       ..isChecked = fields[9] as bool?
       ..imagePath = fields[10] as String?
       ..color = fields[11] as String?
-      ..quantity = fields[12] as num?
+      ..quantity = fields[12] as num
       ..discount = fields[13] as num?;
   }
 

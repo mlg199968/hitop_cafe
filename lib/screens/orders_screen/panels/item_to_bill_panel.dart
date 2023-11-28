@@ -10,6 +10,7 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ItemToBillPanel extends StatefulWidget {
  static const String id="/item-to-bill-panel";
@@ -191,7 +192,9 @@ void replaceOldPurchase(Item? old){
                         ? 0
                         : stringToDouble(discountController.text);
                     selectedItem!..discount=discount
-                    ..quantity=quantity;
+                    ..quantity=quantity
+                    ..itemId=const Uuid().v1();
+
 
 
                     Navigator.pop(context, selectedItem);

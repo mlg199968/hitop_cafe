@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -210,8 +209,7 @@ class _AddWareScreenState extends State<AddWareScreen> {
                           } else {
                             ///condition for demo mode
                             if (HiveBoxes.getRawWare().values.length <
-                                Provider.of<UserProvider>(context,
-                                        listen: false)
+                                context.watch<UserProvider>()
                                     .ceilCount) {
                               saveWare();
                               showSnackBar(context, "کالا به لیست افزوده شد!",
@@ -225,7 +223,7 @@ class _AddWareScreenState extends State<AddWareScreen> {
                               setState(() {});
                               // Navigator.pop(context,false);
                             } else {
-                              showSnackBar(context, ceilCountMessage,
+                              showSnackBar(context, context.watch<UserProvider>().ceilCountMessage,
                                   type: SnackType.error);
                             }
                           }

@@ -7,6 +7,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:provider/provider.dart';
@@ -174,12 +176,11 @@ class PurchaseButton extends StatelessWidget {
   const PurchaseButton({
     super.key,
   });
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-      //  Navigator.pushNamed(context, BazaarPayScreen.id);
+        Navigator.pushNamed(context, AuthorityScreen.id);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -211,6 +212,7 @@ class PurchaseButton extends StatelessWidget {
     );
   }
 }
+
 
 
 class menu_button extends StatelessWidget {

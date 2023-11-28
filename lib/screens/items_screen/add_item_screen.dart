@@ -348,7 +348,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                 setState(() {});
                                 // Navigator.pop(context,false);
                               } else {
-                                showSnackBar(context, ceilCountMessage,
+                                showSnackBar(context, userProvider.ceilCountMessage,
                                     type: SnackType.error);
                               }
                             }

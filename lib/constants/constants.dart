@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 
+const String hostUrl="https://mlggrand.ir/db";
 
-String ceilCountMessage=" برای افزودن آیتم های بیشتر نسخه کامل را فعال کنید! ".toPersianDigit();
 const kMainGradiant2 = LinearGradient(
   colors: [Colors.brown, Colors.deepOrangeAccent],
 );
@@ -14,8 +14,18 @@ const kMainGradiant = LinearGradient(
  end: Alignment.bottomLeft
  // transform: GradientRotation(30),
 );
+const kBlackWhiteGradiant = LinearGradient(
+    colors: [Color(0XFFffffff),Color(0XFFE0E0E0),Color(0XFFffffff),Color(0XFFE0E0E0),],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft
+
+);
 
 const kMainColor=Color(0XFFED921B);
+const kSecondaryColor=Colors.teal;
+
+const kMainDisableColor=Colors.orangeAccent;
+const kMainActiveColor=Colors.deepOrange;
 const kMainColor2=Colors.black38;
 const kMainColor3=Colors.black87;
 
