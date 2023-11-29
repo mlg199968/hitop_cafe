@@ -64,4 +64,9 @@ class ItemTools {
     }
     return list;
   }
+///create new item form item (to prevent from interfere)
+  static Item copyToNewItem(Item i){
+    Item newItem=Item().fromMap(i.toMap());
+    return newItem;
+  }
 }

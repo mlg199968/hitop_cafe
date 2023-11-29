@@ -3,6 +3,13 @@
 import 'package:hitop_cafe/models/raw_ware.dart';
 
 class WareTools {
+
+  ///create new Ware form Raw Ware (to prevent from interfere)
+  static RawWare copyToNewWare(RawWare ware){
+    RawWare newWare=RawWare.fromMap(ware.toMap());
+    return newWare;
+  }
+
   /// search and sort the ware List
   static List<RawWare> filterList(
       List<RawWare> list, String? keyWord, String sort) {

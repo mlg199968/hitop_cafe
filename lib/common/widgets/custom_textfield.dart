@@ -15,7 +15,9 @@ class CustomTextField extends StatelessWidget {
     this.maxLine = 1,
     this.maxLength = 35,
     this.width = 150,
-    this.height = 20,
+    this.height,
+    this.borderRadius=5,
+    this.hint,
     this.textFormat = TextFormatter.normal,
     this.onChange,
     this.validate = false,
@@ -33,7 +35,9 @@ class CustomTextField extends StatelessWidget {
   final int maxLine;
   final int maxLength;
   final double width;
-  final double height;
+  final double? height;
+  final double borderRadius;
+  final String? hint;
   final Widget? suffixIcon;
   final IconData? prefixIcon;
   final FocusNode? focus;
@@ -53,6 +57,7 @@ class CustomTextField extends StatelessWidget {
     String currency=Provider.of<UserProvider>(context,listen: false).currency;
     bool isPressed = false;
     return SizedBox(
+      height: height,
       width: width,
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -101,6 +106,8 @@ class CustomTextField extends StatelessWidget {
           maxLength: maxLength,
           controller: controller,
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(fontSize: 12),
             prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
             suffixIcon:suffixIcon,
             isDense: true,
@@ -118,17 +125,17 @@ class CustomTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderSide: const BorderSide(width: .5),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(width: .5, color: kMainColor2),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(borderRadius+5),
             ),
             enabledBorder: UnderlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: const BorderSide(color: Colors.blueGrey, width: 1)),
             errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(borderRadius+5),
                 borderSide: const BorderSide(color: Colors.red)),
           ),
         ),

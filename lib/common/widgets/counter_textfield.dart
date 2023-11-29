@@ -9,9 +9,11 @@ class CounterTextfield extends StatelessWidget {
     required this.controller,
     this.symbol,
     this.onChange,
+    this.decimal=true,
   });
 
   final TextEditingController controller;
+  final bool decimal;
   final String? symbol;
   final Function(String? val)? onChange;
 
@@ -27,7 +29,7 @@ class CounterTextfield extends StatelessWidget {
             child: TextFormField(
               controller: controller,
               keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+                   TextInputType.numberWithOptions(decimal: decimal),
               onChanged: (val) {
                 // if (val != "" && val != "."  && val != "," &&
                 //     val != "-" && stringToDouble(val) < 0) {
@@ -83,17 +85,19 @@ class CounterTextfield extends StatelessWidget {
                 icon: FontAwesomeIcons.angleUp,
                 onPress: () {
                   double num1 = stringToDouble(
-                      controller.text == "" ? "0" : controller.text);
-                  controller.text = (num1 + 1).toString();
+                      controller.text == "" ? "0" : controller.text) + 1;
+                  int num1int=num1.toInt();
+                  controller.text = (decimal?num1:num1int).toString();
                 },
               ),
               //subtract to value button
               MiniButton(
                 icon: FontAwesomeIcons.angleDown,
                 onPress: () {
-                  if(stringToDouble(controller.text)>0) {
-                    controller.text =
-                      (stringToDouble(controller.text) - 1).toString();
+                  double num1=stringToDouble(controller.text);
+                  if(num1>0) {
+                    controller.text =decimal?
+                      (num1 - 1).toString():(num1.toInt() - 1).toString();
                   }
                 },
               ),

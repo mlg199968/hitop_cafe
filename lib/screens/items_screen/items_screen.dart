@@ -6,6 +6,7 @@ import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -49,87 +50,43 @@ class _WareListScreenState extends State<ItemsScreen> {
           bool isTablet=constraint.maxWidth>500;
           return Consumer<WareProvider>(
               builder: (context,wareProvider,child) {
-                return Scaffold(
-                  key: scaffoldKey,
-                  floatingActionButton: CustomFloatActionButton(onPressed: () {
-                    Navigator.pushNamed(context, AddItemScreen.id);
-                  }),
-                  appBar:isTablet ? null : AppBar(
-                    elevation: 0,
-                    automaticallyImplyLeading: false,
-                    backgroundColor: Colors.transparent,
-                    leading: isTablet && widget.key==null ? null:const BackButton(),
-                    flexibleSpace: Container(
-                      decoration:  BoxDecoration(gradient: kMainGradiant,borderRadius: isTablet && widget.key==null ?BorderRadius.circular(20):null,
-                      ),
-                    ),
-                    actions: const [
-                      // IconButton(
-                      //     onPressed: () {
-                      //       showDialog(
-                      //           context: context,
-                      //           builder: (context) => WareActionsPanel(
-                      //             wares: waresList,
-                      //             subGroup: selectedCategory,
-                      //           ));
-                      //     },
-                      //     icon: const Icon(Icons.more_vert)),
-                    ],
-                    title: Container(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          screenType(context)!=ScreenType.mobile?const SizedBox(): const Text("کالا ها"),
-
-                          ///dropDown list for Group Select
-                          Flexible(
-                            child: DropListModel(
-                              selectedValue: selectedCategory,
-                              height: 40,
-                              listItem: ["همه", ...wareProvider.itemCategories],
-                              onChanged: (val) {
-                                selectedCategory = val;
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        decoration:  BoxDecoration(
-                          gradient: kMainGradiant,
-                          borderRadius:isTablet && widget.key==null ?BorderRadius.circular(20):null,
+                return HideKeyboard(
+                  child: Scaffold(
+                    key: scaffoldKey,
+                    floatingActionButton: CustomFloatActionButton(onPressed: () {
+                      Navigator.pushNamed(context, AddItemScreen.id);
+                    }),
+                    appBar:isTablet ? null : AppBar(
+                      elevation: 0,
+                      automaticallyImplyLeading: false,
+                      backgroundColor: Colors.transparent,
+                      leading: isTablet && widget.key==null ? null:const BackButton(),
+                      flexibleSpace: Container(
+                        decoration:  BoxDecoration(gradient: kMainGradiant,borderRadius: isTablet && widget.key==null ?BorderRadius.circular(20):null,
                         ),
-                        padding: const EdgeInsets.all(10),
+                      ),
+                      actions: const [
+                        // IconButton(
+                        //     onPressed: () {
+                        //       showDialog(
+                        //           context: context,
+                        //           builder: (context) => WareActionsPanel(
+                        //             wares: waresList,
+                        //             subGroup: selectedCategory,
+                        //           ));
+                        //     },
+                        //     icon: const Icon(Icons.more_vert)),
+                      ],
+                      title: Container(
+                        padding: const EdgeInsets.only(right: 5),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            widget.key==null ?const SizedBox(): const BackButton(color: Colors.white,),
-                            ///search bar
-                            Expanded(
-                              child: CustomSearchBar(
-                                controller: searchController,
-                                hint: "جست و جو کالا",
-                                onChange: (val) {
-                                  keyWord = val;
-                                  setState(() {});
-                                },
-                                selectedSort: sortItem,
-                                sortList: sortList,
-                                onSort: (val) {
-                                  sortItem = val;
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                            ///dropDown list for Group Select on desktop mode
-                            SizedBox(
-                              child: !isTablet ?null: DropListModel(
+                            screenType(context)!=ScreenType.mobile?const SizedBox(): const Text("کالا ها"),
+
+                            ///dropDown list for Group Select
+                            Flexible(
+                              child: DropListModel(
                                 selectedValue: selectedCategory,
                                 height: 40,
                                 listItem: ["همه", ...wareProvider.itemCategories],
@@ -139,47 +96,93 @@ class _WareListScreenState extends State<ItemsScreen> {
                                 },
                               ),
                             ),
-                            ///more icon button on desktop mode
-                            // SizedBox(
-                            //     child:constraint.maxWidth<550?null: IconButton(
-                            //         onPressed: () {
-                            //           showDialog(
-                            //               context: context,
-                            //               builder: (context) => WareActionsPanel(
-                            //                 wares: waresList,
-                            //                 subGroup: selectedCategory,
-                            //               ));
-                            //         },
-                            //         icon: const Icon(Icons.more_vert,color: Colors.white,))
-                            // ),
                           ],
                         ),
                       ),
+                    ),
+                    body: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          decoration:  BoxDecoration(
+                            gradient: kMainGradiant,
+                            borderRadius:isTablet && widget.key==null ?BorderRadius.circular(20):null,
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              widget.key==null ?const SizedBox(): const BackButton(color: Colors.white,),
+                              ///search bar
+                              Expanded(
+                                child: CustomSearchBar(
+                                  controller: searchController,
+                                  hint: "جست و جو کالا",
+                                  onChange: (val) {
+                                    keyWord = val;
+                                    setState(() {});
+                                  },
+                                  selectedSort: sortItem,
+                                  sortList: sortList,
+                                  onSort: (val) {
+                                    sortItem = val;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                              ///dropDown list for Group Select on desktop mode
+                              SizedBox(
+                                child: !isTablet ?null: DropListModel(
+                                  selectedValue: selectedCategory,
+                                  height: 40,
+                                  listItem: ["همه", ...wareProvider.itemCategories],
+                                  onChanged: (val) {
+                                    selectedCategory = val;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                              ///more icon button on desktop mode
+                              // SizedBox(
+                              //     child:constraint.maxWidth<550?null: IconButton(
+                              //         onPressed: () {
+                              //           showDialog(
+                              //               context: context,
+                              //               builder: (context) => WareActionsPanel(
+                              //                 wares: waresList,
+                              //                 subGroup: selectedCategory,
+                              //               ));
+                              //         },
+                              //         icon: const Icon(Icons.more_vert,color: Colors.white,))
+                              // ),
+                            ],
+                          ),
+                        ),
 
-                      ///get ware list
-                      ValueListenableBuilder<Box<Item>>(
-                          valueListenable: HiveBoxes.getItem().listenable(),
-                          builder: (context, box, _) {
+                        ///get ware list
+                        ValueListenableBuilder<Box<Item>>(
+                            valueListenable: HiveBoxes.getItem().listenable(),
+                            builder: (context, box, _) {
 
-                            waresList = box.values.toList().cast<Item>();
-                            List<Item> filteredList = ItemTools.filterList(waresList, keyWord, sortItem);
+                              waresList = box.values.toList().cast<Item>();
+                              List<Item> filteredList = ItemTools.filterList(waresList, keyWord, sortItem);
 
-                            if (filteredList.isEmpty) {
-                              return const Expanded(
-                                child: Center(
-                                    child: Text(
-                                      "کالایی یافت نشد!",
-                                      textDirection: TextDirection.rtl,
-                                    )),
+                              if (filteredList.isEmpty) {
+                                return const Expanded(
+                                  child: Center(
+                                      child: Text(
+                                        "کالایی یافت نشد!",
+                                        textDirection: TextDirection.rtl,
+                                      )),
+                                );
+                              }
+                              return ListPart(
+                                key: widget.key,
+                                category: selectedCategory,
+                                wareList: filteredList,
                               );
-                            }
-                            return ListPart(
-                              key: widget.key,
-                              category: selectedCategory,
-                              wareList: filteredList,
-                            );
-                          }),
-                    ],
+                            }),
+                      ],
+                    ),
                   ),
                 );
               }

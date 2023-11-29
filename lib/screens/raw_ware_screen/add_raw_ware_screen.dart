@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -83,160 +84,162 @@ class _AddWareScreenState extends State<AddWareScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: kMainGradiant),
+    return HideKeyboard(
+      child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(gradient: kMainGradiant),
+          ),
+          title: Text(widget.oldRawWare == null ? "افزودن کالا" : "اصلاح کالا"),
         ),
-        title: Text(widget.oldRawWare == null ? "افزودن کالا" : "اصلاح کالا"),
-      ),
-      body: Consumer<WareProvider>(builder: (context, wareProvider, child) {
-        return Align(
-          alignment: Alignment.center,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), color: Colors.white),
-            width: 450,
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ///select group dropdown list and add group
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Flexible(
-                              child: ActionButton(
-                                  label: "افزودن گروه",
-                                  icon: Icons.add,
-                                  onPress: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => CreateGroupPanel());
-                                  }),
-                            ),
-                            Flexible(
-                              child: DropListModel(
-                                  listItem: wareProvider.rawWareCategories,
-                                  selectedValue:
-                                      wareProvider.selectedRawWareCategory,
+        body: Consumer<WareProvider>(builder: (context, wareProvider, child) {
+          return Align(
+            alignment: Alignment.center,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20), color: Colors.white),
+              width: 450,
+              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          ///select group dropdown list and add group
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Flexible(
+                                child: ActionButton(
+                                    label: "افزودن گروه",
+                                    icon: Icons.add,
+                                    onPress: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => CreateGroupPanel());
+                                    }),
+                              ),
+                              Flexible(
+                                child: DropListModel(
+                                    listItem: wareProvider.rawWareCategories,
+                                    selectedValue:
+                                        wareProvider.selectedRawWareCategory,
+                                    onChanged: (val) {
+                                      wareProvider.updateSelectedRawCategory(val);
+                                    }),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          CustomTextField(
+                            label: "نام کالا",
+                            controller: wareNameController,
+                            focus: wareNameFocus,
+                            validate: true,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+
+                          ///unit dropdown list selection
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Flexible(
+                                child: DropListModel(
+                                  height: 35,
+                                  width: 100,
+                                  selectedValue: unitItem,
+                                  listItem: unitList,
                                   onChanged: (val) {
-                                    wareProvider.updateSelectedRawCategory(val);
-                                  }),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        CustomTextField(
-                          label: "نام کالا",
-                          controller: wareNameController,
-                          focus: wareNameFocus,
-                          validate: true,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-
-                        ///unit dropdown list selection
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Flexible(
-                              child: DropListModel(
-                                height: 35,
-                                width: 100,
-                                selectedValue: unitItem,
-                                listItem: unitList,
-                                onChanged: (val) {
-                                  unitItem = val;
-                                  setState(() {});
-                                },
+                                    unitItem = val;
+                                    setState(() {});
+                                  },
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Flexible(
-                              child: CustomTextField(
-                                label: "مقدار",
-                                controller: quantityController,
-                                textFormat: TextFormatter.number,
+                              const SizedBox(
+                                width: 20,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        CustomTextField(
-                          label: "قیمت خرید",
-                          controller: costPriceController,
-                          textFormat: TextFormatter.price,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                              Flexible(
+                                child: CustomTextField(
+                                  label: "مقدار",
+                                  controller: quantityController,
+                                  textFormat: TextFormatter.number,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          CustomTextField(
+                            label: "قیمت خرید",
+                            controller: costPriceController,
+                            textFormat: TextFormatter.price,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
 
-                        CustomTextField(
-                          label: "توضیحات",
-                          controller: descriptionController,
-                          maxLine: 4,
-                        ),
-                      ],
+                          CustomTextField(
+                            label: "توضیحات",
+                            controller: descriptionController,
+                            maxLine: 4,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  CustomButton(
-                      text: widget.oldRawWare == null
-                          ? "افزودن به لیست"
-                          : "ذخیره تغییرات",
-                      width: MediaQuery.of(context).size.width,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          if (widget.oldRawWare != null) {
-                            saveWare(id: widget.oldRawWare!.wareId);
-                            Navigator.pop(context, false);
-                          } else {
-                            ///condition for demo mode
-                            if (HiveBoxes.getRawWare().values.length <
-                                context.watch<UserProvider>()
-                                    .ceilCount) {
-                              saveWare();
-                              showSnackBar(context, "کالا به لیست افزوده شد!",
-                                  type: SnackType.success);
-                              wareNameController.clear();
-                              costPriceController.clear();
-                              descriptionController.clear();
-                              quantityController.clear();
-                              FocusScope.of(context)
-                                  .requestFocus(wareNameFocus);
-                              setState(() {});
-                              // Navigator.pop(context,false);
+                    CustomButton(
+                        text: widget.oldRawWare == null
+                            ? "افزودن به لیست"
+                            : "ذخیره تغییرات",
+                        width: MediaQuery.of(context).size.width,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            if (widget.oldRawWare != null) {
+                              saveWare(id: widget.oldRawWare!.wareId);
+                              Navigator.pop(context, false);
                             } else {
-                              showSnackBar(context, context.watch<UserProvider>().ceilCountMessage,
-                                  type: SnackType.error);
+                              ///condition for demo mode
+                              if (HiveBoxes.getRawWare().values.length <
+                                  context.watch<UserProvider>()
+                                      .ceilCount) {
+                                saveWare();
+                                showSnackBar(context, "کالا به لیست افزوده شد!",
+                                    type: SnackType.success);
+                                wareNameController.clear();
+                                costPriceController.clear();
+                                descriptionController.clear();
+                                quantityController.clear();
+                                FocusScope.of(context)
+                                    .requestFocus(wareNameFocus);
+                                setState(() {});
+                                // Navigator.pop(context,false);
+                              } else {
+                                showSnackBar(context, context.watch<UserProvider>().ceilCountMessage,
+                                    type: SnackType.error);
+                              }
                             }
                           }
-                        }
 
-                        setState(() {});
-                      }),
-                ],
+                          setState(() {});
+                        }),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

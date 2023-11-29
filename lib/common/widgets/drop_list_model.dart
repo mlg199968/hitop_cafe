@@ -72,6 +72,7 @@ class DropListModel extends StatelessWidget {
                         child: Text(
                           item,
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
                           style: const TextStyle(
                             fontSize: 15,
                             color: Colors.blueGrey,

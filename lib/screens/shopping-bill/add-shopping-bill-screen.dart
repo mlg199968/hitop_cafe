@@ -183,9 +183,8 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
   ///call message on pop to previous page function
   Future<bool> willPop() async {
-    return await customAlert(
+    return await showDialog(context: context, builder: (context)=>CustomAlert(
         title: "تغییرات داده شده ذخیره شود؟",
-        context: context,
         onYes: () {
           saveBillOnLocalStorage(
               id: widget.oldBill == null ? null : widget.oldBill!.billId);
@@ -196,11 +195,12 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
         onNo: () {
           Navigator.pop(context, false);
           Navigator.pop(context);
-        });
+        }));
   }
 
   @override
   void dispose() {
+
     // TODO: implement dispose
     super.dispose();
   }
@@ -567,34 +567,12 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                             )),
 
                         ///Product List Part
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "لیست خرید",
-                                style: TextStyle(
-                                    fontSize: 17, color: Colors.white),
-                              ),
-                              ActionButton(
-                                label: "افزودن آیتم",
-                                icon: FontAwesomeIcons.plus,
-                                bgColor: Colors.orange.shade800,
-                                onPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                      const WareToBillPanel())
-                                      .then((value) {
-                                    if (value != null) {
-                                      wares.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                            ],
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "لیست خرید",
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.white),
                           ),
                         ),
                         ShoppingRawList(
@@ -605,33 +583,12 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                         ),
 
                         ///Payment List Part
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "لیست پرداخت",
-                                style: TextStyle(
-                                    fontSize: 17, color: Colors.white),
-                              ),
-                              ActionButton(
-                                label: "پرداخت جدید",
-                                icon: FontAwesomeIcons.plus,
-                                bgColor: Colors.orange.shade800,
-                                onPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                      const PaymentToBill()).then((value) {
-                                    if (value != null) {
-                                      payments.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                            ],
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "لیست پرداخت",
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.white),
                           ),
                         ),
                         screenType(context) == ScreenType.desktop

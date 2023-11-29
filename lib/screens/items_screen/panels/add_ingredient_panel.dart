@@ -8,6 +8,7 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
+import 'package:hitop_cafe/screens/raw_ware_screen/services/ware_tools.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -124,7 +125,7 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
                       if (_formKey.currentState!.validate() && selectedRawWare!=null) {
                         selectedRawWare!.demand =
                             stringToDouble(demandController.text);
-                        Navigator.pop(context, selectedRawWare);
+                        Navigator.pop(context,WareTools.copyToNewWare(selectedRawWare!) );
                         ingredientNameController.clear();
                       }else{
                         showSnackBar(context, "مقادیر داده شده ناقص است",type: SnackType.warning);

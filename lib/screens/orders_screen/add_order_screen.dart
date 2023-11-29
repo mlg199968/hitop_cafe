@@ -8,10 +8,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
+import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -235,9 +237,8 @@ addToItemList(List<Item> iList){
 
   ///call message on pop to previous page function
   Future<bool> willPop() async {
-    return await customAlert(
+    return await showDialog(context: context, builder: (context)=>CustomAlert(
         title: "تغییرات داده شده ذخیره شود؟",
-        context: context,
         onYes: () {
           saveBillOnLocalStorage(
               id: widget.oldOrder == null ? null : widget.oldOrder!.orderId);
@@ -247,7 +248,7 @@ addToItemList(List<Item> iList){
         onNo: () {
           Navigator.pop(context, false);
           Navigator.pop(context);
-        });
+        })) ;
   }
 
   @override
@@ -260,284 +261,148 @@ addToItemList(List<Item> iList){
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: didUpdateData() ? willPop : null,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        ///save float action button
-        floatingActionButton: screenType(context) != ScreenType.mobile
-            ? null
-            : CustomFloatActionButton(
-                label: "ذخیره",
-                icon: Icons.save_outlined,
-                onPressed: () {
-                  saveBillOnLocalStorage(
-                    id: widget.oldOrder == null
-                        ? null
-                        : widget.oldOrder!.orderId,
-                  );
-                }),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            "فاکتور فروش",
-            style: TextStyle(color: Colors.white, fontSize: 20),
+      child: HideKeyboard(
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          ///save float action button
+          floatingActionButton: screenType(context) != ScreenType.mobile
+              ? null
+              : CustomFloatActionButton(
+                  label: "ذخیره",
+                  icon: Icons.save_outlined,
+                  onPressed: () {
+                    saveBillOnLocalStorage(
+                      id: widget.oldOrder == null
+                          ? null
+                          : widget.oldOrder!.orderId,
+                    );
+                  }),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            title: const Text(
+              "فاکتور فروش",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            actions: [
+              ///print button action
+              ActionButton(
+                label: "چاپ",
+                onPress: () {
+                  // saveBillOnLocalStorage(
+                  //     id: widget.oldOrder == null
+                  //         ? null
+                  //         : widget.oldOrder!.orderId);
+                  printPdf();
+                },
+                bgColor: Colors.indigoAccent,
+                icon: Icons.local_printshop_outlined,
+              ),
+              const SizedBox(width: 5,),
+              ///view button action
+              ActionButton(
+                label: "نمایش",
+                onPress: () {
+                  viewPdf();
+                },
+                bgColor: Colors.red,
+                icon: Icons.picture_as_pdf_outlined,
+              ),
+              const SizedBox(width: 10,),
+            ],
           ),
-          actions: [
-            ///print button action
-            ActionButton(
-              label: "چاپ",
-              onPress: () {
-                // saveBillOnLocalStorage(
-                //     id: widget.oldOrder == null
-                //         ? null
-                //         : widget.oldOrder!.orderId);
-                printPdf();
-              },
-              bgColor: Colors.indigoAccent,
-              icon: Icons.local_printshop_outlined,
-            ),
-            const SizedBox(width: 5,),
-            ///view button action
-            ActionButton(
-              label: "نمایش",
-              onPress: () {
-                viewPdf();
-              },
-              bgColor: Colors.red,
-              icon: Icons.picture_as_pdf_outlined,
-            ),
-            const SizedBox(width: 10,),
-          ],
-        ),
-        body: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Container(
-            decoration: const BoxDecoration(gradient: kMainGradiant),
-            child: Row(
-              children: [
-                ///side bar panel in tablet snd desktop mode
-                screenType(context) == ScreenType.mobile
-                    ? const SizedBox()
-                    : Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 20),
-                        width: 200,
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 30,
-                            ),
-
-                            ///orderBill date and orderBill number section
-                            SizedBox(
-                              height: 120,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ///invoice number
-                                  TitleButton(
-                                    title: "شماره فاکتور:",
-                                    value: billNumber.toString(),
-                                    onPress: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              const BillNumber()).then((value) {
-                                        if (value != null) {
-                                          billNumber = value.round();
-                                        }
-                                        setState(() {});
-                                      });
-                                    },
-                                  ),
-                                  const Divider(
-                                    thickness: 1,
-                                    height: 5,
-                                  ),
-
-                                  ///choose orderBill date
-                                  TitleButton(
-                                    title: "تاریخ فاکتور:",
-                                    value: date.formatCompactDate(),
-                                    onPress: () async {
-                                      Jalali? picked =
-                                          await TimeTools.chooseDate(context);
-                                      if (picked != null) {
-                                        setState(() {
-                                          date = picked;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  const Divider(
-                                    thickness: 1,
-                                    height: 5,
-                                  ),
-                                  TitleButton(
-                                    title: "تاریخ تسویه:",
-                                    value: dueDate.toPersianDate(),
-                                    onPress: () async {
-                                      Jalali? picked =
-                                          await TimeTools.chooseDate(context);
-                                      if (picked != null) {
-                                        setState(() {
-                                          dueDate = picked.toDateTime();
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ],
+          body: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Container(
+              decoration: const BoxDecoration(gradient: kMainGradiant),
+              child: Row(
+                children: [
+                  ///side bar panel in tablet snd desktop mode
+                  screenType(context) == ScreenType.mobile
+                      ? const SizedBox()
+                      : Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20),
+                          width: 200,
+                          decoration: const BoxDecoration(color: Colors.white),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 30,
                               ),
-                            ),
-                            const Expanded(child: SizedBox()),
 
-                            BillActionButton(
-                              label: "افزودن آیتم",
-                              icon: Icons.add_shopping_cart_sharp,
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const ItemToBillPanel()).then((value) {
-                                  if (value != null) {
-                                    items.add(value);
-                                  }
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                            BillActionButton(
-                              label: "پرداخت جدید",
-                              icon: Icons.featured_play_list_outlined,
-                              bgColor: Colors.green,
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const PaymentToBill()).then((value) {
-                                  if (value != null) {
-                                    payments.add(value);
-                                  }
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                ///main part like items list
-                Flexible(
-                  child: Container(
-                    width: 450,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 20),
-                    child: ListView(
-                      children: [
-                        ///top customer data part on mobile screen
-                        screenType(context) != ScreenType.mobile
-                            ? const SizedBox()
-                            : Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(.8)),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: Row(
+                              ///orderBill date and orderBill number section
+                              SizedBox(
+                                height: 120,
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    ///top right
-                                    Column(
-                                      children: [
-                                        const Text("شماره میز:"),
-                                        Container(
-                                          width: 50,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.brown)),
-                                          child: CustomTextField(
-                                            controller: tableNumberController,
-                                            textFormat: TextFormatter.number,
-                                          ),
-                                        ),
-                                      ],
+                                    ///invoice number
+                                    TitleButton(
+                                      title: "شماره فاکتور:",
+                                      value: billNumber.toString(),
+                                      onPress: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                const BillNumber()).then((value) {
+                                          if (value != null) {
+                                            billNumber = value.round();
+                                          }
+                                          setState(() {});
+                                        });
+                                      },
                                     ),
-                                    const SizedBox(width: 10),
+                                    const Divider(
+                                      thickness: 1,
+                                      height: 5,
+                                    ),
 
-                                    ///top left
-                                    SizedBox(
-                                      width: 150,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          ///invoice number
-                                          TitleButton(
-                                            title: "شماره فاکتور:",
-                                            value: billNumber.toString(),
-                                            onPress: () {
-                                              showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          const BillNumber())
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  billNumber = value.round();
-                                                }
-                                                setState(() {});
-                                              });
-                                            },
-                                          ),
-                                          const Divider(
-                                            thickness: 1,
-                                            height: 5,
-                                          ),
-
-                                          ///choose orderBill date
-                                          TitleButton(
-                                            title: "تاریخ فاکتور:",
-                                            value: date.formatCompactDate(),
-                                            onPress: () async {
-                                              Jalali? picked =
-                                                  await TimeTools.chooseDate(
-                                                      context);
-                                              if (picked != null) {
-                                                setState(() {
-                                                  date = picked;
-                                                });
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                    ///choose orderBill date
+                                    TitleButton(
+                                      title: "تاریخ فاکتور:",
+                                      value: date.formatCompactDate(),
+                                      onPress: () async {
+                                        Jalali? picked =
+                                            await TimeTools.chooseDate(context);
+                                        if (picked != null) {
+                                          setState(() {
+                                            date = picked;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    const Divider(
+                                      thickness: 1,
+                                      height: 5,
+                                    ),
+                                    TitleButton(
+                                      title: "تاریخ تسویه:",
+                                      value: dueDate.toPersianDate(),
+                                      onPress: () async {
+                                        Jalali? picked =
+                                            await TimeTools.chooseDate(context);
+                                        if (picked != null) {
+                                          setState(() {
+                                            dueDate = picked.toDateTime();
+                                          });
+                                        }
+                                      },
                                     ),
                                   ],
                                 ),
                               ),
-                        ///quick action button like add items and add payments
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ActionButton(
+                              const Expanded(child: SizedBox()),
+
+                              BillActionButton(
                                 label: "افزودن آیتم",
-                                icon: CupertinoIcons.cart_badge_plus,
-                                bgColor: Colors.blueGrey,
+                                icon: Icons.add_shopping_cart_sharp,
                                 onPress: () {
                                   showDialog(
                                       context: context,
                                       builder: (context) =>
-                                      const ItemToBillPanel())
-                                      .then((value) {
+                                          const ItemToBillPanel()).then((value) {
                                     if (value != null) {
                                       items.add(value);
                                     }
@@ -545,29 +410,15 @@ addToItemList(List<Item> iList){
                                   });
                                 },
                               ),
-                              ActionButton(
-                                label: "افزودن سریع",
-                                icon: CupertinoIcons.cart_badge_plus,
-                                bgColor: Colors.deepOrangeAccent,
-                                onPress: () {
-                                  Navigator.pushNamed(context, QuickAddScreen.id).then((value) {
-                                    if(value!=null){
-                                      value as List<Item>;
-                                      addToItemList(value);
-                                      setState(() {});
-                                    }
-                                  });
-                                },
-                              ),
-                              ActionButton(
+                              BillActionButton(
                                 label: "پرداخت جدید",
-                                icon: Icons.add_card_rounded,
-                                bgColor: Colors.teal,
+                                icon: Icons.featured_play_list_outlined,
+                                bgColor: Colors.green,
                                 onPress: () {
                                   showDialog(
                                       context: context,
                                       builder: (context) =>
-                                      const PaymentToBill()).then((value) {
+                                          const PaymentToBill()).then((value) {
                                     if (value != null) {
                                       payments.add(value);
                                     }
@@ -575,105 +426,252 @@ addToItemList(List<Item> iList){
                                   });
                                 },
                               ),
-
-                            ],
-                          ),
-                        ),
-                        ///final data of orderBill like sale total
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: kBoxDecoration,
-                          child: Column(
-                            children: [
-                              TextDataField(title: "جمع خرید", value: itemsSum),
-                              TextDataField(
-                                  title: "پرداخت نقد", value: cashSum),
-                              TextDataField(
-                                  title: "پرداخت با کارت", value: atmSum),
-                              TextDataField(title: "تخفیف", value: discount),
                             ],
                           ),
                         ),
 
-                        ///total payment
-                        Container(
+                  ///main part like items list
+                  Flexible(
+                    child: Container(
+                      width: 450,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      child: ListView(
+                        children: [
+                          ///top customer data part on mobile screen
+                          screenType(context) != ScreenType.mobile
+                              ? const SizedBox()
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(.8)),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      ///top right
+                                      Column(
+                                        children: [
+                                          const Text("شماره میز:"),
+                                          Container(
+                                            width: 100,
+                                            child: CounterTextfield(
+                                              decimal: false,
+                                              controller: tableNumberController,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(width: 10),
+
+                                      ///top left
+                                      SizedBox(
+                                        width: 150,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ///invoice number
+                                            TitleButton(
+                                              title: "شماره فاکتور:",
+                                              value: billNumber.toString(),
+                                              onPress: () {
+                                                showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            const BillNumber())
+                                                    .then((value) {
+                                                  if (value != null) {
+                                                    billNumber = value.round();
+                                                  }
+                                                  setState(() {});
+                                                });
+                                              },
+                                            ),
+                                            const Divider(
+                                              thickness: 1,
+                                              height: 5,
+                                            ),
+
+                                            ///choose orderBill date
+                                            TitleButton(
+                                              title: "تاریخ فاکتور:",
+                                              value: date.formatCompactDate(),
+                                              onPress: () async {
+                                                Jalali? picked =
+                                                    await TimeTools.chooseDate(
+                                                        context);
+                                                if (picked != null) {
+                                                  setState(() {
+                                                    date = picked;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                          ///quick action button like add items and add payments
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ActionButton(
+                                  label: "افزودن آیتم",
+                                  icon: CupertinoIcons.cart_badge_plus,
+                                  bgColor: Colors.blueGrey,
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                        const ItemToBillPanel())
+                                        .then((value) {
+                                      if (value != null) {
+                                        items.add(value);
+                                      }
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+                                ActionButton(
+                                  label: "افزودن سریع",
+                                  icon: CupertinoIcons.cart_badge_plus,
+                                  bgColor: Colors.deepOrangeAccent,
+                                  onPress: () {
+                                    Navigator.pushNamed(context, QuickAddScreen.id).then((value) {
+                                      if(value!=null){
+                                        value as List<Item>;
+                                        addToItemList(value);
+                                        setState(() {});
+                                      }
+                                    });
+                                  },
+                                ),
+                                ActionButton(
+                                  label: "پرداخت جدید",
+                                  icon: Icons.add_card_rounded,
+                                  bgColor: Colors.teal,
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                        const PaymentToBill()).then((value) {
+                                      if (value != null) {
+                                        payments.add(value);
+                                      }
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+
+                              ],
+                            ),
+                          ),
+                          ///final data of orderBill like sale total
+                          Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
-                            decoration: kBoxDecoration.copyWith(
-                              color: payable() == 0
-                                  ? Colors.green
-                                  : (payable() < 0 ? Colors.blue : Colors.red),
+                            decoration: kBoxDecoration,
+                            child: Column(
+                              children: [
+                                TextDataField(title: "جمع خرید", value: itemsSum),
+                                TextDataField(
+                                    title: "پرداخت نقد", value: cashSum),
+                                TextDataField(
+                                    title: "پرداخت با کارت", value: atmSum),
+                                TextDataField(title: "تخفیف", value: discount),
+                              ],
                             ),
-                            child: TextDataField(
-                              title: "قابل پرداخت",
-                              value: payable(),
-                              color: Colors.white,
-                            )),
-
-                        ///Product List Part
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "لیست خرید",
-                            style: TextStyle(
-                                fontSize: 17, color: Colors.white),
                           ),
-                        ),
-                        ShoppingList(
-                          items: items,
-                          onChange: () {
-                            setState(() {});
-                          },
-                        ),
 
-                        ///Payment List Part
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "لیست پرداخت",
-                            style: TextStyle(
-                                fontSize: 17, color: Colors.white),
-                          ),
-                        ),
-                        screenType(context) == ScreenType.desktop
-                            ? const SizedBox()
-                            : PaymentList(
-                                payments: payments,
-                                onChange: () {
-                                  setState(() {});
-                                },
+                          ///total payment
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: kBoxDecoration.copyWith(
+                                color: payable() == 0
+                                    ? Colors.green
+                                    : (payable() < 0 ? Colors.blue : Colors.red),
                               ),
-                        const SizedBox(height: 90),
-                      ],
+                              child: TextDataField(
+                                title: "قابل پرداخت",
+                                value: payable(),
+                                color: Colors.white,
+                              )),
+
+                          ///Product List Part
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "لیست خرید",
+                              style: TextStyle(
+                                  fontSize: 17, color: Colors.white),
+                            ),
+                          ),
+                          ShoppingList(
+                            items: items,
+                            onChange: () {
+                              setState(() {});
+                            },
+                          ),
+
+                          ///Payment List Part
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "لیست پرداخت",
+                              style: TextStyle(
+                                  fontSize: 17, color: Colors.white),
+                            ),
+                          ),
+                          screenType(context) == ScreenType.desktop
+                              ? const SizedBox()
+                              : PaymentList(
+                                  payments: payments,
+                                  onChange: () {
+                                    setState(() {});
+                                  },
+                                ),
+                          const SizedBox(height: 90),
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                ///Payment List Part on desktop mode
-                screenType(context) != ScreenType.desktop
-                    ? const SizedBox()
-                    : Flexible(
-                        child: Container(
-                          margin: const EdgeInsets.all(20),
-                          width: 450,
-                          child: Column(
-                            children: [
-                              const CustomDivider(
-                                title: "پرداختی ها",
-                                color: Colors.white,
-                              ),
-                              PaymentList(
-                                payments: payments,
-                                onChange: () {
-                                  setState(() {});
-                                },
-                              ),
-                            ],
+                  ///Payment List Part on desktop mode
+                  screenType(context) != ScreenType.desktop
+                      ? const SizedBox()
+                      : Flexible(
+                          child: Container(
+                            margin: const EdgeInsets.all(20),
+                            width: 450,
+                            child: Column(
+                              children: [
+                                const CustomDivider(
+                                  title: "پرداختی ها",
+                                  color: Colors.white,
+                                ),
+                                PaymentList(
+                                  payments: payments,
+                                  onChange: () {
+                                    setState(() {});
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
