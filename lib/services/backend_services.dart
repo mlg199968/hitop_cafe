@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,11 +35,11 @@ class BackendServices {
 
   Future<Subscription?> readSubscription(context, String phone) async {
     try {
-     // String deviceId=await getDeviceInfo();
-     // print(deviceId);
+     String deviceId=await getDeviceInfo();
+     print(deviceId);
       http.Response res = await http.post(
           Uri.parse("$hostUrl/user/read_subscription.php"),
-          body: {"phone": phone});
+          body: {"phone": phone,"device-id":deviceId});
       if (res.statusCode == 200) {
         print(res.body);
         var backData = jsonDecode(res.body);
@@ -54,7 +56,7 @@ class BackendServices {
         }
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return null;
   }

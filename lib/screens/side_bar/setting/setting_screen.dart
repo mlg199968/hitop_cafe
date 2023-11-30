@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -106,201 +107,203 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: kMainGradiant),
+    return HideKeyboard(
+      child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(gradient: kMainGradiant),
+          ),
+          title: const Text("تنظیمات"),
         ),
-        title: const Text("تنظیمات"),
-      ),
-      body: Consumer<UserProvider>(builder: (context, userProvider, child) {
-        return Stack(
-          children: [
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: Column(
-                children: [
-                  Card(
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      margin: const EdgeInsets.all(15),
-                      decoration:
-                          BoxDecoration(border: Border.all(color: Colors.blue)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CustomButton(
-                            text: "پشتیبان گیری",
-                            color: Colors.red.withRed(250),
-                            onPressed: () async {
-                              await storagePermission(
-                                  context, Allow.externalStorage);
-                              // ignore: use_build_context_synchronously
-                              await storagePermission(context, Allow.storage);
-                              if (context.mounted) {
-                                await BackupTools.createBackup(context);
-                              }
-                            },
-                          ),
-                          CustomButton(
-                            text: "بارگیری فایل پشتیبان",
-                            color: Colors.green,
-                            onPressed: () async {
-                              await storagePermission(context, Allow.storage);
-                              if (context.mounted) {
+        body: Consumer<UserProvider>(builder: (context, userProvider, child) {
+          return Stack(
+            children: [
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  children: [
+                    Card(
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        margin: const EdgeInsets.all(15),
+                        decoration:
+                            BoxDecoration(border: Border.all(color: Colors.blue)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomButton(
+                              text: "پشتیبان گیری",
+                              color: Colors.red.withRed(250),
+                              onPressed: () async {
                                 await storagePermission(
                                     context, Allow.externalStorage);
-                              }
-                              if (context.mounted) {
-                                // await BackupTools.restoreBackup(context);
-                                await BackupTools.readZipFile(context);
-                              }
-                            },
+                                // ignore: use_build_context_synchronously
+                                await storagePermission(context, Allow.storage);
+                                if (context.mounted) {
+                                  await BackupTools.createBackup(context);
+                                }
+                              },
+                            ),
+                            CustomButton(
+                              text: "بارگیری فایل پشتیبان",
+                              color: Colors.green,
+                              onPressed: () async {
+                                await storagePermission(context, Allow.storage);
+                                if (context.mounted) {
+                                  await storagePermission(
+                                      context, Allow.externalStorage);
+                                }
+                                if (context.mounted) {
+                                  // await BackupTools.restoreBackup(context);
+                                  await BackupTools.readZipFile(context);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    ///currency unit
+                    DropListItem(
+                        title: "واحد پول",
+                        selectedValue: selectedCurrency,
+                        listItem: kCurrencyList,
+                        onChange: (val) {
+                          selectedCurrency = val;
+                          setState(() {});
+                        }),
+
+                    /// preTax value
+                    InputItem(
+                      label: "تخفیف پیشفرض :",
+                      inputLabel: "درصد",
+                      controller: taxController,
+                      width: 100,
+                      onChange: (val) {
+                        if (val != "" && stringToDouble(val) > 100) {
+                          taxController.text = 99.toString();
+                          setState(() {});
+                        }
+                      },
+                    ),
+
+                    ///change font family entire app
+                    DropListItem(
+                      title: "نوع فونت نمایشی",
+                      selectedValue: selectedFont,
+                      listItem: kFonts,
+                      dropWidth: 120,
+                      onChange: (val) {
+                        selectedFont = val;
+                        userProvider.getFontFamily(val);
+                        setState(() {});
+                      },
+                    ),
+
+                    ///printers setting parts
+                    const Text(
+                      "تنظیمات پرینتر",
+                      style: TextStyle(fontSize: 17),
+                    ),
+
+                    ///list of windows printers when platform is windows
+                    if (Platform.isWindows)
+                      ButtonTile(
+                          onPress: () async {
+                            // Show the native printer picker and get the selected printer
+                            final printer = await Printing.pickPrinter(
+                                context: context, title: "پرینتر را انتخاب کنید");
+                            if (printer != null) {
+                              selectedPrinter = printer;
+                            }
+                            setState(() {});
+                          },
+                          label: "انتخاب پرینتر",
+                          buttonLabel: selectedPrinter == null
+                              ? "پرینتری یافت نشد"
+                              : selectedPrinter!.name),
+
+                    ///list of bluetooth devices in android and ios if exist
+                    if (Platform.isAndroid || Platform.isIOS)
+                      ButtonTile(
+                        label: "انتخاب پرینتر بلوتوثی",
+                        buttonLabel: isBtScanning
+                            ? "درحال اسکن"
+                            : selectedBluetoothPrinter == null
+                                ? "پرینتری یافت نشد"
+                                : selectedBluetoothPrinter!.name,
+                        extra: isBtScanning
+                            ? const CircularProgressIndicator()
+                            : ActionButton(
+                                bgColor: Colors.white70,
+                                icon: Icons.search,
+                                onPress: () {
+                                  Navigator.pushNamed(context, PrinterPage.id);
+                                },
+                              ),
+                        onPress: () async {
+                          // Show the native printer picker and get the selected printer
+                          isBtScanning = true;
+                          await PrintServices.scanSimpleBluetoothDevices(_isBle,
+                              onChange: (btList, scanning) {
+                            isBtScanning = scanning!;
+                            if (btList != null) {
+                              devices.addAll(btList);
+                              setState(() {});
+                            }
+                          });
+                          Column(
+                              children: devices
+                                  .map(
+                                    (device) => ListTile(
+                                      title: Text(device.name),
+                                      subtitle: Text(device.address),
+                                      onTap: () {
+                                        // do something
+                                        selectDevice(device);
+                                      },
+                                    ),
+                                  )
+                                  .toList());
+                        },
+                      ),
+                  ],
+                ),
+              ),
+
+              ///**************************************************************************************************
+              ///condition for:if user not purchase the app,it will see purchase button to buy complete version
+              userProvider.userLevel != 0
+                  ? const SizedBox()
+                  : Container(
+                      padding: const EdgeInsets.all(10),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      color: Colors.black87.withOpacity(.7),
+                      //height: MediaQuery.of(context).size.height,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Text(
+                              "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
+                              textDirection: TextDirection.rtl,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                            ),
                           ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          PurchaseButton(),
                         ],
                       ),
                     ),
-                  ),
-
-                  ///currency unit
-                  DropListItem(
-                      title: "واحد پول",
-                      selectedValue: selectedCurrency,
-                      listItem: kCurrencyList,
-                      onChange: (val) {
-                        selectedCurrency = val;
-                        setState(() {});
-                      }),
-
-                  /// preTax value
-                  InputItem(
-                    label: "تخفیف پیشفرض :",
-                    inputLabel: "درصد",
-                    controller: taxController,
-                    width: 100,
-                    onChange: (val) {
-                      if (val != "" && stringToDouble(val) > 100) {
-                        taxController.text = 99.toString();
-                        setState(() {});
-                      }
-                    },
-                  ),
-
-                  ///change font family entire app
-                  DropListItem(
-                    title: "نوع فونت نمایشی",
-                    selectedValue: selectedFont,
-                    listItem: kFonts,
-                    dropWidth: 120,
-                    onChange: (val) {
-                      selectedFont = val;
-                      userProvider.getFontFamily(val);
-                      setState(() {});
-                    },
-                  ),
-
-                  ///printers setting parts
-                  const Text(
-                    "تنظیمات پرینتر",
-                    style: TextStyle(fontSize: 17),
-                  ),
-
-                  ///list of windows printers when platform is windows
-                  if (Platform.isWindows)
-                    ButtonTile(
-                        onPress: () async {
-                          // Show the native printer picker and get the selected printer
-                          final printer = await Printing.pickPrinter(
-                              context: context, title: "پرینتر را انتخاب کنید");
-                          if (printer != null) {
-                            selectedPrinter = printer;
-                          }
-                          setState(() {});
-                        },
-                        label: "انتخاب پرینتر",
-                        buttonLabel: selectedPrinter == null
-                            ? "پرینتری یافت نشد"
-                            : selectedPrinter!.name),
-
-                  ///list of bluetooth devices in android and ios if exist
-                  if (Platform.isAndroid || Platform.isIOS)
-                    ButtonTile(
-                      label: "انتخاب پرینتر بلوتوثی",
-                      buttonLabel: isBtScanning
-                          ? "درحال اسکن"
-                          : selectedBluetoothPrinter == null
-                              ? "پرینتری یافت نشد"
-                              : selectedBluetoothPrinter!.name,
-                      extra: isBtScanning
-                          ? const CircularProgressIndicator()
-                          : ActionButton(
-                              bgColor: Colors.white70,
-                              icon: Icons.search,
-                              onPress: () {
-                                Navigator.pushNamed(context, PrinterPage.id);
-                              },
-                            ),
-                      onPress: () async {
-                        // Show the native printer picker and get the selected printer
-                        isBtScanning = true;
-                        await PrintServices.scanSimpleBluetoothDevices(_isBle,
-                            onChange: (btList, scanning) {
-                          isBtScanning = scanning!;
-                          if (btList != null) {
-                            devices.addAll(btList);
-                            setState(() {});
-                          }
-                        });
-                        Column(
-                            children: devices
-                                .map(
-                                  (device) => ListTile(
-                                    title: Text(device.name),
-                                    subtitle: Text(device.address),
-                                    onTap: () {
-                                      // do something
-                                      selectDevice(device);
-                                    },
-                                  ),
-                                )
-                                .toList());
-                      },
-                    ),
-                ],
-              ),
-            ),
-
-            ///**************************************************************************************************
-            ///condition for:if user not purchase the app,it will see purchase button to buy complete version
-            userProvider.userLevel != 0
-                ? const SizedBox()
-                : Container(
-                    padding: const EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    color: Colors.black87.withOpacity(.7),
-                    //height: MediaQuery.of(context).size.height,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
-                            textDirection: TextDirection.rtl,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        PurchaseButton(),
-                      ],
-                    ),
-                  ),
-          ],
-        );
-      }),
+            ],
+          );
+        }),
+      ),
     );
   }
 }

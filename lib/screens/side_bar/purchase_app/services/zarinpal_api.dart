@@ -7,13 +7,14 @@ import 'package:zarinpal/zarinpal.dart';
 
 class ZarinpalApi{
 
-static  payment(BuildContext context,{required String phone,required int amount}) {
+static  payment(BuildContext context,{required String phone,required int amount}) async{
+  String deviceId=await getDeviceInfo();
   PaymentRequest paymentRequest=PaymentRequest()
       ..setIsSandBox(true)
       ..setAmount(amount)
       ..setDescription("description")
       ..setMerchantID(PrivateKeys.zarinpalId)
-      ..setCallbackURL("https://mlggrand.ir/verify?phone=$phone&amount=$amount");
+      ..setCallbackURL("https://mlggrand.ir/verify?phone=$phone&amount=$amount&device=$deviceId");
 
     ZarinPal().startPayment(paymentRequest, (status, paymentGatewayUri) {
       try {

@@ -3,13 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
-import 'package:hitop_cafe/constants/private.dart';
-import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/payamito_api.dart';
-import 'package:hitop_cafe/screens/side_bar/purchase_app/services/zarinpal_api.dart';
 import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 import 'package:zarinpal/zarinpal.dart';
@@ -32,6 +29,29 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
   bool isRightNumber = false;
   String? sendCode;
   String? payReference;
+
+
+  authorityFunction()async{
+    await BackendServices()
+        .readSubscription(
+        context, phoneNumberController.text)
+        .then((value) {
+      if(value!=null && value.level!=0){
+        // print(value.toMap());
+        Provider.of<UserProvider>(context,listen: false).setUserLevel(value.level);
+        Navigator.pushNamed(context, HomeScreen.id);
+      }else {
+        print("no match phone number found in mySql");
+        Navigator.pushReplacementNamed(
+            context, PurchaseAppScreen.id,arguments: {
+          "phone":phoneNumberController.text,
+          "level":value?.level
+        });
+      }
+      return null;
+
+    });
+  }
 
   @override
   void dispose() {
@@ -105,11 +125,13 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
                               color: Colors.teal,
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  Map phoneAuthData =
+                                  Map? phoneAuthData =
                                       await PayamitoApi.sentMessage(
                                           context, phoneNumberController.text);
-                                  isRightNumber = phoneAuthData["isRight"];
-                                  sendCode = phoneAuthData["authCode"];
+                                  if(phoneAuthData!=null) {
+                                    isRightNumber = phoneAuthData["isRight"];
+                                    sendCode = phoneAuthData["authCode"];
+                                  }
                                   setState(() {});
                                 }
                               }),
@@ -163,26 +185,7 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
                             color: Colors.green,
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                Subscription? subscription =
-                                    await BackendServices()
-                                        .readSubscription(
-                                            context, phoneNumberController.text)
-                                        .then((value) {
-                                          if(value!=null && value.level!=0){
-                                           // print(value.toMap());
-                                            Provider.of<UserProvider>(context,listen: false).setUserLevel(value.level);
-                                            Navigator.pushNamed(context, HomeScreen.id);
-                                          }else {
-                                            print("no match phone number found in mySql");
-                                            Navigator.pushReplacementNamed(
-                                      context, PurchaseAppScreen.id,arguments: {
-                                          "phone":phoneNumberController.text,
-                                              "level":value?.level
-                                        });
-                                          }
-                                  return null;
-
-                                });
+                                authorityFunction();
                               }
                             }),
                     ],
