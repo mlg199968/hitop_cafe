@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:http/http.dart' as http;
 
@@ -60,6 +61,38 @@ class BackendServices {
     }
     return null;
   }
+
+
+  Future<List<Notice?>?> readNotice(context, String appName) async {
+    try {
+
+      http.Response res = await http.post(
+          Uri.parse("$hostUrl/notification/read_notice.php"),
+          body: {"app-name": appName});
+      if (res.statusCode == 200) {
+        print(res.body);
+        var backData = jsonDecode(res.body);
+        if (backData["success"] == true) {
+          List<Notice> notices =(backData["notification-list"] as List).map((e) => Notice().fromJson(e["notice_object"])).toList() ;
+
+          debugPrint("notifications successfully being read!");
+          return notices;
+
+        } else {
+          debugPrint("error in backendServices.readNotice php api error error");
+          return null;
+
+        }
+      }
+    } catch (e) {
+      debugPrint("error in backendServices.readNotice");
+      debugPrint(e.toString());
+    }
+    return null;
+  }
+
+
+
 ///get the options from mysql like the price of the app
   Future readOption(String optionName)async{
 final res=await http.post(
@@ -73,4 +106,5 @@ if(res.statusCode==200){
   }
 }
   }
+
 }

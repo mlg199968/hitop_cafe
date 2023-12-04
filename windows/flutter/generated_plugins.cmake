@@ -5,8 +5,10 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   image_compression_flutter
+  pdfx
   permission_handler_windows
   printing
+  thermal_printer
   url_launcher_windows
 )
 

@@ -12,6 +12,7 @@ import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -84,6 +85,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          ///Notification icon button
+          IconButton(
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, NoticeScreen.id);
+              },
+              icon: const Icon(Icons.notifications,size: 25,)),
+          ///hitop icon
           Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.only(right: 0),

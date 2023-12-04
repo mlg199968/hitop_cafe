@@ -15,7 +15,7 @@ import 'package:hitop_cafe/screens/raw_ware_screen/add_raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
-import 'package:hitop_cafe/screens/side_bar/notification_screen/notification_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
@@ -49,7 +49,7 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case QuickAddScreen.id:
       return MaterialPageRoute(
-          builder: (_) => QuickAddScreen());
+          builder: (_) => const QuickAddScreen());
 
     case AddShoppingBillScreen.id:
       Bill? bill = routeSetting.arguments as Bill?;
@@ -91,8 +91,8 @@ Route generateRoute(RouteSettings routeSetting) {
     case AnalyticsScreen.id:
       return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
 
-    case NotificationScreen.id:
-      return MaterialPageRoute(builder: (_) => const NotificationScreen());
+    case NoticeScreen.id:
+      return MaterialPageRoute(builder: (_) => const NoticeScreen());
 
 
     case PurchaseAppScreen.id:

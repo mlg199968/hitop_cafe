@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
@@ -12,7 +11,6 @@ import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -33,10 +31,10 @@ import 'package:hitop_cafe/screens/orders_screen/widgets/bill_action_button.dart
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
-import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
@@ -160,20 +158,19 @@ addToItemList(List<Item> iList){
     try {
       var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
       Order orderBill = createBillObject();
-      // final file = await PdfInvoiceApi.generate(orderBill,context);
-      //PdfApi.openFile(file);
-      final file = await PdfInvoiceApi.generatePdfA4(orderBill, context);
+      final file = await PdfInvoiceApi.generatePdf80(orderBill, context);
 
-      if (userProvider.selectedPrinter != null && Platform.isWindows) {
-        await Printing.directPrintPdf(
-          usePrinterSettings: true,
-            printer: userProvider.selectedPrinter!,
-            onLayout: (_) => file);
-        // await Printing.layoutPdf(
-        //     onLayout: (_) => file);
-      } else {
-        await bluetoothManager.writeRawData(file.buffer.asUint8List());
-      }
+      await PrintServices().escPosPrint(file);
+      // if (userProvider.selectedPrinter != null && Platform.isWindows) {
+      //   await Printing.directPrintPdf(
+      //     usePrinterSettings: true,
+      //       printer: userProvider.selectedPrinter!,
+      //       onLayout: (_) =>file) ;
+      //   // await Printing.layoutPdf(
+      //   //     onLayout: (_) => file);
+      // } else {
+      //   await bluetoothManager.writeRawData(file.buffer.asUint8List());
+      // }
     } catch (e) {
       debugPrint(e.toString());
       if (context.mounted) {
@@ -183,7 +180,7 @@ addToItemList(List<Item> iList){
   }
   void viewPdf()async{
     Order orderBill = createBillObject();
-    final uni8file = await PdfInvoiceApi.generatePdfA4(orderBill, context);
+    final uni8file = await PdfInvoiceApi.generatePdf80(orderBill, context);
    File file= await PdfApi.saveUni8File(name: "cache pdf",uni8file: uni8file);
     await PdfApi.openFile(file);
   }

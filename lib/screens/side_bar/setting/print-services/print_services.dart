@@ -1,27 +1,109 @@
-import 'dart:typed_data';
+
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 
 
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+import 'package:pdfx/pdfx.dart';
+import 'package:printing/printing.dart' as printing;
+import 'package:thermal_printer/thermal_printer.dart';
+
+
 
 class PrintServices {
 
   printPriority(BuildContext context,{required Uint8List unit8File}){
 
   }
-
-
-///escPos printer
-  void escPosPrint(Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80}) async {
-    final profile = await CapabilityProfile.load();
-    final generator = Generator(paperSize, profile);
-    List<int> bytes = [];
-    generator.rawBytes(unit8File.buffer.asInt8List());
-    generator.feed(2);
-    generator.cut();
+  static List devices = [];
+  _scan(PrinterType type, {bool isBle = false}) {
+    // Find printers
+    PrinterManager.instance.discovery(type: type, isBle: isBle).listen((device) {
+      devices.add(device);
+    });
   }
+  _connectDevice(PrinterDevice selectedPrinter, PrinterType type, {bool reconnect = false, bool isBle = false, String? ipAddress}) async {
+    switch (type) {
+    // only windows and android
+      case PrinterType.usb:
+        await PrinterManager.instance.connect(
+            type: type,
+            model: UsbPrinterInput(name: selectedPrinter.name, productId: selectedPrinter.productId, vendorId: selectedPrinter.vendorId));
+        break;
+    // only iOS and android
+      case PrinterType.bluetooth:
+        await PrinterManager.instance.connect(
+            type: type,
+            model: BluetoothPrinterInput(
+                name: selectedPrinter.name,
+                address: selectedPrinter.address!,
+                isBle: isBle,
+                autoConnect: reconnect));
+        break;
+      case PrinterType.network:
+        await PrinterManager.instance.connect(type: type, model: TcpPrinterInput(ipAddress: ipAddress ?? selectedPrinter.address!));
+        break;
+      default:
+    }
+  }
+  _sendBytesToPrint(List<int> bytes, PrinterType type) async {
+    PrinterManager.instance.send(type: type, bytes: bytes);
+  }
+  _disconnectDevice(PrinterType type) async {
+    await PrinterManager.instance.disconnect(type: type);
+  }
+///escPos printer
+  Future<void> escPosPrint(Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80}) async {
+    try {
+
+      //at first we convert unit8file to Image then we give it to the printer
+      final document = await PdfDocument.openData(unit8File);
+      final page = await document.getPage(1);
+      final pageImage = await page.render(width: page.width*10, height: page.height*10);
+      await page.close();
+
+      List<int> bytes = [];
+      final profile = await CapabilityProfile.load();
+      final generator = Generator(paperSize, profile);
+      //
+      img.Image? image = img.decodeImage(pageImage!.bytes);
+      image=img.copyResize(image!,width:500);
+      bytes += generator.image(image);
+      bytes += generator.feed(2);
+      bytes += generator.cut();
+      _scan(PrinterType.network);
+      final res = await PrinterManager.instance.connect(
+          type: PrinterType.network,
+          model: TcpPrinterInput(ipAddress: "192.168.1.24"));
+      _sendBytesToPrint(bytes, PrinterType.network);
+
+
+      await PrinterManager.instance.disconnect(type: PrinterType.network);
+    }catch(e){
+      debugPrint("print Services-escPosPrint function error \n $e");
+      _disconnectDevice(PrinterType.network);
+    }
+
+  }
+  ///direct printing windows
+  Future<void> windowsDirectPrint(printing.Printer? printer,Uint8List unit8File) async {
+
+    if (printer != null && Platform.isWindows) {
+      await printing.Printing.directPrintPdf(
+          usePrinterSettings: true,
+          printer: printer,
+          onLayout: (_) =>unit8File) ;
+      // await Printing.layoutPdf(
+      //     onLayout: (_) => file);
+    }
+  }
+
+
+
 
 ///scan the bluetooth devices from simpleBluetoothPrinter package
   static Future<void> scanSimpleBluetoothDevices(bool isOnBT,

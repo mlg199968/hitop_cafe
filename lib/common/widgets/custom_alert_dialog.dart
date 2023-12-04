@@ -5,18 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 
 class CustomDialog extends StatelessWidget {
-   const CustomDialog({super.key, this.title, required this.child, this.height, this.textDirection=TextDirection.rtl,this.opacity= .6, this.image,});
+  const CustomDialog({
+    super.key,
+    this.title,
+    required this.child,
+    this.height,
+    this.textDirection = TextDirection.rtl,
+    this.opacity = .6,
+    this.image,
+    this.borderRadius=20,
+  });
   final String? title;
   final Widget child;
   final double? height;
   final double width = 450;
   final TextDirection textDirection;
-  final  double opacity;
+  final double opacity;
+  final double borderRadius;
   final String? image;
   @override
   Widget build(BuildContext context) {
-    return  AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
       iconPadding: EdgeInsets.zero,
       contentPadding: EdgeInsets.zero,
       backgroundColor: Colors.white.withOpacity(opacity),
@@ -24,7 +34,7 @@ class CustomDialog extends StatelessWidget {
       content: HideKeyboard(
         child: BlurryContainer(
           padding: const EdgeInsets.all(0),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(borderRadius),
           child: Stack(
             children: [
               ///image holder part with faded button,
@@ -37,16 +47,16 @@ class CustomDialog extends StatelessWidget {
                     image: image == null
                         ? null
                         : DecorationImage(
-                      image: FileImage(File(image!)),
-                      fit: BoxFit.cover,
-                    ),
+                            image: FileImage(File(image!)),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ),
               Container(
                 width: width,
                 height: 250,
-                decoration:  const BoxDecoration(
+                decoration: const BoxDecoration(
                     backgroundBlendMode: BlendMode.dstIn,
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -75,25 +85,36 @@ class CustomDialog extends StatelessWidget {
                       child: title == null
                           ? null
                           : Text(
-                        title!,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 18),
-                      )),
+                              title!,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 18),
+                            )),
                   Directionality(
                     textDirection: textDirection,
                     child: Flexible(
                       child: Container(
-                          margin: image==null?null:const EdgeInsets.all(20).copyWith(top: 50),
+                          margin: image == null
+                              ? null
+                              : const EdgeInsets.all(20).copyWith(top: 50),
                           //decoration for image if image is not null
-                          decoration:image==null?null: BoxDecoration(
-                            gradient: const LinearGradient(
-                                colors: [Colors.white, Colors.transparent],
-                                stops: [0,.8],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          height: height, // ?? MediaQuery.of(context).size.height,
+                          decoration: image == null
+                              ? null
+                              : BoxDecoration(
+                                  gradient: const LinearGradient(
+                                      colors: [
+                                        Colors.white,
+                                        Colors.transparent
+                                      ],
+                                      stops: [
+                                        0,
+                                        .8
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                          height:
+                              height, // ?? MediaQuery.of(context).size.height,
                           width: width, // ?? MediaQuery.of(context).size.width,
                           padding: const EdgeInsets.all(20).copyWith(top: 0),
                           child: child),
@@ -108,4 +129,3 @@ class CustomDialog extends StatelessWidget {
     );
   }
 }
-

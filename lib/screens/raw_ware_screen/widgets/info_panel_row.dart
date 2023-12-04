@@ -9,35 +9,33 @@ class InfoPanelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                  color: Colors.black12,
-                ))),
-        width: MediaQuery.of(context).size.width * .5,
-        padding: const EdgeInsets.only(bottom: 10),
-        margin: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title.toPersianDigit()),
-            const SizedBox(
-              width: 10,
+    return Container(
+      decoration: const BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+                color: Colors.black12,
+              ))),
+      width: MediaQuery.of(context).size.width * .5,
+      padding: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title.toPersianDigit()),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              infoList.toPersianDigit(),
+              textAlign: TextAlign.left,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                infoList.toPersianDigit(),
-                textAlign: TextAlign.left,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
