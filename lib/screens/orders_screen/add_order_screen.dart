@@ -36,6 +36,7 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
+import 'package:thermal_printer/thermal_printer.dart';
 import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
@@ -158,19 +159,10 @@ addToItemList(List<Item> iList){
     try {
       var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
       Order orderBill = createBillObject();
-      final file = await PdfInvoiceApi.generatePdf80(orderBill, context);
-
-      await PrintServices().escPosPrint(file);
-      // if (userProvider.selectedPrinter != null && Platform.isWindows) {
-      //   await Printing.directPrintPdf(
-      //     usePrinterSettings: true,
-      //       printer: userProvider.selectedPrinter!,
-      //       onLayout: (_) =>file) ;
-      //   // await Printing.layoutPdf(
-      //   //     onLayout: (_) => file);
-      // } else {
-      //   await bluetoothManager.writeRawData(file.buffer.asUint8List());
-      // }
+        final file = await PdfInvoiceApi.generatePdf80(orderBill, context);
+      if(context.mounted) {
+        await PrintServices().printPriority(context, unit8File: file);
+      }
     } catch (e) {
       debugPrint(e.toString());
       if (context.mounted) {
@@ -184,7 +176,6 @@ addToItemList(List<Item> iList){
    File file= await PdfApi.saveUni8File(name: "cache pdf",uni8file: uni8file);
     await PdfApi.openFile(file);
   }
-
   ///replace old  orderBill data for edit
   void oldOrderReplace(Order oldOrder) {
     items.clear();

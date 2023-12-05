@@ -7,17 +7,25 @@ import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printe
 
 
 import 'package:flutter/services.dart';
+import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:image/image.dart' as img;
-import 'package:pdfx/pdfx.dart';
+import 'package:pdfx/pdfx.dart' as pdfx;
 import 'package:printing/printing.dart' as printing;
+import 'package:provider/provider.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 
 
 
 class PrintServices {
 
-  printPriority(BuildContext context,{required Uint8List unit8File}){
-
+  printPriority(BuildContext context,{required Uint8List unit8File})async{
+    UserProvider userProvider=Provider.of<UserProvider>(context,listen: false);
+if(Platform.isWindows){
+ await windowsDirectPrint(userProvider.selectedPrinter, unit8File,);
+}
+else if(Platform.isAndroid || Platform.isIOS){
+ await escPosPrint(unit8File,ip: userProvider.printerIp);
+}
   }
   static List devices = [];
   _scan(PrinterType type, {bool isBle = false}) {
@@ -53,15 +61,15 @@ class PrintServices {
   _sendBytesToPrint(List<int> bytes, PrinterType type) async {
     PrinterManager.instance.send(type: type, bytes: bytes);
   }
-  _disconnectDevice(PrinterType type) async {
+  disconnectDevice(PrinterType type) async {
     await PrinterManager.instance.disconnect(type: type);
   }
 ///escPos printer
-  Future<void> escPosPrint(Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80}) async {
+  Future<void> escPosPrint(Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80,required String ip}) async {
     try {
 
       //at first we convert unit8file to Image then we give it to the printer
-      final document = await PdfDocument.openData(unit8File);
+      final document = await pdfx.PdfDocument.openData(unit8File);
       final page = await document.getPage(1);
       final pageImage = await page.render(width: page.width*10, height: page.height*10);
       await page.close();
@@ -75,17 +83,17 @@ class PrintServices {
       bytes += generator.image(image);
       bytes += generator.feed(2);
       bytes += generator.cut();
-      _scan(PrinterType.network);
+      // _scan(PrinterType.network);
       final res = await PrinterManager.instance.connect(
           type: PrinterType.network,
-          model: TcpPrinterInput(ipAddress: "192.168.1.24"));
+          model: TcpPrinterInput(ipAddress: ip));
       _sendBytesToPrint(bytes, PrinterType.network);
 
 
       await PrinterManager.instance.disconnect(type: PrinterType.network);
     }catch(e){
       debugPrint("print Services-escPosPrint function error \n $e");
-      _disconnectDevice(PrinterType.network);
+     // _disconnectDevice(PrinterType.network);
     }
 
   }

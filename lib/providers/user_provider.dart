@@ -27,6 +27,7 @@ class UserProvider extends ChangeNotifier{
   int preBillNumber=1;
   String fontFamily=kFonts[0];
   Printer? _selectedPrinter;
+  String printerIp="192.168.1.1";
 
   Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
 
@@ -44,6 +45,7 @@ class UserProvider extends ChangeNotifier{
     preDiscount=shop.preTax ;
     preBillNumber=shop.preBillNumber;
     _selectedPrinter=shop.printer==null?null:Printer.fromMap(shop.printer!);
+    printerIp=shop.printerIp ?? "192.168.1.1" ;
 
   }
 

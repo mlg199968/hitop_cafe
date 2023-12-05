@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -28,18 +29,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
-  ///get start up data
-  getInitData(){
-    Provider.of<WareProvider>(context, listen: false).loadCategories();
-    if(HiveBoxes.getShopInfo().values.isNotEmpty){
-      Shop? shop = HiveBoxes.getShopInfo().values.first;
-      Provider.of<UserProvider>(context, listen: false).getData(shop);
-    }
-  }
+
 @override
   void initState() {
     super.initState();
-    getInitData();
+    ///get start up data
+    GlobalFunc.getInitData(context);
   }
 
   @override

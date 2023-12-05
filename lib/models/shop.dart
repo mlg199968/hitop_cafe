@@ -32,6 +32,8 @@ class Shop extends HiveObject {
   Map? printer;
   @HiveField(13)
   String? fontFamily;
+  @HiveField(14)
+  String? printerIp="192.168.1.1";
 
 }
 

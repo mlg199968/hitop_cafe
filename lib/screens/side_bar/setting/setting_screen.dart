@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -11,7 +10,6 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
-import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
@@ -34,6 +32,7 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   final TextEditingController taxController = TextEditingController();
   final TextEditingController billNumberController = TextEditingController();
+  final TextEditingController printerIpController = TextEditingController();
   late String selectedCurrency;
   String selectedFont = kFonts[0];
   late UserProvider provider;
@@ -57,7 +56,8 @@ class _SettingScreenState extends State<SettingScreen> {
       ..fontFamily = selectedFont
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
-      ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap();
+      ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap()
+    ..printerIp=printerIpController.text;
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
@@ -70,6 +70,7 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedFont = shopInfo.fontFamily ?? kFonts[0];
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
+      printerIpController.text=shopInfo.printerIp ?? provider.printerIp;
       selectedPrinter =
           shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
     }
@@ -268,6 +269,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   .toList());
                         },
                       ),
+                    InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip")
                   ],
                 ),
               ),

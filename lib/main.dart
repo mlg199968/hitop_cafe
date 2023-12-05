@@ -23,7 +23,7 @@ import 'package:provider/provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Global.init();
+  GlobalFunc.init();
   // To turn off landscape mode
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
