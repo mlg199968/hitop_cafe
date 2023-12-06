@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
-
-import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/private.dart';
-import 'package:hitop_cafe/models/subscription.dart';
-import 'package:hitop_cafe/services/backend_services.dart';
+
 
 import 'package:http/http.dart' as http;
 
 class PayamitoApi {
-  static Future<Map?> sentMessage(BuildContext context, String phoneNumber) async {
+  static Future<Map?> sentMessage(context, String phoneNumber) async {
     try{
       Random random = Random();
       String authCode = (random.nextInt(8998) + 1001).toString();
@@ -25,18 +23,15 @@ class PayamitoApi {
           Uri.parse(
               "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber"),
           body: messageBox);
-      print("statusCode");
-      print(res.statusCode);
       if (res.statusCode == 200) {
         Map backData = jsonDecode(res.body);
-        print("backData");
-        print(backData);
         if (backData["RetStatus"] == 1 && context.mounted) {
           return {"isRight": true, "authCode": authCode};
         }
       }
     }catch(e){
-      debugPrint(e.toString());
+
+      ErrorHandler.errorManger(context, e,title: "PayamitoApi -sendMessage error",showSnackbar: true);
     }
     return null;
   }

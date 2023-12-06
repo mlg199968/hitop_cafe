@@ -1,5 +1,6 @@
 
 
+import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
@@ -27,6 +28,10 @@ static Box<Bill> getBills(){
 
 static Box<Shop> getShopInfo(){
     return Hive.box<Shop>("shop_db");
+  }
+
+static Box<Bug> getBugs(){
+    return Hive.box<Bug>("bug_db");
   }
 
 

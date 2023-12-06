@@ -11,7 +11,6 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class ItemToBillPanel extends StatefulWidget {
  static const String id="/item-to-bill-panel";

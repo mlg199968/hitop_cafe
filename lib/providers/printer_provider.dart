@@ -1,13 +1,8 @@
 
 import 'package:flutter/foundation.dart';
 
-import 'package:hitop_cafe/constants/global.dart';
-import 'package:printing/printing.dart';
-
-
 //
 class PrinterProvider extends ChangeNotifier {
-  Printer? _printer;
   Uint8List? _file;
 
 

@@ -267,14 +267,15 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                                 if (value != null) {
                                                   value as RawWare;
                                                   bool exitedIngredient=false;
-                                                  ingredients.forEach((element) {
+                                                  for (var element in ingredients) {
                                                     if(element.wareId==value.wareId){
                                                     element.demand+=value.demand;
-                                                  }else{
-                                                      ingredients.add(value);
-                                                    }
-                                                  });
-
+                                                    exitedIngredient=true;
+                                                  }
+                                                  }
+                                                  if(!exitedIngredient){
+                                                    ingredients.add(value);
+                                                  }
                                                   setState(() {});
                                                 }
                                               });

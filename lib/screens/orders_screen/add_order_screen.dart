@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
@@ -13,7 +12,9 @@ import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -36,7 +37,6 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
-import 'package:thermal_printer/thermal_printer.dart';
 import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
@@ -105,27 +105,35 @@ addToItemList(List<Item> iList){
   num get atmSum => payments.isEmpty
       ? 0
       : payments
-          .map((e) => e.method == "atm" ? e.amount : 0)
+          .map((e) => e.method == PayMethod.atm ? e.amount : 0)
           .reduce((a, b) => a + b);
 
   ///calculate cash amount
   num get cashSum => payments.isEmpty
       ? 0
       : payments
-          .map((e) => e.method == "cash" ? e.amount : 0)
+          .map((e) => e.method == PayMethod.cash ? e.amount : 0)
           .reduce((a, b) => a + b);
 
   ///calculate discount amount
   num get discount => items.isEmpty
-      ? 0
-      : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
+        ? 0
+        : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
+
+  ///calculate Payment discount amount in payment
+  num get paymentDiscount =>payments.isEmpty
+        ? 0
+        : payments
+        .map((e) => e.method == PayMethod.discount ? e.amount : 0)
+        .reduce((a, b) => a + b);
+
 
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
     Order orderBill = Order()
       ..items = items
       ..payments = payments
-      ..discount = discount
+      ..discount = discount+paymentDiscount
       ..payable = payable()
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
       ..tableNumber = int.parse(tableNumberController.text)
@@ -157,23 +165,21 @@ addToItemList(List<Item> iList){
   ///export pdf function
   void printPdf() async {
     try {
-      var bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
       Order orderBill = createBillObject();
         final file = await PdfInvoiceApi.generatePdf80(orderBill, context);
       if(context.mounted) {
         await PrintServices().printPriority(context, unit8File: file);
       }
     } catch (e) {
-      debugPrint(e.toString());
-      if (context.mounted) {
-        showSnackBar(context, "پرینتری یافت نشد", type: SnackType.error);
+      if(context.mounted) {
+        ErrorHandler.errorManger(context, e,title: "addOrderScreen-print pdf error",showSnackbar: true);
       }
     }
   }
   void viewPdf()async{
     Order orderBill = createBillObject();
     final uni8file = await PdfInvoiceApi.generatePdf80(orderBill, context);
-   File file= await PdfApi.saveUni8File(name: "cache pdf",uni8file: uni8file);
+   File file= await PdfApi.saveUni8File(name: "cache pdf.pdf",uni8file: uni8file);
     await PdfApi.openFile(file);
   }
   ///replace old  orderBill data for edit
@@ -304,7 +310,7 @@ addToItemList(List<Item> iList){
               decoration: const BoxDecoration(gradient: kMainGradiant),
               child: Row(
                 children: [
-                  ///side bar panel in tablet snd desktop mode
+                  ///*****side bar panel in tablet snd desktop mode************
                   screenType(context) == ScreenType.mobile
                       ? const SizedBox()
                       : Container(
@@ -444,7 +450,7 @@ addToItemList(List<Item> iList){
                                       Column(
                                         children: [
                                           const Text("شماره میز:"),
-                                          Container(
+                                          SizedBox(
                                             width: 100,
                                             child: CounterTextfield(
                                               decimal: false,

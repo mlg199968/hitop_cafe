@@ -36,7 +36,7 @@ class Item extends HiveObject{
 @HiveField(13)
   num? discount=0;
 @HiveField(14)
-  num get sum =>(quantity ?? 1) * sale;
+  num get sum =>quantity * sale;
 
 
 

@@ -7,6 +7,7 @@ import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printe
 
 
 import 'package:flutter/services.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:image/image.dart' as img;
 import 'package:pdfx/pdfx.dart' as pdfx;
@@ -17,14 +18,14 @@ import 'package:thermal_printer/thermal_printer.dart';
 
 
 class PrintServices {
-
+///printer priority for print
   printPriority(BuildContext context,{required Uint8List unit8File})async{
     UserProvider userProvider=Provider.of<UserProvider>(context,listen: false);
 if(Platform.isWindows){
  await windowsDirectPrint(userProvider.selectedPrinter, unit8File,);
 }
 else if(Platform.isAndroid || Platform.isIOS){
- await escPosPrint(unit8File,ip: userProvider.printerIp);
+ await escPosPrint(context,unit8File,ip: userProvider.printerIp);
 }
   }
   static List devices = [];
@@ -65,7 +66,7 @@ else if(Platform.isAndroid || Platform.isIOS){
     await PrinterManager.instance.disconnect(type: type);
   }
 ///escPos printer
-  Future<void> escPosPrint(Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80,required String ip}) async {
+  Future<void> escPosPrint(context,Uint8List unit8File,{PaperSize paperSize=PaperSize.mm80,required String ip}) async {
     try {
 
       //at first we convert unit8file to Image then we give it to the printer
@@ -84,7 +85,7 @@ else if(Platform.isAndroid || Platform.isIOS){
       bytes += generator.feed(2);
       bytes += generator.cut();
       // _scan(PrinterType.network);
-      final res = await PrinterManager.instance.connect(
+      await PrinterManager.instance.connect(
           type: PrinterType.network,
           model: TcpPrinterInput(ipAddress: ip));
       _sendBytesToPrint(bytes, PrinterType.network);
@@ -92,8 +93,8 @@ else if(Platform.isAndroid || Platform.isIOS){
 
       await PrinterManager.instance.disconnect(type: PrinterType.network);
     }catch(e){
-      debugPrint("print Services-escPosPrint function error \n $e");
-     // _disconnectDevice(PrinterType.network);
+      ErrorHandler.errorManger(context, e,title:"print Services-escPosPrint function error",);
+
     }
 
   }

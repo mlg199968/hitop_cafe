@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/database.dart';
@@ -18,8 +18,6 @@ import 'package:path_provider/path_provider.dart';
 
 class BackupTools {
   static const String _outPutName = "data-file.mlg";
-
-
 
   static Future<void> _restoreJsonData(File json, context) async {
     try {
@@ -46,12 +44,8 @@ class BackupTools {
       showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",
           type: SnackType.success);
     } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      if (context.mounted) {
-        showSnackBar(context, e.toString(), type: SnackType.error);
-      }
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - restoreJsonData error", showSnackbar: true);
     }
   }
 
@@ -75,21 +69,17 @@ class BackupTools {
             if (filename == _outPutName) {
               await _restoreJsonData(extractedFile, context);
             } else {
-              print("images file extracted");
-              print(filename);
-              print(extractedFile.path);
               String imagesPath = await Address.itemsDirectory();
               await extractedFile.copy("$imagesPath/$filename");
             }
           } else {
-            print("is Directory");
             await Directory('$directory/$filename').create(recursive: true);
           }
         }
       }
-    }catch(e){
-      debugPrint(e.toString());
-      showSnackBar(context, e.toString(),type: SnackType.error) ;
+    } catch (e) {
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - readZipFile error", showSnackbar: true);
     }
   }
 
@@ -117,8 +107,8 @@ class BackupTools {
             type: SnackType.success);
       }
     } catch (e) {
-        debugPrint("create zip file error\n$e");
-      showSnackBar(context, e.toString(), type: SnackType.error);
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - createZipFile error", showSnackbar: true);
     }
   }
 
@@ -128,10 +118,6 @@ class BackupTools {
     await createdFile.writeAsString(json);
     return createdFile;
   }
-
-
-
-
 
   static Future<void> createBackup(context) async {
     try {
@@ -150,11 +136,8 @@ class BackupTools {
       await createZipFile(
           await Address.itemsImage(), database.toJson(), context);
     } catch (e) {
-      print("create backup error");
-      print(e);
-      if (context.mounted) {
-        showSnackBar(context, e.toString(), type: SnackType.error);
-      }
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - createBackup error", showSnackbar: true);
     }
   }
 
@@ -187,29 +170,25 @@ class BackupTools {
             type: SnackType.success);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      if (context.mounted) {
-        showSnackBar(context, e.toString(), type: SnackType.error);
-      }
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - restoreBackup error", showSnackbar: true);
     }
   }
 
-  static Future<void> _saveJson(String json, context) async {
-    String formattedDate =
-        intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
-
-    String? result = await FilePicker.platform
-        .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
-    if (result != null) {
-      String path = result;
-      File createdFile = File("$path/$formattedDate.mlg");
-      createdFile.create(recursive: true);
-      createdFile.writeAsString(json);
-
-      showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
-          type: SnackType.success);
-    }
-  }
+  // static Future<void> _saveJson(String json, context) async {
+  //   String formattedDate =
+  //       intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
+  //
+  //   String? result = await FilePicker.platform
+  //       .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
+  //   if (result != null) {
+  //     String path = result;
+  //     File createdFile = File("$path/$formattedDate.mlg");
+  //     createdFile.create(recursive: true);
+  //     createdFile.writeAsString(json);
+  //
+  //     showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
+  //         type: SnackType.success);
+  //   }
+  // }
 }

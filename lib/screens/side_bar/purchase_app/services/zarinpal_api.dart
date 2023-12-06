@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/private.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,7 +26,7 @@ static  payment(BuildContext context,{required String phone,required int amount}
           showSnackBar(context, "error $status on the ZarinPalApi.payment ");
         }
       }catch(e){
-        debugPrint("pay option error..\n $e" );
+        ErrorHandler.errorManger(context, e,title: "ZarinpalApi payment error",showSnackbar: true);
       }
     });
   }

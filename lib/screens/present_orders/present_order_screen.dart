@@ -212,7 +212,6 @@ class _CreditListPartState extends State<CreditListPart> {
                           child: CardTile(
                             enabled: !isTablet,
                             orderDetail: widget.orderList[index],
-                            color: kMainColor.withRed(170),
                             onSee: () {
                               if (widget.key != null) {
                                 Navigator.pop(context, widget.orderList[index]);

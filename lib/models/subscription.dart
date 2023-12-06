@@ -1,9 +1,6 @@
 
 import 'dart:convert';
-
-import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hive/hive.dart';
-
 
 part 'subscription.g.dart';
 @HiveType(typeId: 8)

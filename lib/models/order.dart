@@ -19,7 +19,7 @@ class Order extends HiveObject {
   @HiveField(4)
   late num payable;
   @HiveField(5)
-  num get itemsSum => items.isEmpty?0:items.map((e) => e.sale).reduce((a, b) => a + b);
+  num get itemsSum => items.isEmpty?0:items.map((e) => e.sale*e.quantity).reduce((a, b) => a + b);
   @HiveField(6)
   num get cashSum => payments.isEmpty?0:payments.map((e) =>e.method==PayMethod.cash? e.amount:0).reduce((a, b) => a + b);
   @HiveField(7)

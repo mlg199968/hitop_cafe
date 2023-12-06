@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
-import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/notice.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/info_panel_row.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class NoticeDetailPanel extends StatelessWidget {
@@ -63,6 +60,5 @@ class NoticeDetailPanel extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

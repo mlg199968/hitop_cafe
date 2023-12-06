@@ -16,7 +16,7 @@ class CardTile extends StatelessWidget {
       required this.orderDetail,
       this.enabled = true,
       this.height = 70,
-      required this.color,
+      this.color=kMainColor,
       required this.onSee});
 
   final Order orderDetail;

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/subscription.dart';
@@ -10,7 +11,8 @@ import 'package:http/http.dart' as http;
 
 
 class BackendServices {
-  Future<bool?> createSubscription(Subscription subs) async {
+  ///create new subscription data in host
+  Future<bool?> createSubscription(context,Subscription subs) async {
     try {
 
       http.Response res = await http.post(
@@ -21,48 +23,45 @@ class BackendServices {
         print(res.body);
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
-          Fluttertoast.showToast(msg: "Subscription successfully saved");
+          showSnackBar(context,"Subscription successfully saved",type: SnackType.success);
           return true;
         } else {
-          Fluttertoast.showToast(msg: "Subscription Not Saved!");
+          showSnackBar(context,"Subscription Not Saved!",type: SnackType.warning);
           return false;
         }
       }
     } catch (e) {
-      print(e);
+      ErrorHandler.errorManger(context, e,title: "BackendServices-createSubscription error",showSnackbar: true);
     }
     return null;
   }
-
+///read subscription data from host
   Future<Subscription?> readSubscription(context, String phone) async {
     try {
      String deviceId=await getDeviceInfo();
-     print(deviceId);
       http.Response res = await http.post(
           Uri.parse("$hostUrl/user/read_subscription.php"),
           body: {"phone": phone,"device-id":deviceId});
       if (res.statusCode == 200) {
-        print(res.body);
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
             Subscription subs = Subscription().fromMap(backData["subsData"]);
-
-            Fluttertoast.showToast(msg: "Subscription successfully being read!");
+            showSnackBar(context,"Subscription successfully being read!",type: SnackType.success);
             return subs;
 
         } else {
-          Fluttertoast.showToast(msg: "has not being purchase");
+          showSnackBar(context,"has not being purchase",type: SnackType.warning);
           return null;
 
         }
       }
     } catch (e) {
-      debugPrint(e.toString());
+      ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
     }
     return null;
   }
 
-
+///read Notifications from host
   Future<List<Notice?>?> readNotice(context, String appName) async {
     try {
 
@@ -70,7 +69,6 @@ class BackendServices {
           Uri.parse("$hostUrl/notification/read_notice.php"),
           body: {"app-name": appName});
       if (res.statusCode == 200) {
-        print(res.body);
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
           List<Notice> notices =(backData["notification-list"] as List).map((e) => Notice().fromJson(e["notice_object"])).toList() ;
@@ -85,8 +83,7 @@ class BackendServices {
         }
       }
     } catch (e) {
-      debugPrint("error in backendServices.readNotice");
-      debugPrint(e.toString());
+      ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
     }
     return null;
   }
@@ -98,7 +95,6 @@ class BackendServices {
 final res=await http.post(
     Uri.parse("$hostUrl/user/read_options.php"),
     body:{"option_name":optionName});
-print(res.body);
 if(res.statusCode==200){
   var backData=jsonDecode(res.body);
   if (backData["success"] == true){

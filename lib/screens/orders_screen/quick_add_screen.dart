@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
@@ -11,7 +10,6 @@ import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class QuickAddScreen extends StatefulWidget {
   static const String id = "quick-add-screen";
@@ -125,7 +123,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                               ]
                                   .map(
                                     (group) {
-                                      if(group.toString().contains(searchGroupWord!))
+                                      if(group.toString().contains(searchGroupWord))
                                       {
                                   return LabelTile(
                                     activeColor: Colors.teal,

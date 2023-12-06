@@ -211,7 +211,7 @@ class _AddWareScreenState extends State<AddWareScreen> {
                             } else {
                               ///condition for demo mode
                               if (HiveBoxes.getRawWare().values.length <
-                                  context.watch<UserProvider>()
+                                  Provider.of<UserProvider>(context,listen: false)
                                       .ceilCount) {
                                 saveWare();
                                 showSnackBar(context, "کالا به لیست افزوده شد!",
@@ -225,7 +225,7 @@ class _AddWareScreenState extends State<AddWareScreen> {
                                 setState(() {});
                                 // Navigator.pop(context,false);
                               } else {
-                                showSnackBar(context, context.watch<UserProvider>().ceilCountMessage,
+                                showSnackBar(context, Provider.of<UserProvider>(context,listen: false).ceilCountMessage,
                                     type: SnackType.error);
                               }
                             }

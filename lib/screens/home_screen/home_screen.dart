@@ -4,9 +4,7 @@ import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/global.dart';
-import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
@@ -15,7 +13,6 @@ import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
-import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 

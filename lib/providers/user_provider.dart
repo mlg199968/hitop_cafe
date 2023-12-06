@@ -10,7 +10,7 @@ class UserProvider extends ChangeNotifier{
 
   int userLevel=1;
   //ceil count is for how many item you can add to list
-  int ceilCount=1000;
+  int _ceilCount=3;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
   //*****
   String shopName="نام فروشگاه";
@@ -29,6 +29,7 @@ class UserProvider extends ChangeNotifier{
   Printer? _selectedPrinter;
   String printerIp="192.168.1.1";
 
+  int get ceilCount =>_ceilCount;
   Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
 
   void getData(Shop shop){
@@ -54,7 +55,7 @@ class UserProvider extends ChangeNotifier{
     prefs.setInt("level",input);
     userLevel=input;
     if(userLevel==1) {
-      ceilCount=1000;
+      _ceilCount=1000;
     }
     notifyListeners();
   }
@@ -66,7 +67,7 @@ class UserProvider extends ChangeNotifier{
     if(subsInfo!=null){
       userLevel=subsInfo;
       if(userLevel==1) {
-        ceilCount=1000;
+        _ceilCount=1000;
       }
     }else{
     }

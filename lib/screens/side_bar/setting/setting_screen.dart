@@ -12,6 +12,7 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
@@ -269,7 +270,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                   .toList());
                         },
                       ),
-                    InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip")
+                    InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip"),
+                    ///printers setting parts
+                    const Text(
+                      "توسعه دهنده",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    ButtonTile(onPress: (){
+                      Navigator.pushNamed(context, BugListScreen.id);
+                    }, label: "error List", buttonLabel:"see")
                   ],
                 ),
               ),

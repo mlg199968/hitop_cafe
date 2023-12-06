@@ -20,7 +20,7 @@ class OrderTools{
           List<RawWare> oldWares=oldItems[j].ingredients;
           for(int k=0;k<oldWares.length;k++) {
             if (oldWares[k].wareId == wareList[i].wareId) {
-              wareList[i].quantity += oldWares[k].demand * (oldItems[j].quantity ?? 1);
+              wareList[i].quantity += oldWares[k].demand * (oldItems[j].quantity);
             }
           }
         }
@@ -32,7 +32,7 @@ class OrderTools{
         List<RawWare> wares=items[j].ingredients;
         for(int k=0;k<wares.length;k++) {
           if (wares[k].wareId == wareList[i].wareId) {
-            wareList[i].quantity -= wares[k].demand*(items[j].quantity ?? 1);
+            wareList[i].quantity -= wares[k].demand*(items[j].quantity);
             HiveBoxes.getRawWare().putAt(i, wareList[i]);
           }
         }
@@ -51,7 +51,7 @@ class OrderTools{
         List<RawWare> wares=items[j].ingredients;
         for(int k=0;k<wares.length;k++) {
           if (wares[k].wareId == wareList[i].wareId) {
-            wareList[i].quantity += wares[k].demand*(items[j].quantity ?? 1);
+            wareList[i].quantity += wares[k].demand*(items[j].quantity);
             HiveBoxes.getRawWare().putAt(i, wareList[i]);
           }
         }

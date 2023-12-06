@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/global.dart';
+import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
@@ -40,6 +41,7 @@ Future main() async {
   Hive.registerAdapter(ShopAdapter());
   Hive.registerAdapter(OrderAdapter());
   Hive.registerAdapter(SubscriptionAdapter());
+  Hive.registerAdapter(BugAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
@@ -47,6 +49,7 @@ Future main() async {
   await Hive.openBox<Order>("order_db",path: await Address.hiveDirectory());
   await Hive.openBox<Bill>("bill_db",path: await Address.hiveDirectory());
   await Hive.openBox<Shop>("shop_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Bug>("bug_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),

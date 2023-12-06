@@ -22,12 +22,6 @@ class NoticeScreen extends StatelessWidget {
           child: FutureBuilder(
             future: BackendServices().readNotice(context, "hitop-cafe"),
             builder: (context, snap) {
-              Notice notice1 = Notice()
-                ..title = "Title"
-                ..content = "this is the test message for this tile"
-                ..link = "https://googe.com"
-                ..linkTitle = "google";
-              print(notice1.toJson());
               if (snap.connectionState == ConnectionState.done &&
                   snap.hasData) {
                 if (snap.hasData) {
@@ -72,7 +66,6 @@ class NoticeTile extends StatelessWidget {
           style: const TextStyle(fontSize: 11),
         ),
         onTap: () {
-          print(notice);
           showDialog(
               context: context,
               builder: (context) => NoticeDetailPanel(notice: notice));

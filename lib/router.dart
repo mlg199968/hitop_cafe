@@ -15,6 +15,7 @@ import 'package:hitop_cafe/screens/raw_ware_screen/add_raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
@@ -93,6 +94,9 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case NoticeScreen.id:
       return MaterialPageRoute(builder: (_) => const NoticeScreen());
+
+    case BugListScreen.id:
+      return MaterialPageRoute(builder: (_) => const BugListScreen());
 
 
     case PurchaseAppScreen.id:
