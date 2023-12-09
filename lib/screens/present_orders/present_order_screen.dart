@@ -58,9 +58,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
             onPressed: () {
               Navigator.pushNamed(context, AddOrderScreen.id);
             }),
-        appBar: screenType(context) != ScreenType.mobile
-            ? null
-            : AppBar(
+        appBar: AppBar(
           backgroundColor: Colors.transparent,
 
           actions: [
@@ -170,66 +168,37 @@ class _CreditListPartState extends State<CreditListPart> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
-      bool isTablet = constraint.maxWidth > 500;
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          !isTablet
-              ? const SizedBox()
-              : Flexible(
-            child: SizedBox(
-              width: 400,
-              child: selectedOrder == null
-                  ? null
-                  : OrderInfoPanelDesktop(
-                  infoData: selectedOrder!,
-                  onDelete: () {
-                    selectedOrder = null;
-                    setState(() {});
-                  }),
-            ),
-          ),
-          Expanded(
-            child: Wrap(
-              runSpacing: 10,
-              spacing: 10,
-              alignment: WrapAlignment.center,
-              children:
-                List.generate(
-                    widget.orderList.length,
-                    (index) {
 
-                      if (Provider.of<FilterProvider>(context, listen: false)
-                          .compareData(
-                          widget.orderList[index].dueDate,
-                          widget.orderList[index].payable,
-                          widget.orderList[index].orderDate)) {
-                        return GestureDetector(
-                          onTap: () {
-                            selectedOrder = widget.orderList[index];
-                            setState(() {});
-                          },
-                          child: CardTile(
-                            enabled: !isTablet,
-                            orderDetail: widget.orderList[index],
-                            onSee: () {
-                              if (widget.key != null) {
-                                Navigator.pop(context, widget.orderList[index]);
-                              } else {
-                                Navigator.pushNamed(context, AddOrderScreen.id,
-                                    arguments: widget.orderList[index]);
-                              }
-                            },
-                          ),
-                        );
+      return Wrap(
+        runSpacing: 10,
+        spacing: 10,
+        alignment: WrapAlignment.center,
+        children:
+          List.generate(
+              widget.orderList.length,
+              (index) {
+
+                if (Provider.of<FilterProvider>(context, listen: false)
+                    .compareData(
+                    widget.orderList[index].dueDate,
+                    widget.orderList[index].payable,
+                    widget.orderList[index].orderDate)) {
+                  return CardTile(
+                    orderDetail: widget.orderList[index],
+                    onSee: () {
+                      if (widget.key != null) {
+                        Navigator.pop(context, widget.orderList[index]);
                       } else {
-                        return const SizedBox();
+                        Navigator.pushNamed(context, AddOrderScreen.id,
+                            arguments: widget.orderList[index]);
                       }
-                    }),
+                    },
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              }),
 
-            ),
-          ),
-        ],
       );
     });
   }

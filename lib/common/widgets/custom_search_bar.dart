@@ -24,13 +24,20 @@ class CustomSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Flexible(
-          child: Directionality(
-            textDirection: TextDirection.rtl,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropListModel(
+            icon: Icon(Icons.sort,size: 30,color:iconColor,),
+              listItem: sortList,
+              selectedValue: selectedSort,
+              onChanged: (val) {
+                onSort(val);
+              }),
+          Flexible(
             child: SizedBox(
               width: 400,
               height: 45,
@@ -70,16 +77,9 @@ class CustomSearchBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ),
-        DropListModel(
-          icon: Icon(Icons.sort,size: 30,color:iconColor,),
-            listItem: sortList,
-            selectedValue: selectedSort,
-            onChanged: (val) {
-              onSort(val);
-            })
-      ],
+          )
+        ],
+      ),
     );
   }
 }

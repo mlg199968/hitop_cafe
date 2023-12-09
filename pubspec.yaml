@@ -43,7 +43,7 @@ dependencies:
   intl: ^0.18.1
   persian_datetime_picker: ^2.6.0
   path: ^1.8.2
-  uuid: ^3.0.7
+  uuid: ^4.2.1
   floating_action_bubble: ^1.1.4
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -87,8 +87,8 @@ dependencies:
   zarinpal: ^1.0.5
   fluttertoast: ^8.2.4
   device_info_plus: ^9.1.1
-  thermal_printer: ^1.0.4
-  pdfx: ^2.4.0
+#  thermal_printer: ^1.0.4
+#  pdfx: ^2.5.0
 
 
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
-import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
-import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
@@ -37,11 +36,6 @@ class _CustomerListScreenState extends State<OrderScreen> {
   String sortItem = SortItem.modifiedDate.value;
   String? keyWord;
 
-  @override
-  void didChangeDependencies() {
-
-    super.didChangeDependencies();
-  }
 
   @override
   void dispose() {
@@ -58,121 +52,76 @@ class _CustomerListScreenState extends State<OrderScreen> {
             onPressed: () {
           Navigator.pushNamed(context, AddOrderScreen.id);
         }),
-        appBar: screenType(context) != ScreenType.mobile
-            ? null
-            : AppBar(
+        appBar: CustomAppBar(
+          title:"لیست سفارشات",
+          context2: context,
           actions: [
+            ///filter button
             IconButton(
-              onPressed: () {},
               icon: const Icon(
-                Icons.more_vert,
-                size: 30,
+                Icons.filter_alt_rounded,
+                color: Colors.white,
               ),
+              onPressed: () async {
+                focusNode.unfocus();
+                searchCustomerController.clear();
+                keyWord = null;
+                showDialog(
+                    context: context,
+                    builder: (context) => const FilterPanel())
+                    .then((value) {
+                  setState(() {});
+                });
+              },
             ),
           ],
-          leading: const BackButton(),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(gradient: kMainGradiant),
-          ),
-          title: Container(
-            padding: const EdgeInsets.only(right: 5),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("لیست سفارشات"),
-              ],
-            ),
-          ),
-          elevation: 5.0,
-          automaticallyImplyLeading: false,
+          widgets: [
+    ///Search bar customer list
+            CustomSearchBar(
+                focusNode: focusNode,
+                controller: searchCustomerController,
+                hint: "جست و جو سفارش",
+                onChange: (val) {
+                  keyWord = val;
+                  setState(() {});
+                },
+                selectedSort: sortItem,
+                sortList: sortList,
+                onSort: (val){
+                  sortItem = val;
+                  setState(() {});
+                }),
+          ],
         ),
-        body:Container(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ///Search bar customer list
-                  Container(
-                      decoration: BoxDecoration(
-                        gradient: kMainGradiant,
-                        borderRadius: screenType(context) == ScreenType.mobile
-                            ? null
-                            : BorderRadius.circular(20),
+        body:Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ValueListenableBuilder<Box<Order>>(
+                valueListenable: HiveBoxes.getOrders().listenable(),
+                builder: (context, box, _) {
+                  List<Order> orderList =
+                  box.values.toList().cast<Order>();
+                  //filter the list in order to the search results
+                  List<Order> filteredList =
+                  OrderTools.filterList(orderList, keyWord, sortItem);
+                  if (filteredList.isNotEmpty) {
+                    return CreditListPart(
+                      orderList: filteredList,
+                      key: widget.key,
+                    );
+                  } else {
+                    return const Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "سفارشی یافت نشد!",
+                          textDirection: TextDirection.rtl,
+                        ),
                       ),
-                      //margin: const EdgeInsets.only(top: 20),
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: CustomSearchBar(
-                                focusNode: focusNode,
-                                controller: searchCustomerController,
-                                hint: "جست و جو سفارش",
-                                onChange: (val) {
-                                  keyWord = val;
-                                  setState(() {});
-                                },
-                                selectedSort: sortItem,
-                                sortList: sortList,
-                                onSort: (val){
-                                  sortItem = val;
-                                  setState(() {});
-                                }),
-                          ),
-                          Container(
-                            height: 20,
-                            width: 1,
-                            color: Colors.white60,
-                          ),
-                          SizedBox(
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.filter_alt_rounded,
-                                color: Colors.white,
-                              ),
-                              onPressed: () async {
-                                focusNode.unfocus();
-                                searchCustomerController.clear();
-                                keyWord = null;
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => const FilterPanel())
-                                    .then((value) {
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      )),
-                  ValueListenableBuilder<Box<Order>>(
-                      valueListenable: HiveBoxes.getOrders().listenable(),
-                      builder: (context, box, _) {
-                        List<Order> orderList =
-                        box.values.toList().cast<Order>();
-                        //filter the list in order to the search results
-                        List<Order> filteredList =
-                        OrderTools.filterList(orderList, keyWord, sortItem);
-                        if (filteredList.isNotEmpty) {
-                          return CreditListPart(
-                            orderList: filteredList,
-                            key: widget.key,
-                          );
-                        } else {
-                          return const Expanded(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "سفارشی یافت نشد!",
-                                textDirection: TextDirection.rtl,
-                              ),
-                            ),
-                          );
-                        }
-                      }),
-                ],
-              ),
+                    );
+                  }
+                }),
+          ],
         ),),
     );
   }

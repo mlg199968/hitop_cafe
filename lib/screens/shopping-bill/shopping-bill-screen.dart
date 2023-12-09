@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/constants/constants.dart';
@@ -33,14 +34,12 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
     SortItem.modifiedDate.value,
     SortItem.createdDate.value,
     SortItem.billNumber.value,
-
   ];
   String sortItem = SortItem.modifiedDate.value;
   String? keyWord;
 
   @override
   void didChangeDependencies() {
-
     super.didChangeDependencies();
   }
 
@@ -54,126 +53,82 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      floatingActionButton: CustomFloatActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, AddShoppingBillScreen.id);
-          }),
-      appBar: screenType(context) != ScreenType.mobile
-          ? null
-          : AppBar(
+      floatingActionButton: CustomFloatActionButton(onPressed: () {
+        Navigator.pushNamed(context, AddShoppingBillScreen.id);
+      }),
+      appBar: CustomAppBar(
+        context2: context,
+        title: "فاکتور های خرید",
         actions: [
+          ///filter button
           IconButton(
-            onPressed: () {},
             icon: const Icon(
-              Icons.more_vert,
-              size: 30,
+              Icons.filter_alt_rounded,
+              color: Colors.white,
             ),
+            onPressed: () async {
+              focusNode.unfocus();
+              searchCustomerController.clear();
+              keyWord = null;
+              showDialog(
+                  context: context,
+                  builder: (context) => const FilterPanel())
+                  .then((value) {
+                setState(() {});
+              });
+            },
           ),
         ],
-        leading: const BackButton(),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: kMainGradiant),
-        ),
-        title: Container(
-          padding: const EdgeInsets.only(right: 5),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("فاکتور های خرید"),
-            ],
-          ),
-        ),
-        elevation: 5.0,
-        automaticallyImplyLeading: false,
+        widgets: [
+          ///Search bar
+          CustomSearchBar(
+              focusNode: focusNode,
+              controller: searchCustomerController,
+              hint: "جست و جو فاکتور",
+              onChange: (val) {
+                keyWord = val;
+                setState(() {});
+              },
+              selectedSort: sortItem,
+              sortList: sortList,
+              onSort: (val) {
+                sortItem = val;
+                setState(() {});
+              }),
+        ],
       ),
-      body:Container(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ///Search bar customer list
-            Container(
-                decoration: BoxDecoration(
-                  gradient: kMainGradiant,
-                  borderRadius: screenType(context) == ScreenType.mobile
-                      ? null
-                      : BorderRadius.circular(20),
-                ),
-                //margin: const EdgeInsets.only(top: 20),
-                padding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomSearchBar(
-                          focusNode: focusNode,
-                          controller: searchCustomerController,
-                          hint: "جست و جو فاکتور",
-                          onChange: (val) {
-                            keyWord = val;
-                            setState(() {});
-                          },
-                          selectedSort: sortItem,
-                          sortList: sortList,
-                          onSort: (val){
-                            sortItem = val;
-                            setState(() {});
-                          }),
-                    ),
-                    Container(
-                      height: 20,
-                      width: 1,
-                      color: Colors.white60,
-                    ),
-                    SizedBox(
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.filter_alt_rounded,
-                          color: Colors.white,
-                        ),
-                        onPressed: () async {
-                          focusNode.unfocus();
-                          searchCustomerController.clear();
-                          keyWord = null;
-                          showDialog(
-                              context: context,
-                              builder: (context) => const FilterPanel())
-                              .then((value) {
-                            setState(() {});
-                          });
-                        },
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+
+
+          ValueListenableBuilder<Box<Bill>>(
+              valueListenable: HiveBoxes.getBills().listenable(),
+              builder: (context, box, _) {
+                List<Bill> billList = box.values.toList().cast<Bill>();
+                //filter the list in order to the search results
+                List<Bill> filteredList =
+                    BillTools.filterList(billList, keyWord, sortItem);
+                if (filteredList.isNotEmpty) {
+                  return CreditListPart(
+                    billList: filteredList,
+                    key: widget.key,
+                  );
+                } else {
+                  return const Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "فاکتوری یافت نشد!",
+                        textDirection: TextDirection.rtl,
                       ),
                     ),
-                  ],
-                )),
-            ValueListenableBuilder<Box<Bill>>(
-                valueListenable: HiveBoxes.getBills().listenable(),
-                builder: (context, box, _) {
-                  List<Bill> billList =
-                  box.values.toList().cast<Bill>();
-                  //filter the list in order to the search results
-                  List<Bill> filteredList =
-                  BillTools.filterList(billList, keyWord, sortItem);
-                  if (filteredList.isNotEmpty) {
-                    return CreditListPart(
-                      billList: filteredList,
-                      key: widget.key,
-                    );
-                  } else {
-                    return const Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "فاکتوری یافت نشد!",
-                          textDirection: TextDirection.rtl,
-                        ),
-                      ),
-                    );
-                  }
-                }),
-          ],
-        ),
-      ),);
+                  );
+                }
+              }),
+        ],
+      ),
+    );
   }
 }
 
@@ -198,18 +153,18 @@ class _CreditListPartState extends State<CreditListPart> {
             !isTablet
                 ? const SizedBox()
                 : Flexible(
-              child: SizedBox(
-                width: 400,
-                child: selectedOrder == null
-                    ? null
-                    : BillInfoPanelDesktop(
-                    infoData: selectedOrder!,
-                    onDelete: () {
-                      selectedOrder = null;
-                      setState(() {});
-                    }),
-              ),
-            ),
+                    child: SizedBox(
+                      width: 400,
+                      child: selectedOrder == null
+                          ? null
+                          : BillInfoPanelDesktop(
+                              infoData: selectedOrder!,
+                              onDelete: () {
+                                selectedOrder = null;
+                                setState(() {});
+                              }),
+                    ),
+                  ),
             Expanded(
               child: ListView.builder(
                   itemCount: widget.billList.length,
@@ -217,14 +172,14 @@ class _CreditListPartState extends State<CreditListPart> {
                     //color condition for tile color
                     final colorCondition = widget.billList[index].payable <= 0
                         ? (widget.billList[index].payable == 0
-                        ? Colors.green
-                        : Colors.blue)
+                            ? Colors.green
+                            : Colors.blue)
                         : Colors.red;
                     if (Provider.of<FilterProvider>(context, listen: false)
                         .compareData(
-                        widget.billList[index].dueDate,
-                        widget.billList[index].payable,
-                        widget.billList[index].billDate)) {
+                            widget.billList[index].dueDate,
+                            widget.billList[index].payable,
+                            widget.billList[index].billDate)) {
                       return GestureDetector(
                         onTap: () {
                           selectedOrder = widget.billList[index];
@@ -238,7 +193,8 @@ class _CreditListPartState extends State<CreditListPart> {
                             if (widget.key != null) {
                               Navigator.pop(context, widget.billList[index]);
                             } else {
-                              Navigator.pushNamed(context, AddShoppingBillScreen.id,
+                              Navigator.pushNamed(
+                                  context, AddShoppingBillScreen.id,
                                   arguments: widget.billList[index]);
                             }
                           },
