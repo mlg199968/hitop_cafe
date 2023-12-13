@@ -63,138 +63,151 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: const BoxDecoration(
           gradient: kMainGradiant,
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ///top Person Icon
-                Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                        color: Colors.orangeAccent,
-                        strokeAlign: BorderSide.strokeAlignCenter,
-                        width: 5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: ShaderMask(
-                    shaderCallback: (rect) => const LinearGradient(
-                      colors: [
-                        Colors.orangeAccent,
-                        Colors.yellow,
-                        Colors.orangeAccent,
-                      ],
-                    ).createShader(rect),
-                    child: const Icon(
-                      Icons.person,
-                      size: 120,
+        child: Container(
+          width: 450,
+          height: 550,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: kBlackWhiteGradiant,
+            borderRadius: BorderRadius.circular(20)
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ///top Person Icon
+                  Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
                       color: Colors.white,
+                      border: Border.all(
+                          color: Colors.orangeAccent,
+                          strokeAlign: BorderSide.strokeAlignCenter,
+                          width: 5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ShaderMask(
+                      shaderCallback: (rect) => const LinearGradient(
+                        colors: [
+                          Colors.orangeAccent,
+                          Colors.yellow,
+                          Colors.orangeAccent,
+                        ],
+                      ).createShader(rect),
+                      child: const Icon(
+                        Icons.person,
+                        size: 120,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 50,
-                      ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
 
-                      ///phone number field and auth button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        ///phone number field and auth button
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomButton(
+                                text: "ارسال کد",
+                                height: 40,
+                                color: Colors.teal,
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    Map? phoneAuthData =
+                                        await PayamitoApi.sentMessage(
+                                            context, phoneNumberController.text);
+                                    if(phoneAuthData!=null) {
+                                      isRightNumber = phoneAuthData["isRight"];
+                                      sendCode = phoneAuthData["authCode"];
+                                    }
+                                    setState(() {});
+                                  }
+                                }),
+                            const VerticalDivider(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: CustomTextField(
+                                label: "شماره موبایل",
+                                controller: phoneNumberController,
+                                textFormat: TextFormatter.number,
+                                maxLength: 11,
+                                validate: true,
+                                extraValidate: (val) {
+                                  String newVal = val!;
+                                  if (val[0] == "0") {
+                                    newVal = val.replaceFirst("0", "");
+                                    phoneNumberController.text = newVal;
+                                  }
+                                  if (newVal.length < 10 || newVal[0] != "9") {
+                                    return "شماره معتبر نیست";
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+
+                        ///show code textfield when authorization code has been sent
+                        if (isRightNumber)
+                          CustomTextField(
+                            validate: true,
+                            label: "کد ارسال شده",
+                            textFormat: TextFormatter.number,
+                            controller: authCodeController,
+                            extraValidate: (val) {
+                              if (sendCode != val) {
+                                return "کد وارد شده معتبر نمی باشد!";
+                              }
+                            },
+                          ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        if (isRightNumber)
                           CustomButton(
-                              text: "ارسال کد",
-                              height: 40,
-                              color: Colors.teal,
+                              text: "احراز هویت",
+                              color: Colors.green,
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  Map? phoneAuthData =
-                                      await PayamitoApi.sentMessage(
-                                          context, phoneNumberController.text);
-                                  if(phoneAuthData!=null) {
-                                    isRightNumber = phoneAuthData["isRight"];
-                                    sendCode = phoneAuthData["authCode"];
-                                  }
-                                  setState(() {});
+                                  authorityFunction();
                                 }
                               }),
-                          const VerticalDivider(
-                            width: 8,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              label: "شماره موبایل",
-                              controller: phoneNumberController,
-                              textFormat: TextFormatter.number,
-                              maxLength: 11,
-                              validate: true,
-                              extraValidate: (val) {
-                                String newVal = val!;
-                                if (val[0] == "0") {
-                                  newVal = val.replaceFirst("0", "");
-                                  phoneNumberController.text = newVal;
-                                }
-                                if (newVal.length < 10 || newVal[0] != "9") {
-                                  return "شماره معتبر نیست";
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 50,
-                      ),
-
-                      ///show code textfield when authorization code has been sent
-                      if (isRightNumber)
-                        CustomTextField(
-                          validate: true,
-                          label: "کد ارسال شده",
-                          textFormat: TextFormatter.number,
-                          controller: authCodeController,
-                          extraValidate: (val) {
-                            if (sendCode != val) {
-                              return "کد وارد شده معتبر نمی باشد!";
-                            }
-                          },
-                        ),
-                      const SizedBox(
-                        height: 18,
-                      ),
-                      if (isRightNumber)
-                        CustomButton(
-                            text: "احراز هویت",
-                            color: Colors.green,
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                authorityFunction();
-                              }
-                            }),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-              ],
+                  const SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

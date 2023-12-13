@@ -116,7 +116,7 @@ class CustomDialog extends StatelessWidget {
                           height:
                               height, // ?? MediaQuery.of(context).size.height,
                           width: width, // ?? MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.all(20).copyWith(top: 0),
+                          padding: const EdgeInsets.all(20).copyWith(top: 10),
                           child: child),
                     ),
                   ),

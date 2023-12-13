@@ -3,7 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/global.dart';
+import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
@@ -26,6 +28,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
+
+
+  final List screens=[
+    const OrderScreen(),
+    const PresentOrderScreen(),
+    const ItemsScreen(),
+    const WareListScreen(),
+    const ShoppingBillScreen(),
+    const AnalyticsScreen(),
+  ];
+  int screenIndex=0;
+  ///when screen width it's getting large onTap button function change to change screen with index
+  VoidCallback onTapFunction(int index,VoidCallback onTap){
+    screenIndex=index;
+    if(screenType(context)==ScreenType.desktop){
+      setState(() {});
+      print(index);
+      print("current index");
+      print(screenIndex);
+    }else {
+      return onTap;
+    }
+    return (){};
+  }
 
 @override
   void initState() {
@@ -103,110 +129,141 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              ///home screen header
-              Container(
-                width: double.maxFinite,
-                height: MediaQuery.of(context).size.height * .35,
-                decoration: const BoxDecoration(
-                  gradient: kMainGradiant,
-                  borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
-                ),
-                child:  Center(
-                  child: Wrap(
-                    children: [
-                      Text("امروز: ${DateTime.now().toPersianDateStr()}",style: const TextStyle(color: Colors.white,fontSize: 17),),
-                    ],
-                  ),
+        child: Stack(
+          children: [
+            ///home screen header
+            Container(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * .35,
+              decoration: const BoxDecoration(
+                gradient: kMainGradiant,
+                borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
+              ),
+              child:  Center(
+                child: Wrap(
+                  children: [
+                    Text("امروز: ${DateTime.now().toPersianDateStr()}",style: const TextStyle(color: Colors.white,fontSize: 17),),
+                  ],
                 ),
               ),
-              Container(
-                margin:
-                    EdgeInsets.only(top: MediaQuery.of(context).size.height * .2),
-                padding: const EdgeInsets.all(20),
+            ),
+            Container(
+              margin:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height * .2),
+              padding: const EdgeInsets.all(20),
 
-                ///card button sections
-                child: Center(
-                    child: Column(
-                  children: [
-                    ///order button card
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 3,
-                          child: CardButton(
-                              label: "سفارشات حاضر",
-                              width: 300,
-                              image: "active-orders",
-                              onTap: () {
-                                Navigator.pushNamed(context, PresentOrderScreen.id);
-                              }),
+              ///card button sections
+              child: Row(
+                textDirection: TextDirection.ltr,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if(screenType(context)==ScreenType.desktop)
+                  Expanded(
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.red
                         ),
-                        Flexible(
-                          flex: 2,
-                          child: CardButton(
-                              label: "تاریخچه سفارشات",
-                              width: 200,
-                              image: "orders-history",
-                              onTap: () {
-                                Navigator.pushNamed(context, OrderScreen.id);
-                              }),
-                        ),
-                      ],
-                    ),
-
-                    ///ware house button raw wares and main items
-
-                    CardButton(
-                        label: "لیست آیتم ها ",
-                        width: 400,
-                        height: 100,
-                        image: "items",
-                        verticalDirection: false,
-                        onTap: () {
-                          Navigator.pushNamed(context, ItemsScreen.id);
-                        }),
-                    CardButton(
-                        label: "لیست مواد خام ",
-                        width: 400,
-                        height: 100,
-                        image: "raw-wares",
-                        verticalDirection: false,
-                        onTap: () {
-                          Navigator.pushNamed(context, WareListScreen.id);
-                        }),
-
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Wrap(
-                        children: [
-                          SmallCardButton(
-                              label: "فاکتور خرید",
-                              image: "bills.jpg",
-                              onTap: () {
-                                Navigator.pushNamed(context, ShoppingBillScreen.id);
-                              }),
-                          SmallCardButton(
-                              label: "آنالیز",
-                              image: "analytics.png",
-                              onTap: () {
-                                Navigator.pushNamed(context, AnalyticsScreen.id);
-                              }),
-                        ],
+                        child: screens[screenIndex],
                       ),
                     ),
-                    const SizedBox(
-                      height: 100,
-                    ),
-                  ],
-                )),
+                  ),
+                  SingleChildScrollView(
+                    child: Center(
+                        child: Column(
+                      children: [
+
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 3,
+                              child: CardButton(
+                                  label: "سفارشات حاضر",
+                                  width: 300,
+                                  image: "active-orders",
+                                  onTap:() {
+                                    onTapFunction(0, () {
+                                      Navigator.pushNamed(
+                                          context, PresentOrderScreen.id);
+                                    });
+                                  }),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: CardButton(
+                                  label: "تاریخچه سفارشات",
+                                  width: 200,
+                                  image: "orders-history",
+                                  onTap: () {
+                                    onTapFunction(1, () {
+                                      Navigator.pushNamed(context, OrderScreen.id);
+                                    });
+
+                                  }),
+                            ),
+                          ],
+                        ),
+
+                        ///ware house button raw wares and main items
+
+                        CardButton(
+                            label: "لیست آیتم ها ",
+                            width: 400,
+                            height: 100,
+                            image: "items",
+                            verticalDirection: false,
+                            onTap: (){
+                              onTapFunction(2, () {
+                                Navigator.pushNamed(context, ItemsScreen.id);
+                              });
+                            }),
+                        CardButton(
+                            label: "لیست مواد خام ",
+                            width: 400,
+                            height: 100,
+                            image: "raw-wares",
+                            verticalDirection: false,
+                            onTap: (){
+                              onTapFunction(3, () {
+                                Navigator.pushNamed(context, WareListScreen.id);
+                              });
+                            }),
+
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Wrap(
+                            children: [
+                              SmallCardButton(
+                                  label: "فاکتور خرید",
+                                  image: "bills.jpg",
+                                  onTap: () {
+                                    onTapFunction(4, () { Navigator.pushNamed(context, ShoppingBillScreen.id);});
+
+                                  }),
+                              SmallCardButton(
+                                  label: "آنالیز",
+                                  image: "analytics.png",
+                                  onTap: () {
+                                    onTapFunction(5, () { Navigator.pushNamed(context, AnalyticsScreen.id);});
+
+                                  }),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

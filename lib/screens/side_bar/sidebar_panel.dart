@@ -7,7 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:provider/provider.dart';
@@ -99,13 +101,13 @@ class SideBarPanel extends StatelessWidget {
                         : const SizedBox(),
 
                     ///a button just for test
-                    // ActionButton(
-                    //   icon: Icons.account_balance_outlined,
-                    //   onPress: () {
-                    //     Navigator.pushNamed(context, PurchaseAppScreen.id,
-                    //         arguments: {"phone": "9910606073"});
-                    //   },
-                    // ),
+                    ActionButton(
+                      icon: Icons.account_balance_outlined,
+                      onPress: () {
+                        Navigator.pushNamed(context, PurchaseAppScreen.id,
+                            arguments: {"phone": "9910606073"});
+                      },
+                    ),
                   ],
                 ),
 
@@ -202,6 +204,7 @@ class PurchaseButton extends StatelessWidget {
         Navigator.pushNamed(context, AuthorityScreen.id);
       },
       child: Container(
+        width: 300,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(

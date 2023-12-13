@@ -65,6 +65,10 @@ purchaseButtonFunc()async{
   Widget build(BuildContext context) {
     return HideKeyboard(
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+        ),
         body: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

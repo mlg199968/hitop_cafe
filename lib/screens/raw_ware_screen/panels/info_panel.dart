@@ -12,28 +12,38 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 
 import '../widgets/info_panel_row.dart';
 
-InfoPanel({required BuildContext context, required RawWare wareInfo}) {
+class WareInfoPanel{
+ WareInfoPanel(this.context,{ required this.wareInfo});
+ final BuildContext context;
+final RawWare wareInfo;
+
+ List<Widget> get _infoLines => [
+  InfoPanelRow(title: "نام کالا", infoList: wareInfo.wareName),
+  InfoPanelRow(title: "سرگروه", infoList: wareInfo.category),
+  InfoPanelRow(
+      title: "قیمت خرید", infoList: addSeparator(wareInfo.cost)),
+  InfoPanelRow(
+      title: "مقدار", infoList: "${wareInfo.quantity} ${wareInfo.unit} "),
+  InfoPanelRow(title: "توضیحات", infoList: wareInfo.description),
+  InfoPanelRow(
+      title: "تاریخ ثبت", infoList: wareInfo.createDate.toPersianDateStr()),
+  InfoPanelRow(
+      title: "تاریخ ویرایش:",
+      infoList: wareInfo.modifiedDate.toPersianDateStr()),
+];
+
+ dialogPanel() {
   return CustomDialog(
-    height: MediaQuery.of(context).size.height * .5,
+    height: MediaQuery
+        .of(context)
+        .size
+        .height * .5,
     title: "مشخصات کالا",
     child: Column(
       children: [
         Expanded(
           child: ListView(
-            children: <Widget>[
-              InfoPanelRow(title: "نام کالا", infoList: wareInfo.wareName),
-              InfoPanelRow(title: "سرگروه", infoList: wareInfo.category),
-              InfoPanelRow(
-                  title: "قیمت خرید", infoList: addSeparator(wareInfo.cost)),
-              InfoPanelRow(
-                  title: "مقدار", infoList: "${wareInfo.quantity} ${wareInfo.unit} "),
-              InfoPanelRow(title: "توضیحات", infoList: wareInfo.description),
-              InfoPanelRow(
-                  title: "تاریخ ثبت", infoList: wareInfo.createDate.toPersianDateStr()),
-              InfoPanelRow(
-                  title: "تاریخ ویرایش:",
-                  infoList: wareInfo.modifiedDate.toPersianDateStr()),
-            ],
+            children: _infoLines,
           ),
         ),
         const SizedBox(
@@ -42,14 +52,16 @@ InfoPanel({required BuildContext context, required RawWare wareInfo}) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+
             ///delete button
             ActionButton(
-              label: "حذف",
+                label: "حذف",
                 bgColor: Colors.red,
                 onPress: () {
                   wareInfo.delete();
                   Navigator.pop(context);
-                  showSnackBar(context, "کالا مورد نظر حذف شد!",type: SnackType.success);
+                  showSnackBar(context, "کالا مورد نظر حذف شد!",
+                      type: SnackType.success);
                 },
                 icon: Icons.delete),
 
@@ -70,35 +82,21 @@ InfoPanel({required BuildContext context, required RawWare wareInfo}) {
 }
 
 
-
-
-
-InfoPanelDesktop({required BuildContext context, required RawWare wareInfo,required VoidCallback onReload}) {
+staticPanel(
+    {required VoidCallback onReload}) {
   return Directionality(
     textDirection: TextDirection.rtl,
     child: Container(
       width: 300,
-      margin: const EdgeInsets.symmetric(vertical: 30,horizontal: 5),
-      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
-      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(20)),
+      margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
           Expanded(
             child: ListView(
-              children: <Widget>[
-                InfoPanelRow(title: "نام کالا", infoList: wareInfo.wareName),
-                InfoPanelRow(title: "سرگروه", infoList: wareInfo.category),
-                InfoPanelRow(
-                    title: "قیمت خرید", infoList: addSeparator(wareInfo.cost)),
-
-                InfoPanelRow(
-                    title: "مقدار", infoList: "${wareInfo.quantity} ${wareInfo.unit} "),
-                InfoPanelRow(title: "توضیحات", infoList: wareInfo.description),
-                InfoPanelRow(
-                    title: "تاریخ ثبت", infoList: wareInfo.createDate.toPersianDateStr()),
-               InfoPanelRow(
-                    title: "تاریخ ویرایش", infoList: wareInfo.modifiedDate.toPersianDateStr()),
-              ],
+              children: _infoLines,
             ),
           ),
           const SizedBox(
@@ -107,6 +105,7 @@ InfoPanelDesktop({required BuildContext context, required RawWare wareInfo,requi
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
+
               ///delete button
               ActionButton(
                   label: "حذف",
@@ -114,7 +113,8 @@ InfoPanelDesktop({required BuildContext context, required RawWare wareInfo,requi
                   onPress: () {
                     wareInfo.delete();
                     onReload();
-                    showSnackBar(context, "کالا مورد نظر حذف شد!",type: SnackType.success);
+                    showSnackBar(context, "کالا مورد نظر حذف شد!",
+                        type: SnackType.success);
                   },
                   icon: Icons.delete),
 
@@ -135,4 +135,4 @@ InfoPanelDesktop({required BuildContext context, required RawWare wareInfo,requi
   );
 }
 
-
+}

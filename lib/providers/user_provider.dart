@@ -8,9 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier{
 
-  int userLevel=1;
+  int userLevel=0;
   //ceil count is for how many item you can add to list
-  int _ceilCount=3;
+  int _ceilCount=10;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
   //*****
   String shopName="نام فروشگاه";
@@ -71,6 +71,7 @@ class UserProvider extends ChangeNotifier{
       }
     }else{
     }
+
     notifyListeners();
   }
 

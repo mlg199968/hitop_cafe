@@ -20,48 +20,63 @@ class ShoppingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * .4,
-      width: double.maxFinite,
-      decoration: kBoxDecoration,
-      child: items.isEmpty
-          ? const Center(child: Text("کالایی افزوده نشده است"))
-          : SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
-              child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    if (items[index].sum < 0) {
-                    }
-                    return CustomTile(
-                      // onInfo: () {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (context) =>
-                      //         WareToBillPanel(oldPurchase: items[index]),
-                      //   ).then((value) => onChange());
-                      // },
-                      onDelete: () {
-                        items.removeAt(index);
-                        onChange();
-                      },
-                      height: 55,
-                      color:kMainColor,
-                      leadingIcon: FontAwesomeIcons.cartShopping,
-                      type: (index+1).toString().toPersianDigit(),
-                      title: items[index].itemName,
-                      subTitle:
-                          "${items[index].quantity} ${items[index].unit} * ${addSeparator(items[index].sale)} "
-                              .toPersianDigit(),
-                      topTrailing: items[index].discount == 0
-                          ? "ندارد"
-                          : "${addSeparator(items[index].sum * (items[index].discount ?? 0)/100)} "
-                              .toPersianDigit(),
-                      topTrailingLabel: "تخفیف: ",
-                      trailing: addSeparator(items[index].sum),
-                    );
-                  }),
-            ),
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "لیست خرید",
+            style: TextStyle(
+                fontSize: 17, color: Colors.white),
+          ),
+        ),
+        Container(
+          height: MediaQuery.of(context).size.height * .4,
+          width: 450,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white70)
+          ),
+          child: items.isEmpty
+              ? const Center(child: Text("کالایی افزوده نشده است",style: TextStyle(color: Colors.white70),))
+              : SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        if (items[index].sum < 0) {
+                        }
+                        return CustomTile(
+                          // onInfo: () {
+                          //   showDialog(
+                          //     context: context,
+                          //     builder: (context) =>
+                          //         WareToBillPanel(oldPurchase: items[index]),
+                          //   ).then((value) => onChange());
+                          // },
+                          onDelete: () {
+                            items.removeAt(index);
+                            onChange();
+                          },
+                          height: 55,
+                          color:kMainColor,
+                          leadingIcon: FontAwesomeIcons.cartShopping,
+                          type: (index+1).toString().toPersianDigit(),
+                          title: items[index].itemName,
+                          subTitle:
+                              "${items[index].quantity} ${items[index].unit} * ${addSeparator(items[index].sale)} "
+                                  .toPersianDigit(),
+                          topTrailing: items[index].discount == 0
+                              ? "ندارد"
+                              : "${addSeparator(items[index].sum * (items[index].discount ?? 0)/100)} "
+                                  .toPersianDigit(),
+                          topTrailingLabel: "تخفیف: ",
+                          trailing: addSeparator(items[index].sum),
+                        );
+                      }),
+                ),
+        ),
+      ],
     );
   }
 }
