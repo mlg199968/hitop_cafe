@@ -1,3 +1,4 @@
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
 part 'shop.g.dart';
@@ -34,6 +35,8 @@ class Shop extends HiveObject {
   String? fontFamily;
   @HiveField(14)
   String? printerIp="192.168.1.1";
+  @HiveField(15)
+  User? activeUser;
 
 }
 

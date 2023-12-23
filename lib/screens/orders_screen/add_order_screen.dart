@@ -31,6 +31,7 @@ import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -146,7 +147,7 @@ addToItemList(List<Item> iList){
   ///Hive Database Save function
   void saveBillOnLocalStorage({String? id}) async {
     //condition for limitation of free version
-    if (HiveBoxes.getOrders().values.length < userProvider.ceilCount) {
+    if (UserTools.userPermission(context,count: HiveBoxes.getOrders().values.length)) {
       if (items.isNotEmpty) {
         Order orderBill = createBillObject(id: id);
         OrderTools.subtractFromWareStorage(items, oldOrder: widget.oldOrder);
@@ -155,8 +156,6 @@ addToItemList(List<Item> iList){
       } else {
         showSnackBar(context, "لیست آیتم ها خالی است!", type: SnackType.error);
       }
-    } else {
-      showSnackBar(context, userProvider.ceilCountMessage, type: SnackType.error);
     }
   }
 

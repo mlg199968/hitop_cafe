@@ -12,6 +12,7 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/setting_provider.dart';
@@ -42,6 +43,7 @@ Future main() async {
   Hive.registerAdapter(OrderAdapter());
   Hive.registerAdapter(SubscriptionAdapter());
   Hive.registerAdapter(BugAdapter());
+  Hive.registerAdapter(UserAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
@@ -50,6 +52,7 @@ Future main() async {
   await Hive.openBox<Bill>("bill_db",path: await Address.hiveDirectory());
   await Hive.openBox<Shop>("shop_db",path: await Address.hiveDirectory());
   await Hive.openBox<Bug>("bug_db",path: await Address.hiveDirectory());
+  await Hive.openBox<User>("user_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),

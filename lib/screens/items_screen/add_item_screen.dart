@@ -6,6 +6,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
@@ -15,6 +16,7 @@ import 'package:hitop_cafe/screens/items_screen/panels/create_item_group_panel.d
 import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
 import 'package:hitop_cafe/screens/items_screen/widgets/item_image_holder.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +66,8 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
     // save image if exist
     if(imagePath!=item.imagePath) {
-      item.imagePath=await ItemTools.saveImage(imagePath, item.itemId);
+      final String newPath = await Address.itemsImage();
+      item.imagePath=await saveImage(imagePath, item.itemId,newPath);
     }
      HiveBoxes.getItem().put(item.itemId, item);
   }
@@ -146,8 +149,8 @@ class _AddWareScreenState extends State<AddItemScreen> {
                       Expanded(
                         child: ListView(
                           children: [
+                            ///photo part
                             Container(
-                              ///photo part
                               height: 150,
                               margin: const EdgeInsets.all(5),
                               child: ItemImageHolder(
@@ -344,8 +347,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
                                 Navigator.pop(context, false);
                               } else {
                                 ///condition for demo mode
-                                if (HiveBoxes.getItem().values.length <
-                                    userProvider.ceilCount) {
+                                if (UserTools.userPermission(context,count: HiveBoxes.getItem().values.length)) {
                                   saveItem();
                                     showSnackBar(
                                         context, "آیتم به لیست افزوده شد!",
@@ -360,9 +362,6 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
                                   setState(() {});
                                   // Navigator.pop(context,false);
-                                } else {
-                                  showSnackBar(context, userProvider.ceilCountMessage,
-                                      type: SnackType.error);
                                 }
                               }
                             }

@@ -13,6 +13,7 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/panels/set_password_panel.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
@@ -281,10 +282,14 @@ class _SettingScreenState extends State<SettingScreen> {
                           ButtonTile(onPress: (){
                             Navigator.pushNamed(context, BugListScreen.id);
                           }, label: "error List", buttonLabel:"see"),
+                          ///security options section
                           const Text(
                             "تنظیمات امنیت",
                             style: TextStyle(fontSize: 17),
                           ),
+                          ButtonTile(onPress: (){
+                            showDialog(context: context, builder: (context)=>SetPasswordPanel());
+                          }, label: "پسوورد ادمین", buttonLabel: "تعیین یا تغییر"),
                         ],
                       ),
                     ),

@@ -141,6 +141,19 @@ Future<String?> chooseDirectory() async {
   }
   return null;
 }
+///save image from cache to new path
+ saveImage(String? path,String idName,String newPath)async{
+  if(path!=null){
+    //get image directory from consts_class file in constants folder
+    File newFile= await File(path).copy("$newPath/$idName.jpg");
+    //delete file picker cache file in android and ios because windows show original path file so when you delete it's delete orginal file
+    if(Platform.isAndroid || Platform.isIOS) {
+      await File(path).delete();
+    }
+    return newFile.path;
+  }
+  return null;
+}
 
 /// condition for pick image from device storage
 Future<File?> pickImage(String imageName) async {

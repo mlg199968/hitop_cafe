@@ -6,6 +6,7 @@ import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
 class HiveBoxes{
@@ -32,6 +33,10 @@ static Box<Shop> getShopInfo(){
 
 static Box<Bug> getBugs(){
     return Hive.box<Bug>("bug_db");
+  }
+
+static Box<User> getUsers(){
+    return Hive.box<User>("user_db");
   }
 
 

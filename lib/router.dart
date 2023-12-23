@@ -3,6 +3,7 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
@@ -23,8 +24,11 @@ import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
+import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
+import 'package:hitop_cafe/screens/user_screen/choose_user_screen.dart';
+import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
 
-import 'package:hitop_cafe/screens/ware_house/ware_house_screen.dart';
+
 
 Route generateRoute(RouteSettings routeSetting) {
   switch (routeSetting.name) {
@@ -59,8 +63,6 @@ Route generateRoute(RouteSettings routeSetting) {
                 oldBill: bill,
               ));
 
-    case WareHouseScreen.id:
-      return MaterialPageRoute(builder: (_) => const WareHouseScreen());
 
     case ShoppingBillScreen.id:
       Key? key = routeSetting.arguments as Key?;
@@ -105,6 +107,18 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case AuthorityScreen.id:
       return MaterialPageRoute(builder: (_) =>  const AuthorityScreen());
+
+
+///user screens
+    case AddUserScreen.id:
+      User? user=routeSetting.arguments as User?;
+      return MaterialPageRoute(builder: (_) => AddUserScreen(oldUser: user,));
+
+   case UserListScreen.id:
+      return MaterialPageRoute(builder: (_) =>  const UserListScreen());
+
+   case ChooseUserScreen.id:
+      return MaterialPageRoute(builder: (_) =>  ChooseUserScreen());
 
     case PrinterPage.id:
       Key? key = routeSetting.arguments as Key?;

@@ -26,6 +26,7 @@ import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/shopping-bill/panels/ware_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/shopping-bill/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/shopping-bill/services/bill_tools.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -112,7 +113,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
   ///Hive Database Save function
   void saveBillOnLocalStorage({String? id}) async {
     //condition for limitation of free version
-    if ( HiveBoxes.getBills().values.length < userProvider.ceilCount) {
+    if ( UserTools.userPermission(context,count: HiveBoxes.getBills().values.length)) {
       if(wares.isNotEmpty){
         Bill orderBill = createBillObject(id: id);
         BillTools.addToWareStorage(wares, oldBill: widget.oldBill);
@@ -121,9 +122,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
       }else {
         showSnackBar(context, "لیست آیتم ها خالی است!", type: SnackType.error);
       }
-    }
-    else {
-      showSnackBar(context, userProvider.ceilCountMessage, type: SnackType.error);
     }
   }
 

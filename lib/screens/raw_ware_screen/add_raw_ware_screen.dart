@@ -11,6 +11,7 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/panels/create_group_panel.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -210,9 +211,7 @@ class _AddWareScreenState extends State<AddWareScreen> {
                               Navigator.pop(context, false);
                             } else {
                               ///condition for demo mode
-                              if (HiveBoxes.getRawWare().values.length <
-                                  Provider.of<UserProvider>(context,listen: false)
-                                      .ceilCount) {
+                              if (UserTools.userPermission(context,count: HiveBoxes.getRawWare().values.length,)) {
                                 saveWare();
                                 showSnackBar(context, "کالا به لیست افزوده شد!",
                                     type: SnackType.success);
@@ -224,9 +223,6 @@ class _AddWareScreenState extends State<AddWareScreen> {
                                     .requestFocus(wareNameFocus);
                                 setState(() {});
                                 // Navigator.pop(context,false);
-                              } else {
-                                showSnackBar(context, Provider.of<UserProvider>(context,listen: false).ceilCountMessage,
-                                    type: SnackType.error);
                               }
                             }
                           }

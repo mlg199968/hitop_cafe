@@ -8,10 +8,12 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:provider/provider.dart';
 
 class SideBarPanel extends StatelessWidget {
@@ -41,6 +43,7 @@ class SideBarPanel extends StatelessWidget {
               children: <Widget>[
                 ///top info part
                 Stack(children: [
+                  ///top background
                   Container(
                     height: 150,
                     decoration: const BoxDecoration(
@@ -49,12 +52,26 @@ class SideBarPanel extends StatelessWidget {
                             fit: BoxFit.fitWidth,
                             opacity: .6)),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: BackButton(
-                      color: Colors.white70,
+
+                   Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const BackButton(
+                          color: Colors.white70,
+                        ),
+                        ///Notification icon button
+                        IconButton(
+                            color: Colors.white,
+                            onPressed: () {
+                              Navigator.pushNamed(context, NoticeScreen.id);
+                            },
+                            icon: const Icon(Icons.notifications,size: 25,))
+                      ],
                     ),
                   ),
+                  ///cafe name
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0).copyWith(top: 40),
@@ -74,23 +91,26 @@ class SideBarPanel extends StatelessWidget {
                       text: "مشخصات فروشگاه",
                       icon: Icons.factory,
                       onPress: () {
-                        Navigator.pushNamed(context, ShopInfoScreen.id);
+                        if(UserTools.userPermission(context,userTypes: [])) {
+                        Navigator.pushNamed(context, ShopInfoScreen.id);}
                       },
                     ),
                     menu_button(
                       text: "تنظیمات",
                       icon: Icons.settings_outlined,
                       onPress: () {
-                        Navigator.pushNamed(context, SettingScreen.id);
+                        if(UserTools.userPermission(context,userTypes: [])) {
+                        Navigator.pushNamed(context, SettingScreen.id);}
                       },
                     ),
                     menu_button(
-                      onPress: () {
-                        urlLauncher(
-                            context: context, urlTarget: "http://mlggrand.ir");
-                      },
                       text: "ارتباط با ما",
                       icon: Icons.support_agent_outlined,
+                      onPress: () {
+                          urlLauncher(
+                            context: context, urlTarget: "http://mlggrand.ir");
+                      },
+
                     ),
                     const SizedBox(
                       height: 20,
@@ -236,8 +256,9 @@ class PurchaseButton extends StatelessWidget {
 
 class menu_button extends StatelessWidget {
   const menu_button(
-      {super.key, required this.text, required this.onPress, this.icon});
+      {super.key, required this.text, required this.onPress, this.icon, this.enable=true});
   final String text;
+  final bool enable;
   final IconData? icon;
   final VoidCallback onPress;
   @override
@@ -268,7 +289,7 @@ class menu_button extends StatelessWidget {
             ),
           ),
           child: TextButton(
-              onPressed: onPress,
+              onPressed:enable? onPress : (){},
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

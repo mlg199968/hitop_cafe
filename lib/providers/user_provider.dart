@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,8 @@ class UserProvider extends ChangeNotifier{
   //ceil count is for how many item you can add to list
   int _ceilCount=10;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
+  User? _user;
+  User? get activeUser=>_user;
   //*****
   String shopName="نام فروشگاه";
   String address="آدرس فروشگاه";
@@ -86,6 +89,14 @@ class UserProvider extends ChangeNotifier{
     }
     return null;
   }
+setUser(User? user){
+    _user=user;
+    notifyListeners();
+}
+removeUser(){
+    _user=null;
+    notifyListeners();
+}
 
   getFontFamily(String font){
     fontFamily=font;

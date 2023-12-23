@@ -8,22 +8,6 @@ import 'package:hitop_cafe/models/item.dart';
 
 class ItemTools {
 
-  static saveImage(String? path,String idName)async{
-    if(path!=null){
-      //get image directory from consts_class file in constants folder
-      final String directory = await Address.itemsImage();
-
-      File newFile= await File(path).copy("$directory/$idName.jpg");
-      //delete file picker cache file in android and ios because windows show orginal path file so when you delete it's delete orginal file
-      if(Platform.isAndroid || Platform.isIOS) {
-        await File(path).delete();
-      }
-      return newFile.path;
-
-    }
-    return null;
-  }
-
   /// search and sort the ware List
   static List<Item> filterList(
       List<Item> list, String? keyWord, String sort) {
