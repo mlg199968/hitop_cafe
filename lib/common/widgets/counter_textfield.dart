@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 
@@ -9,11 +10,12 @@ class CounterTextfield extends StatelessWidget {
     required this.controller,
     this.symbol,
     this.onChange,
-    this.decimal=true,
+    this.decimal=true, this.label,
   });
 
   final TextEditingController controller;
   final bool decimal;
+  final String? label;
   final String? symbol;
   final Function(String? val)? onChange;
 
@@ -50,6 +52,7 @@ class CounterTextfield extends StatelessWidget {
                 isPressed = true;
               },
               decoration: InputDecoration(
+                label:label==null?null: CText(label!,fontSize: 12,maxLine: 2,),
                 suffix: Text(symbol ?? ""),
                 contentPadding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                 counterText: "",

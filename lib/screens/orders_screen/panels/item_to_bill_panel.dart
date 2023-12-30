@@ -27,6 +27,7 @@ class _WareToBillPanelState extends State<ItemToBillPanel> {
   TextEditingController salePriceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController discountController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
   String unitItem = unitList[0];
   bool isCheck = false;
@@ -37,14 +38,17 @@ void replaceOldPurchase(Item? old){
     salePriceController.text=addSeparator(old.sale);
     quantityController.text=old.quantity.toString();
     discountController.text=old.discount.toString();
+    descriptionController.text=old.description;
     unitItem=old.unit;
     isCheck=old.sale<0?true:false;
+    selectedItem=old;
+    setState(() {});
   }
 }
   void getItemData(Item item) {
     itemNameController.text = item.itemName;
     salePriceController.text = addSeparator(item.sale);
-    quantityController.text = 1.toString();
+    quantityController.text =1.toString();
     unitItem = item.unit;
     selectedItem=item;
     setState(() {});
@@ -53,16 +57,16 @@ void replaceOldPurchase(Item? old){
   @override
   void initState() {
   userProvider=Provider.of<UserProvider>(context,listen: false);
-  replaceOldPurchase(widget.oldItem);
     discountController.text = userProvider.preDiscount.toString();
+  replaceOldPurchase(widget.oldItem);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomDialog(
-      height: MediaQuery.of(context).size.height*.5,
-      title:"افزودن کالا به فاکتور",
+      height: 500,
+      title:"افزودن آیتم به فاکتور",
       child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -177,6 +181,7 @@ void replaceOldPurchase(Item? old){
                       const SizedBox(height: 5),
                       customDivider(
                           context: context, color: Colors.white70),
+                      CustomTextField(controller: descriptionController,label: "توضیحات",maxLine: 4,maxLength: 250,),
                     ],
                   ),
                 ),
@@ -186,17 +191,29 @@ void replaceOldPurchase(Item? old){
                 width: MediaQuery.of(context).size.width,
                 text:widget.oldItem==null? "افزودن به فاکتور":"ذخیره تغییرات",
                 onPressed: () {
-                  if (_formKey.currentState!.validate() && selectedItem!=null) {
+
+                  if (_formKey.currentState!.validate() && selectedItem!=null ) {
                     num quantity = double.parse(quantityController.text);
                     num discount = discountController.text == ""
                         ? 0
                         : stringToDouble(discountController.text);
-                    selectedItem!..discount=discount
-                    ..quantity=quantity;
-
-
-                    Navigator.pop(context,ItemTools.copyToNewItem(selectedItem!));
-                  }
+                    if(widget.oldItem==null) {
+                    selectedItem!
+                      ..discount = discount
+                      ..quantity = quantity
+                    ..description=descriptionController.text;
+                    Navigator.pop(
+                        context, ItemTools.copyToNewItem(selectedItem!));
+                  }else{
+                      selectedItem!
+                        ..discount = discount
+                        ..quantity = quantity
+                        ..description=descriptionController.text;
+                      print(selectedItem!.toMap());
+                      Navigator.pop(
+                          context,selectedItem!);
+                    }
+                }
                 }),
           ],
         ),

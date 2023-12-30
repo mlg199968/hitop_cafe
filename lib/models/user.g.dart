@@ -30,13 +30,14 @@ class UserAdapter extends TypeAdapter<User> {
       ..score = fields[10] as double?
       ..createDate = fields[11] as DateTime
       ..modifiedDate = fields[12] as DateTime
-      ..userId = fields[13] as String;
+      ..userId = fields[13] as String
+      ..userDevice = fields[14] as String?;
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -64,7 +65,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(12)
       ..write(obj.modifiedDate)
       ..writeByte(13)
-      ..write(obj.userId);
+      ..write(obj.userId)
+      ..writeByte(14)
+      ..write(obj.userDevice);
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 
@@ -47,13 +48,20 @@ class ShoppingList extends StatelessWidget {
                         if (items[index].sum < 0) {
                         }
                         return CustomTile(
-                          // onInfo: () {
-                          //   showDialog(
-                          //     context: context,
-                          //     builder: (context) =>
-                          //         WareToBillPanel(oldPurchase: items[index]),
-                          //   ).then((value) => onChange());
-                          // },
+                          onInfo: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  ItemToBillPanel(oldItem: items[index]),
+                            ).then((value) {
+                              if(value!=null) {
+                                items[index]=value;
+                                // items.removeAt(index);
+                                // items.insert(index, value);
+                              }
+                                  onChange();
+                            });
+                          },
                           onDelete: () {
                             items.removeAt(index);
                             onChange();

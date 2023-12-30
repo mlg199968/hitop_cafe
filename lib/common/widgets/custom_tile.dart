@@ -68,16 +68,19 @@ class CustomTile extends StatelessWidget {
                 ),
                 children: [
                   SlidableAction(
+                    label: "جزئیات",
+                    borderRadius:const BorderRadius.horizontal(left: Radius.circular(10)),
+                    onPressed: (context) => {onInfo!()},
+                    icon: FontAwesomeIcons.pencil,
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  SlidableAction(
                     label: "حذف",
+
+                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
                     onPressed: (context) => {onDelete()},
                     icon: FontAwesomeIcons.trashCan,
                     backgroundColor: Colors.red,
-                  ),
-                  SlidableAction(
-                    label: "جزئیات",
-                    onPressed: (context) => {onInfo!()},
-                    icon: FontAwesomeIcons.list,
-                    backgroundColor: Colors.blueAccent,
                   ),
                 ],
               ),

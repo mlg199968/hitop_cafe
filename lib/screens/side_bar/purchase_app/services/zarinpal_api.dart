@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/private.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -11,11 +12,11 @@ class ZarinpalApi{
 static  payment(BuildContext context,{required String phone,required int amount}) async{
   String deviceId=await getDeviceInfo();
   PaymentRequest paymentRequest=PaymentRequest()
-      ..setIsSandBox(true)
-      ..setAmount(amount)
+      ..setIsSandBox(false)
+      ..setAmount(1000)
       ..setDescription("description")
       ..setMerchantID(PrivateKeys.zarinpalId)
-      ..setCallbackURL("https://mlggrand.ir/verify?phone=$phone&amount=$amount&device=$deviceId");
+      ..setCallbackURL("$hostUrl/payment/payzarin.php?phone=$phone&amount=$amount&device=$deviceId");
 
     ZarinPal().startPayment(paymentRequest, (status, paymentGatewayUri) {
       try {

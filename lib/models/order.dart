@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/payment.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
 part 'order.g.dart';
@@ -40,6 +41,8 @@ class Order extends HiveObject {
   bool isDone = false;
   @HiveField(15)
   int? billNumber;
+ @HiveField(16)
+  User? user;
 
 
 
@@ -59,6 +62,7 @@ class Order extends HiveObject {
       'isDone': isDone?1:0,
       'description': description,
       'billNumber': billNumber,
+      'user': user?.toMap(),
     };
   }
 
@@ -78,7 +82,9 @@ class Order extends HiveObject {
       ..isChecked= map['isChecked']==1?true:false
       ..isDone= map['isDone']==1?true:false
       ..description= map['description'] ?? ""
+      ..user= map['user']==null?null:User().fromMap(map['user'])
       ..billNumber= map['billNumber'] ?? 0;
+
     return order;
   }
   String toJson()=>jsonEncode(toMap());

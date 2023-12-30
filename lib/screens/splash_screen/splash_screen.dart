@@ -25,12 +25,19 @@ class SplashScreen extends StatelessWidget {
       }
       ///if user on the choose user screen check the 'remember user' checkBox we go directly to home screen
       User? currentUser = HiveBoxes.getShopInfo().values.first.activeUser;
-      if (currentUser != null) {
+      List<User?> users = HiveBoxes.getUsers().values.toList();
+      if (currentUser != null ) {
         if (context.mounted) {
           Provider.of<UserProvider>(context, listen: false).setUser(currentUser);
           Navigator.pushReplacementNamed(context, HomeScreen.id);
         }
-      }else {
+
+      }
+      else if(users.isEmpty){
+        if (context.mounted) {
+        Navigator.pushReplacementNamed(context, HomeScreen.id);}
+      }
+      else {
           if (context.mounted) {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 ChooseUserScreen.id, (context) => false);

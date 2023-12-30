@@ -125,7 +125,7 @@ class SideBarPanel extends StatelessWidget {
                       icon: Icons.account_balance_outlined,
                       onPress: () {
                         Navigator.pushNamed(context, PurchaseAppScreen.id,
-                            arguments: {"phone": "9910606073"});
+                            arguments: {"phone": "9306374837"});
                       },
                     ),
                   ],

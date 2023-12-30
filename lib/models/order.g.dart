@@ -29,13 +29,14 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..dueDate = fields[12] as DateTime?
       ..isChecked = fields[13] as bool
       ..isDone = fields[14] as bool
-      ..billNumber = fields[15] as int?;
+      ..billNumber = fields[15] as int?
+      ..user = fields[16] as User?;
   }
 
   @override
   void write(BinaryWriter writer, Order obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.items)
       ..writeByte(1)
@@ -62,6 +63,8 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..write(obj.isDone)
       ..writeByte(15)
       ..write(obj.billNumber)
+      ..writeByte(16)
+      ..write(obj.user)
       ..writeByte(5)
       ..write(obj.itemsSum)
       ..writeByte(6)

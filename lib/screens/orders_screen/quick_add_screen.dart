@@ -71,195 +71,198 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
           body: Directionality(
             textDirection: TextDirection.rtl,
             child: Container(
-              alignment: Alignment.topRight,
+              alignment: Alignment.center,
               decoration: const BoxDecoration(
                 gradient: kMainGradiant,
               ),
               child: SafeArea(
                 child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "انتخاب گروه:",
-                              style: TextStyle(color: Colors.white70, fontSize: 17),
-                            ),
-                            ///search group textField
-                            CustomTextField(
-                              hint: "جست و جو گروه",
-                              height: 30,
-                                borderRadius: 20,
-                                controller: searchGroupController,
-                            suffixIcon:const Icon(Icons.search),
-                            onChange: (val){
-                              searchGroupWord=val;
-                              setState(() {});
-                            },),
-                          ],
-                        ),
-                      ),
-
-                      ///group list choose part
-                      Container(
-                        alignment: Alignment.center,
-                        width: double.maxFinite,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: const BoxDecoration(),
-                        height: 100,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                "همه",
-                                ...context.watch<WareProvider>().itemCategories
-                              ]
-                                  .map(
-                                    (group) {
-                                      if(group.toString().contains(searchGroupWord))
-                                      {
-                                  return LabelTile(
-                                    activeColor: Colors.teal,
-                                    disableColor: Colors.blueGrey,
-                                    disable: selectedGroup != group,
-                                    label: group,
-                                    onTap: () {
-                                      selectedGroup = group;
-                                      setState(() {});
-                                    },
-                                  );
-                                }else{
-                                        return const SizedBox();
-                                      }
-                              }
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment:MainAxisAlignment.spaceBetween ,
-                          children: [
-                            const Text(
-                              "انتخاب آیتم:",
-                              style: TextStyle(color: Colors.white70, fontSize: 17),
-                            ),
-                            ///search group textField
-                            CustomTextField(
-                              hint: "جست و جو آیتم",
-                              height: 30,
-                              borderRadius: 20,
-                              controller: searchItemController,
+                  child: SizedBox(
+                    width: 500,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "انتخاب گروه:",
+                                style: TextStyle(color: Colors.white70, fontSize: 17),
+                              ),
+                              ///search group textField
+                              CustomTextField(
+                                hint: "جست و جو گروه",
+                                height: 30,
+                                  borderRadius: 20,
+                                  controller: searchGroupController,
                               suffixIcon:const Icon(Icons.search),
                               onChange: (val){
-                                searchItemWord=val;
+                                searchGroupWord=val;
                                 setState(() {});
                               },),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                      ///choose item list  section
-                      Container(
-                        alignment: Alignment.center,
-                        width: double.maxFinite,
-                        margin: const EdgeInsets.only(left: 9, right: 9),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                            gradient: kBlackWhiteGradiant,
-                            borderRadius: BorderRadius.circular(20)),
-                        height: MediaQuery.of(context).size.height * .3,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              children: HiveBoxes.getItem().values.map((item) {
-                                if ((selectedGroup == item.category ||
-                                    selectedGroup == "همه") && item.itemName.contains(searchItemWord)) {
-                                  return LabelTile(
-                                    disable: !selectedItems.contains(item),
-                                    count: !selectedItems.contains(item)
-                                        ? 0
-                                        : selectedItems
-                                            .firstWhere((element) =>
-                                                element.itemName == item.itemName)
-                                            .quantity,
-                                    label: item.itemName,
-                                    onTap: () {
-                                      bool existedItem = false;
-                                      for (var element in selectedItems) {
-                                        if (element.itemName == item.itemName) {
-                                          element.quantity++;
-                                          existedItem = true;
+                        ///group list choose part
+                        Container(
+                          alignment: Alignment.center,
+                          width: double.maxFinite,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: const BoxDecoration(),
+                          height: 100,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                children: [
+                                  "همه",
+                                  ...context.watch<WareProvider>().itemCategories
+                                ]
+                                    .map(
+                                      (group) {
+                                        if(group.toString().contains(searchGroupWord))
+                                        {
+                                    return LabelTile(
+                                      activeColor: Colors.teal,
+                                      disableColor: Colors.blueGrey,
+                                      disable: selectedGroup != group,
+                                      label: group,
+                                      onTap: () {
+                                        selectedGroup = group;
+                                        setState(() {});
+                                      },
+                                    );
+                                  }else{
+                                          return const SizedBox();
                                         }
-                                      }
-                                      if (!existedItem) {
-                                        selectedItems.add(item);
-                                      }
-
-                                      setState(() {});
-                                    },
-                                  );
-                                } else {
-                                  return const SizedBox();
                                 }
-                              }).toList(),
+                                    )
+                                    .toList(),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const Divider(
-                        height: 50,
-                        indent: 50,
-                        endIndent: 50,
-                      ),
-
-                      ///selected items list
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: selectedItems
-                              .map(
-                                (item) => QuickItemTile(
-                                  label: item.itemName,
-                                  count: item.quantity,
-                                  onAddPress: () {
-                                    item.quantity++;
-                                    setState(() {});
-                                  },
-                                  onRemovePress: () {
-                                    if (item.quantity > 1) {
-                                      item.quantity--;
-                                    } else {
-                                      selectedItems.remove(item);
-                                    }
-                                    setState(() {});
-                                  },
-                                ),
-                              )
-                              .toList()
-                              .reversed
-                              .toList(),
+                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween ,
+                            children: [
+                              const Text(
+                                "انتخاب آیتم:",
+                                style: TextStyle(color: Colors.white70, fontSize: 17),
+                              ),
+                              ///search group textField
+                              CustomTextField(
+                                hint: "جست و جو آیتم",
+                                height: 30,
+                                borderRadius: 20,
+                                controller: searchItemController,
+                                suffixIcon:const Icon(Icons.search),
+                                onChange: (val){
+                                  searchItemWord=val;
+                                  setState(() {});
+                                },),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 100,
-                      ),
-                    ],
+
+                        ///choose item list  section
+                        Container(
+                          alignment: Alignment.center,
+                          width: double.maxFinite,
+                          margin: const EdgeInsets.only(left: 9, right: 9),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                              gradient: kBlackWhiteGradiant,
+                              borderRadius: BorderRadius.circular(20)),
+                          height: MediaQuery.of(context).size.height * .3,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                children: HiveBoxes.getItem().values.map((item) {
+                                  if ((selectedGroup == item.category ||
+                                      selectedGroup == "همه") && item.itemName.contains(searchItemWord)) {
+                                    return LabelTile(
+                                      disable: !selectedItems.contains(item),
+                                      count: !selectedItems.contains(item)
+                                          ? 0
+                                          : selectedItems
+                                              .firstWhere((element) =>
+                                                  element.itemName == item.itemName)
+                                              .quantity,
+                                      label: item.itemName,
+                                      onTap: () {
+                                        bool existedItem = false;
+                                        for (var element in selectedItems) {
+                                          if (element.itemName == item.itemName) {
+                                            element.quantity++;
+                                            existedItem = true;
+                                          }
+                                        }
+                                        if (!existedItem) {
+                                          selectedItems.add(item);
+                                        }
+
+                                        setState(() {});
+                                      },
+                                    );
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(
+                          height: 50,
+                          indent: 50,
+                          endIndent: 50,
+                        ),
+
+                        ///selected items list
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: selectedItems
+                                .map(
+                                  (item) => QuickItemTile(
+                                    label: item.itemName,
+                                    count: item.quantity,
+                                    onAddPress: () {
+                                      item.quantity++;
+                                      setState(() {});
+                                    },
+                                    onRemovePress: () {
+                                      if (item.quantity > 1) {
+                                        item.quantity--;
+                                      } else {
+                                        selectedItems.remove(item);
+                                      }
+                                      setState(() {});
+                                    },
+                                  ),
+                                )
+                                .toList()
+                                .reversed
+                                .toList(),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
