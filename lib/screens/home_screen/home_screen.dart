@@ -15,7 +15,6 @@ import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
-import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/panels/active_user_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
@@ -109,13 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           ///manage
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ActionButton(
               label: "کاربر",
               icon: Icons.supervised_user_circle,
               bgColor: kSecondaryColor,
               onPress: (){
-                showDialog(context: context, builder: (context)=>ActiveUserPanel());
+                showDialog(context: context, builder: (context)=>const ActiveUserPanel());
               },
             ),
           )

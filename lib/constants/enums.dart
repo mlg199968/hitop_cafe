@@ -12,7 +12,7 @@
   final String value;
 }
 
-
+///message type for snackbar
   enum SnackType{
     normal,
     success,
@@ -25,3 +25,9 @@
     desktop
   }
 
+  enum AppType{
+  waiter("waiter"),
+    main("main");
+    const AppType(this.value);
+   final String value;
+  }

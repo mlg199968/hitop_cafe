@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
-import 'package:hitop_cafe/common/widgets/password_textField.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -11,7 +10,7 @@ import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/widgets/item_image_holder.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/panels/set_password_panel.dart';
+import 'package:hitop_cafe/screens/user_screen/panels/set_password_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 

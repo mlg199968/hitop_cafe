@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
-import 'package:hitop_cafe/common/widgets/password_textField.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/panels/set_password_panel.dart';
+import 'package:hitop_cafe/screens/user_screen/panels/set_password_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/widgets/user_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -69,7 +66,7 @@ class _ChooseUserScreenState extends State<ChooseUserScreen> {
                               style: const TextStyle(
                                   color: Colors.white60, fontSize: 18),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Row(
@@ -135,8 +132,8 @@ class _ChooseUserScreenState extends State<ChooseUserScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text("به یاد داشتن ورود"),
-                                SizedBox(
+                                const Text("به یاد داشتن ورود"),
+                                const SizedBox(
                                   width: 6,
                                 ),
                                 Checkbox(

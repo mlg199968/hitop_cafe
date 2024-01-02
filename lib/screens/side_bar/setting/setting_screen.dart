@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
@@ -13,7 +14,8 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/panels/set_password_panel.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
+import 'package:hitop_cafe/screens/user_screen/panels/set_password_panel.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
@@ -207,9 +209,10 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
 
                           ///printers setting parts
-                          const Text(
+                          const CText(
                             "تنظیمات پرینتر",
-                            style: TextStyle(fontSize: 17),
+                            fontSize: 16,
+                            color: Colors.white60,
                           ),
 
                           ///list of windows printers when platform is windows
@@ -274,22 +277,24 @@ class _SettingScreenState extends State<SettingScreen> {
                               },
                             ),
                           InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip"),
-                          ///printers setting parts
-                          const Text(
+                          ///local network options section
+                          const CText(
+                            "تنظیمات شبکه",
+                            fontSize: 16,
+                            color: Colors.white60,
+                          ),
+                          ButtonTile(onPress: (){
+                            Navigator.pushNamed(context, LocalServerScreen.id);
+                          }, label: "تنظیمات سرور", buttonLabel: "تعیین سرور"),
+                          ///developer section
+                          const CText(
                             "توسعه دهنده",
-                            style: TextStyle(fontSize: 17),
+                            fontSize: 16,
+                            color: Colors.white60,
                           ),
                           ButtonTile(onPress: (){
                             Navigator.pushNamed(context, BugListScreen.id);
                           }, label: "error List", buttonLabel:"see"),
-                          ///security options section
-                          const Text(
-                            "تنظیمات امنیت",
-                            style: TextStyle(fontSize: 17),
-                          ),
-                          ButtonTile(onPress: (){
-                            showDialog(context: context, builder: (context)=>SetPasswordPanel());
-                          }, label: "پسوورد ادمین", buttonLabel: "تعیین یا تغییر"),
                         ],
                       ),
                     ),

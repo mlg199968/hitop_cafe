@@ -2,15 +2,10 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
-import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/providers/setting_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
@@ -115,17 +110,10 @@ class UserTile extends StatelessWidget {
 
 class _CardListTile extends StatelessWidget {
   _CardListTile({
-    super.key,
     required this.enable,
     required this.title,
-    this.leadingIcon,
-    this.type,
-    this.subTitle,
-    this.topTrailingLabel,
     required this.topTrailing,
-    required this.trailing,
-    this.selected = false,
-    this.bottomLeading="", required this.onTap,
+    required this.trailing, required this.onTap, required this.selected, this.leadingIcon, this.type, this.subTitle, this.topTrailingLabel, required this.bottomLeading,
   });
 
   final bool enable;

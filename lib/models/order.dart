@@ -67,17 +67,17 @@ class Order extends HiveObject {
   }
 
   Order fromMap(Map<String, dynamic> map) {
-    List<Item> items=List<Item>.from((map['items'] as List).map((e)=>Item().fromMap(e),),);
-    List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
+    List<Item> mapItems=map['items']==null?[]:List<Item>.from((map['items'] as List).map((e)=>Item().fromMap(e),),);
+    List<Payment> mapPayments=map['payments']==null?[]:List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
     Order order=Order()
-      ..items= items
+      ..items= mapItems
       ..tableNumber= map['tableNumber'] ?? 0
-      ..payments= payments
+      ..payments= mapPayments
       ..payable= map['payable'] ?? 0
       ..discount= map['discount'] ?? 0
-      ..orderDate=DateTime.parse( map['orderDate'])
+      ..orderDate=map['orderDate']!=null?DateTime.parse( map['orderDate']):DateTime.now()
       ..orderId= map['orderId'] ?? ""
-      ..modifiedDate= DateTime.parse(map['modifiedDate'])
+      ..modifiedDate=map['modifiedDate']!=null? DateTime.parse(map['modifiedDate']):DateTime.now()
       ..dueDate= map['dueDate']!=null?DateTime.parse(map['dueDate']):null
       ..isChecked= map['isChecked']==1?true:false
       ..isDone= map['isDone']==1?true:false

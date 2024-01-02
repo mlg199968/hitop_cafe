@@ -1,3 +1,4 @@
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
@@ -37,6 +38,8 @@ class Shop extends HiveObject {
   String? printerIp="192.168.1.1";
   @HiveField(15)
   User? activeUser;
+  @HiveField(16)
+  AppType? appType;
 
 }
 
@@ -44,3 +47,4 @@ class Shop extends HiveObject {
 
 //run this code for create adaptor:
 //flutter packages pub run build_runner build --delete-conflicting-outputs
+//dart run build_runner build --delete-conflicting-outputs

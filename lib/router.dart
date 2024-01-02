@@ -21,12 +21,16 @@ import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/choose_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
+import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_home_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
 
 
 
@@ -118,12 +122,29 @@ Route generateRoute(RouteSettings routeSetting) {
       return MaterialPageRoute(builder: (_) =>  const UserListScreen());
 
    case ChooseUserScreen.id:
-      return MaterialPageRoute(builder: (_) =>  ChooseUserScreen());
+      return MaterialPageRoute(builder: (_) =>  const ChooseUserScreen());
 
     case PrinterPage.id:
       Key? key = routeSetting.arguments as Key?;
       return MaterialPageRoute(builder: (_) => PrinterPage(key: key));
 
+    case LocalServerScreen.id:
+      return MaterialPageRoute(builder: (_) => const LocalServerScreen());
+
+
+      ///waiter app screens
+    case AppTypeScreen.id:
+      return MaterialPageRoute(builder: (_) => const AppTypeScreen());
+
+    case WaiterHomeScreen.id:
+      return MaterialPageRoute(builder: (_) => const WaiterHomeScreen());
+
+    case WaiterSettingScreen.id:
+      return MaterialPageRoute(builder: (_) => const WaiterSettingScreen());
+
+
+
+///default screen
     default:
       return MaterialPageRoute(
           builder: (_) => const Scaffold(

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:printing/printing.dart';
@@ -12,9 +14,13 @@ class UserProvider extends ChangeNotifier{
   int userLevel=0;
   //ceil count is for how many item you can add to list
   int _ceilCount=10;
+  int get ceilCount =>_ceilCount;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
   User? _user;
   User? get activeUser=>_user;
+  AppType? _appType;
+ AppType? get appType=>_appType;
+
   //*****
   String shopName="نام فروشگاه";
   String address="آدرس فروشگاه";
@@ -30,10 +36,11 @@ class UserProvider extends ChangeNotifier{
   int preBillNumber=1;
   String fontFamily=kFonts[0];
   Printer? _selectedPrinter;
+  Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
   String printerIp="192.168.1.1";
 
-  int get ceilCount =>_ceilCount;
-  Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
+
+
 
   void getData(Shop shop){
     shopName=shop.shopName;
@@ -89,12 +96,22 @@ class UserProvider extends ChangeNotifier{
     }
     return null;
   }
+  ///user functions
 setUser(User? user){
     _user=user;
     notifyListeners();
 }
 removeUser(){
     _user=null;
+    notifyListeners();
+}
+///appType Functions
+setAppType(AppType? type){
+    _appType=type;
+    notifyListeners();
+}
+removeAppType(){
+    _appType=null;
     notifyListeners();
 }
 

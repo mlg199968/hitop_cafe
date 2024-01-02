@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/choose_user_screen.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_home_screen.dart';
 import 'package:provider/provider.dart';
 
 
@@ -24,26 +27,35 @@ class SplashScreen extends StatelessWidget {
         Provider.of<UserProvider>(context,listen: false).getUserLevel();
       }
       ///if user on the choose user screen check the 'remember user' checkBox we go directly to home screen
+      AppType? appType = HiveBoxes.getShopInfo().values.first.appType;
       User? currentUser = HiveBoxes.getShopInfo().values.first.activeUser;
       List<User?> users = HiveBoxes.getUsers().values.toList();
-      if (currentUser != null ) {
-        if (context.mounted) {
-          Provider.of<UserProvider>(context, listen: false).setUser(currentUser);
-          Navigator.pushReplacementNamed(context, HomeScreen.id);
+      if(appType==AppType.main) {
+        if (currentUser != null) {
+          if (context.mounted) {
+            Provider.of<UserProvider>(context, listen: false).setUser(
+                currentUser);
+            Navigator.pushReplacementNamed(context, HomeScreen.id);
+          }
         }
-
-      }
-      else if(users.isEmpty){
-        if (context.mounted) {
-        Navigator.pushReplacementNamed(context, HomeScreen.id);}
-      }
-      else {
+        else if (users.isEmpty) {
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(context, HomeScreen.id);
+          }
+        }
+        else {
           if (context.mounted) {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 ChooseUserScreen.id, (context) => false);
             // Navigator.of(context).pushNamedAndRemoveUntil(HomeScreen.id,(context)=>false);
           }
         }
+      }
+      else if(appType==AppType.waiter){
+        Navigator.pushReplacementNamed(context, WaiterHomeScreen.id);
+      }else{
+        Navigator.pushReplacementNamed(context, AppTypeScreen.id);
+      }
       }); });
 
 

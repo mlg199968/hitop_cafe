@@ -6,6 +6,7 @@ import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
+import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
@@ -13,10 +14,13 @@ import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/models/user.dart';
+import 'package:hitop_cafe/providers/client_provider.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/setting_provider.dart';
+import 'package:hitop_cafe/providers/sever_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:hitop_cafe/providers/waiter_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/router.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
@@ -44,6 +48,7 @@ Future main() async {
   Hive.registerAdapter(SubscriptionAdapter());
   Hive.registerAdapter(BugAdapter());
   Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(PackAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
@@ -60,6 +65,9 @@ Future main() async {
     ChangeNotifierProvider(create: (context) => FilterProvider()),
     ChangeNotifierProvider(create: (context) => SettingProvider()),
     ChangeNotifierProvider(create: (context) => PrinterProvider()),
+    ChangeNotifierProvider(create: (context) => WaiterProvider()),
+    ChangeNotifierProvider(create: (context) => ClientProvider()),
+    ChangeNotifierProvider(create: (context) => ServerProvider()),
   ], child: const MyApp()));
 }
 

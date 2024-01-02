@@ -27,7 +27,7 @@ class TextDataField extends StatelessWidget {
         Row(
           children: [
             CText(addSeparator(value),textDirection: TextDirection.ltr,color: color,fontSize: 13),
-            Gap(2),
+            const Gap(2),
             if(showCurrency)
             CText(context.watch<UserProvider>().currency,textDirection: TextDirection.ltr,color: color.withOpacity(.7),fontSize: 8),
           ],

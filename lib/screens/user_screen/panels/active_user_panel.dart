@@ -32,9 +32,9 @@ class ActiveUserPanel extends StatelessWidget {
                   foregroundImage:
                       user.image == null ? null : FileImage(File(user.image!)),
                   child:
-                      user.image != null ? null : Icon(FontAwesomeIcons.user),
+                      user.image != null ? null : const Icon(FontAwesomeIcons.user),
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 InfoPanelRow(infoList: user.name, title: "نام"),
                 InfoPanelRow(infoList:UserType().englishToPersian(user.userType) , title: "سمت"),
                 InfoPanelRow(infoList: user.phone ?? "", title: "شماره تماس"),
@@ -60,8 +60,8 @@ class ActiveUserPanel extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("حسابکاربری یافت نشد"),
-                  SizedBox(
+                  const Text("حسابکاربری یافت نشد"),
+                  const SizedBox(
                     height: 10,
                   ),
                   ActionButton(

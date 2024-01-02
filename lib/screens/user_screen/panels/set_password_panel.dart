@@ -90,10 +90,9 @@ class _SetPasswordPanelState extends State<SetPasswordPanel> {
                       newPasswordReapedController.text) {
                     return "تکرار رمز اشتباه است";
                   }
-                  ;
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomButton(

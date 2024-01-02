@@ -14,7 +14,7 @@ class UserTools{
    UserProvider userProvider=Provider.of<UserProvider>(context,listen: false);
     User? activeUser=Provider.of<UserProvider>(context,listen: false).activeUser;
     if(count==null || count < userProvider.ceilCount) {
-      if(userTypes==null || userTypes.contains(activeUser?.userType) || activeUser?.userType==UserType.admin) {
+      if(activeUser==null || userTypes==null || userTypes.contains(activeUser.userType) || activeUser.userType==UserType.admin) {
         return true;
       }else{
         showSnackBar(context, "شما اجازه دسترسی به این بخش را ندارید!",

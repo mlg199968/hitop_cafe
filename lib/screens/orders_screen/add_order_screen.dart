@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
@@ -604,6 +603,7 @@ addToItemList(List<Item> iList){
                           if(showDescription && screenType(context) == ScreenType.mobile)
                           CustomTextField(controller: descriptionController,label: "توضیحات سفارش",width: double.maxFinite,maxLine: 3,maxLength: 300,),
                           ///quick action button like add items and add payments
+                            if(screenType(context) == ScreenType.mobile)
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Row(
@@ -668,6 +668,7 @@ addToItemList(List<Item> iList){
                           ),
                           ///final data of orderBill like sale total
                           Container(
+                            width: 450,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: kBoxDecoration,
@@ -685,6 +686,7 @@ addToItemList(List<Item> iList){
 
                             ///total payment
                             Container(
+                              width: 450,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: kBoxDecoration.copyWith(

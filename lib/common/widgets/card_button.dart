@@ -30,7 +30,7 @@ class CardButton extends StatelessWidget {
       margin: const EdgeInsets.all(5),
       elevation: 4,
       color: Colors.black,
-      child: GestureDetector(
+      child: InkWell(
         onTap: onTap,
         child: Container(
           width: width,

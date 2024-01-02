@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 
 part 'user.g.dart';
@@ -75,7 +77,8 @@ class User extends HiveObject {
     return user;
   }
 
-
+String toJson()=>jsonEncode(toMap());
+  User fromJson(String source)=>fromMap(jsonDecode(source));
 }
 
 //run this code for create adaptor:

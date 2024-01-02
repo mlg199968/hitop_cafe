@@ -4,9 +4,7 @@ import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
-import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/screens/user_screen/widgets/user_tile.dart';
@@ -185,8 +183,6 @@ class _CreditListPartState extends State<UserListPart> {
                     }
                   }, color: Colors.red,
                 );
-              } else {
-                return const SizedBox();
               }
             }),
 
