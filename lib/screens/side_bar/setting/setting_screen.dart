@@ -15,11 +15,11 @@ import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
-import 'package:hitop_cafe/screens/user_screen/panels/set_password_panel.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
@@ -286,6 +286,16 @@ class _SettingScreenState extends State<SettingScreen> {
                           ButtonTile(onPress: (){
                             Navigator.pushNamed(context, LocalServerScreen.id);
                           }, label: "تنظیمات سرور", buttonLabel: "تعیین سرور"),
+
+                          const CText(
+                            "متفرقه",
+                            fontSize: 16,
+                            color: Colors.white60,
+                          ),
+                          ///back to app Type screen
+                          ButtonTile(onPress: (){
+                            Navigator.pushNamedAndRemoveUntil(context, AppTypeScreen.id,(context)=>false);
+                          }, label: "تغییر نوع کاربری برنامه", buttonLabel:"تغییر"),
                           ///developer section
                           const CText(
                             "توسعه دهنده",

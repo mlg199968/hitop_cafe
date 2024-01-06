@@ -4,7 +4,9 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/bug.dart';
+import 'package:hitop_cafe/models/database.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/payment.dart';
@@ -47,8 +49,10 @@ Future main() async {
   Hive.registerAdapter(OrderAdapter());
   Hive.registerAdapter(SubscriptionAdapter());
   Hive.registerAdapter(BugAdapter());
+  Hive.registerAdapter(NoticeAdapter());
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(PackAdapter());
+  Hive.registerAdapter(DBAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
@@ -58,6 +62,7 @@ Future main() async {
   await Hive.openBox<Shop>("shop_db",path: await Address.hiveDirectory());
   await Hive.openBox<Bug>("bug_db",path: await Address.hiveDirectory());
   await Hive.openBox<User>("user_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Pack>("pack_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),

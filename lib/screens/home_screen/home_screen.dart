@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 300,
                                     image: "active-orders",
                                     onTap: () {
-                                      onTapFunction(0, () {
+                                      onTapFunction(1, () {
                                         Navigator.pushNamed(
                                             context, PresentOrderScreen.id);
                                       });
@@ -215,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 200,
                                     image: "orders-history",
                                     onTap: () {
-                                      onTapFunction(1, () {
+                                      onTapFunction(0, () {
                                         Navigator.pushNamed(
                                             context, OrderScreen.id);
                                       });

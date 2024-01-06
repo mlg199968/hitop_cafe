@@ -16,13 +16,12 @@ class PaymentAdapter extends TypeAdapter<Payment> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Payment(
-      amount: fields[0] as num,
-      method: fields[1] as String?,
-      paymentId: fields[2] as String,
-      deliveryDate: fields[3] as DateTime,
-      isChecked: fields[4] as bool,
-    );
+    return Payment()
+      ..amount = fields[0] as num
+      ..method = fields[1] as String?
+      ..paymentId = fields[2] as String
+      ..deliveryDate = fields[3] as DateTime
+      ..isChecked = fields[4] as bool;
   }
 
   @override

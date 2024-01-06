@@ -16,21 +16,20 @@ class RawWareAdapter extends TypeAdapter<RawWare> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return RawWare(
-      wareName: fields[0] as String,
-      unit: fields[1] as String,
-      category: fields[2] as String,
-      description: fields[3] as String,
-      cost: fields[4] as num,
-      quantity: fields[5] as double,
-      demand: fields[6] as double,
-      modifiedDate: fields[7] as DateTime,
-      createDate: fields[8] as DateTime,
-      wareId: fields[9] as String,
-      isChecked: fields[10] as bool,
-      imagePath: fields[11] as String?,
-      color: fields[12] as String?,
-    );
+    return RawWare()
+      ..wareName = fields[0] as String
+      ..unit = fields[1] as String
+      ..category = fields[2] as String
+      ..description = fields[3] as String
+      ..cost = fields[4] as num
+      ..quantity = fields[5] as double
+      ..demand = fields[6] as double
+      ..modifiedDate = fields[7] as DateTime
+      ..createDate = fields[8] as DateTime
+      ..wareId = fields[9] as String
+      ..isChecked = fields[10] as bool
+      ..imagePath = fields[11] as String?
+      ..color = fields[12] as String?;
   }
 
   @override

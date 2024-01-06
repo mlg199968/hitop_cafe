@@ -4,9 +4,11 @@ import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/waiter_home_screen.dart';
+import 'package:provider/provider.dart';
 
 class AppTypeScreen extends StatefulWidget {
   static const String id = "/app-type-screen";
@@ -47,8 +49,10 @@ class _AppTypeScreenState extends State<AppTypeScreen> {
                     icon: FontAwesomeIcons.person,
                     label: "سفارشگیر",
                     onPress:() {
-                      Shop shop=HiveBoxes.getShopInfo().values.first;
-                      shop.appType=AppType.waiter;
+                      Shop shop=HiveBoxes.getShopInfo().getAt(0)!;
+                      shop.appType=AppType.waiter.value;
+                      HiveBoxes.getShopInfo().putAt(0, shop);
+                      Provider.of<UserProvider>(context,listen:false).getData(shop);
                       Navigator.pushReplacementNamed(context, WaiterHomeScreen.id);
                     } ,
                   ),
@@ -57,7 +61,8 @@ class _AppTypeScreenState extends State<AppTypeScreen> {
                     label: "برنامه اصلی",
                     onPress: () {
                       Shop shop=HiveBoxes.getShopInfo().values.first;
-                      shop.appType=AppType.main;
+                      shop.appType=AppType.main.value;
+                      HiveBoxes.getShopInfo().putAt(0, shop);
                       Navigator.pushReplacementNamed(context, SplashScreen.id);
                     },
                   ),

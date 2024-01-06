@@ -72,13 +72,12 @@ class _CashToBillState extends State<PaymentToBill> {
                   text: "افزودن به فاکتور",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Payment payment = Payment(
-                          method: PayMethod().persianToEnglish(pMethod),
-                          amount: stringToDouble(cashController.text),
-                          deliveryDate: DateTime.now(),
-                        paymentId: const Uuid().v1(),
-
-                      );
+                      Payment payment = Payment()
+                      ..   method= PayMethod().persianToEnglish(pMethod)
+                      ..   amount= stringToDouble(cashController.text)
+                      ..   deliveryDate= DateTime.now()
+                      .. paymentId= const Uuid().v1()
+                      ;
                       Navigator.pop(context, payment);
                     }
                   }),

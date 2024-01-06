@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 
 class CustomFloatActionButton extends StatelessWidget {
@@ -21,11 +20,12 @@ class CustomFloatActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: label==null?null:50,
+      width: label==null?60:null,
       child: FloatingActionButton.extended(
         label:Text(label ?? "",style: const TextStyle(fontSize: 20),),
         icon:  Icon(
-          icon ?? FontAwesomeIcons.plus,
-          size: 30,
+          icon ?? Icons.add_rounded,
+          size: 45,
         ),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         isExtended: label==null?false:true,

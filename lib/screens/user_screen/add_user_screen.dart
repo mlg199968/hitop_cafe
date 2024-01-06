@@ -18,15 +18,15 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class AddUserScreen extends StatefulWidget {
-  static const String id = "/addUserScreen";
+  static const String id = "/add-user-screen";
   const AddUserScreen({Key? key, this.oldUser}) : super(key: key);
   final User? oldUser;
 
   @override
-  State<AddUserScreen> createState() => _AddCustomerScreenState();
+  State<AddUserScreen> createState() => _AddUserScreenState();
 }
 
-class _AddCustomerScreenState extends State<AddUserScreen> {
+class _AddUserScreenState extends State<AddUserScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController firstNameController = TextEditingController();
   FocusNode firstNameFocus = FocusNode();
@@ -40,14 +40,18 @@ class _AddCustomerScreenState extends State<AddUserScreen> {
   String? imagePath;
   String selectedUserType = UserType.waiterPersian;
 
-  List UserTypesList() {
-    Provider.of<UserProvider>(context, listen: false).activeUser != null;
+  List userTypesList() {
+   String? appType= Provider.of<UserProvider>(context, listen: false).appType;
 
-    if (HiveBoxes.getUsers().values.isEmpty ||
-        widget.oldUser?.userType == UserType.admin) {
-      selectedUserType = UserType.adminPersian;
-      return [UserType.adminPersian];
-    } else {
+   if(appType==AppType.waiter.value){
+      return [UserType.waiterPersian];
+    }
+   else  if (HiveBoxes.getUsers().values.isEmpty ||
+    widget.oldUser?.userType == UserType.admin) {
+    selectedUserType = UserType.adminPersian;
+    return [UserType.adminPersian];
+    }
+    else {
       return UserType().getList();
     }
   }
@@ -58,7 +62,6 @@ class _AddCustomerScreenState extends State<AddUserScreen> {
       User user = User()
         ..name = nameController.text
         ..password = passwordController.text
-        ..userType = selectedUserType
         ..phone =
             phoneNumberController.text.isEmpty ? "" : phoneNumberController.text
         ..email = emailController.text.isEmpty ? "" : emailController.text
@@ -77,6 +80,9 @@ class _AddCustomerScreenState extends State<AddUserScreen> {
         user.image = await saveImage(imagePath, user.userId, newPath);
       }
       HiveBoxes.getUsers().put(user.userId, user);
+      if(context.mounted) {
+        Provider.of<UserProvider>(context,listen: false).setUser(user);
+      }
     }
   }
 
@@ -95,7 +101,6 @@ class _AddCustomerScreenState extends State<AddUserScreen> {
   @override
   void initState() {
     replaceOldUser();
-    firstNameFocus.requestFocus();
     super.initState();
   }
 
@@ -181,7 +186,7 @@ class _AddCustomerScreenState extends State<AddUserScreen> {
                         children: [
                           const Text("نقش کاربر"),
                           DropListModel(
-                              listItem: UserTypesList(),
+                              listItem: userTypesList(),
                               selectedValue: selectedUserType,
                               onChanged: (val) {
                                 selectedUserType = val;

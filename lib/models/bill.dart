@@ -74,7 +74,7 @@ class Bill extends HiveObject {
 
   factory Bill.fromMap(Map<String, dynamic> map) {
     List<Purchase> purchases=List<Purchase>.from((map['purchases'] as List).map((e)=>Purchase.fromMap(e),),);
-    List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
+    List<Payment> payments=List<Payment>.from((map['payments'] as List).map((e)=>Payment().fromMap(e),),);
     return Bill(
       purchases: purchases,
       payments: payments,

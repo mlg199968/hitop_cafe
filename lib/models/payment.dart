@@ -14,17 +14,10 @@ class Payment extends HiveObject{
   @HiveField(2)
   String paymentId="0";
   @HiveField(3)
-  DateTime deliveryDate=DateTime.now();
+  late DateTime deliveryDate;
   @HiveField(4)
   bool isChecked=false;
 
-  Payment({
-    required this.amount,
-    this.method,
-    this.paymentId="0",
-    required this.deliveryDate,
-    this.isChecked=false,
-  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,19 +29,20 @@ class Payment extends HiveObject{
     };
   }
 
-  factory Payment.fromMap(Map<String, dynamic> map) {
-    return Payment(
-      amount: map['amount'] ?? 0,
-      method: map['method'] ?? "",
-      paymentId: map['paymentId'] ?? "0",
-      deliveryDate: DateTime.parse(map['deliveryDate']),
-      isChecked: map['isChecked']==1?true:false,
-    );
+  Payment fromMap(Map<String,dynamic> map) {
+    Payment payment= Payment()
+     ..amount= map['amount'] ?? 0
+     ..method= map['method'] ?? ""
+     ..paymentId= map['paymentId'] ?? "0"
+     ..deliveryDate=map['deliveryDate']==null?DateTime.now(): DateTime.parse(map['deliveryDate'])
+     ..isChecked= map['isChecked']==1?true:false;
+    return payment;
   }
 
   String toJson()=>jsonEncode(toMap());
-  factory Payment.fromJson(String source)=>Payment.fromMap(jsonDecode(source));
+  Payment fromJson(String source)=>Payment().fromMap(jsonDecode(source));
 }
+
 
 
 
@@ -56,3 +50,4 @@ class Payment extends HiveObject{
 
 //run this code for create adaptor:
 //flutter packages pub run build_runner build --delete-conflicting-outputs
+//dart run build_runner build --delete-conflicting-outputs

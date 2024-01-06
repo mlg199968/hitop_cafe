@@ -34,13 +34,13 @@ class Client {
       isConnected = true;
         const String message = "user get connected";
         pack.message=message;
-         write(message);
+         write(pack.toJson());
     } catch (e) {
       debugPrint("error on connect client to server \n ${e.toString()}");
     }
   }
 
-  void write(String message)async {
+  void write(String message) {
     socket.write(message);
   }
 

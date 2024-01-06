@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/item.dart';
-import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
@@ -56,24 +55,28 @@ getIpAddress()async{
   }
 
 
-  void sendPack(Pack pack){
+  bool sendPack(Pack pack){
     Uint8List.fromList(utf8.encode(pack.toJson()));
-    client!.write(pack.toJson());
-    logs.add(pack);
-
+    if(client !=null) {
+      client!.write(pack.toJson());
+      logs.add(pack);
+      return true;
+    }else{
+      return false;
+    }
   }
 
   onData(Uint8List data){
     Pack pack=Pack().fromJson(utf8.decode(data));
-    if(pack.type=="itemList" && pack.object.isNotEmpty){
-      for (var itemMap in pack.object) {
-        Item item=Item().fromMap(itemMap!);
+    if(pack.type=="itemList" && pack.object!=null){
+      for (var itemJson in pack.object!) {
+        Item item=Item().fromJson(itemJson);
         HiveBoxes.getItem().put(item.itemId, item);
       }
     }
-    if(pack.type=="wareList" && pack.object.isNotEmpty){
-      for (var itemMap in pack.object) {
-        RawWare ware=RawWare.fromMap(itemMap!);
+    if(pack.type=="wareList" && pack.object!=null){
+      for (String itemJson in pack.object!) {
+        RawWare ware=RawWare().fromJson(itemJson);
         HiveBoxes.getRawWare().put(ware.wareId, ware);
       }
     }

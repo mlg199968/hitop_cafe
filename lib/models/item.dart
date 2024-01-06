@@ -64,7 +64,7 @@ class Item extends HiveObject{
   Item fromMap(Map<String, dynamic> map) {
 
     List<RawWare> ingredients = List<RawWare>.from(
-        (map['ingredients']).map((e) => RawWare.fromMap(e)));
+        (map['ingredients']).map((e) => RawWare().fromMap(e)));
 
      Item item=Item ()
       ..itemName= map['itemName'] ?? ""

@@ -20,9 +20,7 @@ class PackAdapter extends TypeAdapter<Pack> {
       ..type = fields[0] as String?
       ..message = fields[1] as String?
       ..device = fields[2] as String?
-      ..object = (fields[3] as List)
-          .map((dynamic e) => (e as Map?)?.cast<String, dynamic>())
-          .toList()
+      ..object = (fields[3] as List?)?.cast<dynamic>()
       ..date = fields[4] as DateTime
       ..packId = fields[5] as String;
   }

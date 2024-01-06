@@ -6,7 +6,7 @@ class WareTools {
 
   ///create new Ware form Raw Ware (to prevent from interfere)
   static RawWare copyToNewWare(RawWare ware){
-    RawWare newWare=RawWare.fromMap(ware.toMap());
+    RawWare newWare=RawWare().fromMap(ware.toMap());
     return newWare;
   }
 

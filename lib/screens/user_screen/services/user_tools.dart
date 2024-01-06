@@ -16,7 +16,12 @@ class UserTools{
     if(count==null || count < userProvider.ceilCount) {
       if(activeUser==null || userTypes==null || userTypes.contains(activeUser.userType) || activeUser.userType==UserType.admin) {
         return true;
-      }else{
+      }
+      //if app type is waiter app we don't have any limitation
+      else if(userProvider.appType==AppType.waiter.value){
+        return true;
+      }
+      else{
         showSnackBar(context, "شما اجازه دسترسی به این بخش را ندارید!",
             type: SnackType.error);
         return false;

@@ -2,12 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/services/localhost_services/server.dart';
-import 'package:ping_discover_network_plus/ping_discover_network_plus.dart';
 
 
 class ServerProvider extends ChangeNotifier {
@@ -42,8 +40,9 @@ class ServerProvider extends ChangeNotifier {
   void onData(Uint8List? data) {
     if(data!=null) {
       Pack? pack = Pack().fromJson(utf8.decode(data));
-      if(pack.type=="order" && pack.object.isNotEmpty){
-        Order order=Order().fromMap(pack.object[0]!);
+      if(pack.type=="order" && pack.object!=null && pack.object!.isNotEmpty){
+
+        Order order=Order().fromJson(pack.object!.first);
         HiveBoxes.getOrders().put(order.orderId, order);
       }
      // Order order = Order().fromJson(utf8.decode(data));

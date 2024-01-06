@@ -29,16 +29,15 @@ import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/choose_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
 import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_app_setting_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_home_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
 
-
-
 Route generateRoute(RouteSettings routeSetting) {
   switch (routeSetting.name) {
-
     case SplashScreen.id:
-      return MaterialPageRoute(builder: (_) =>  const SplashScreen());
+      return MaterialPageRoute(builder: (_) => const SplashScreen());
 
     case HomeScreen.id:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
@@ -51,14 +50,10 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case AddOrderScreen.id:
       Order? order = routeSetting.arguments as Order?;
-      return MaterialPageRoute(
-          builder: (_) => AddOrderScreen(
-                oldOrder: order,
-              ));
+      return MaterialPageRoute(builder: (_) => AddOrderScreen(oldOrder: order));
 
     case QuickAddScreen.id:
-      return MaterialPageRoute(
-          builder: (_) => const QuickAddScreen());
+      return MaterialPageRoute(builder: (_) => const QuickAddScreen());
 
     case AddShoppingBillScreen.id:
       Bill? bill = routeSetting.arguments as Bill?;
@@ -66,7 +61,6 @@ Route generateRoute(RouteSettings routeSetting) {
           builder: (_) => AddShoppingBillScreen(
                 oldBill: bill,
               ));
-
 
     case ShoppingBillScreen.id:
       Key? key = routeSetting.arguments as Key?;
@@ -104,25 +98,30 @@ Route generateRoute(RouteSettings routeSetting) {
     case BugListScreen.id:
       return MaterialPageRoute(builder: (_) => const BugListScreen());
 
-
     case PurchaseAppScreen.id:
       Map? args = routeSetting.arguments as Map?;
-      return MaterialPageRoute(builder: (_) => PurchaseAppScreen(phone: args?["phone"],level: args?["level"],));
+      return MaterialPageRoute(
+          builder: (_) => PurchaseAppScreen(
+                phone: args?["phone"],
+                level: args?["level"],
+              ));
 
     case AuthorityScreen.id:
-      return MaterialPageRoute(builder: (_) =>  const AuthorityScreen());
+      return MaterialPageRoute(builder: (_) => const AuthorityScreen());
 
-
-///user screens
+    ///user screens
     case AddUserScreen.id:
-      User? user=routeSetting.arguments as User?;
-      return MaterialPageRoute(builder: (_) => AddUserScreen(oldUser: user,));
+      User? user = routeSetting.arguments as User?;
+      return MaterialPageRoute(
+          builder: (_) => AddUserScreen(
+                oldUser: user,
+              ));
 
-   case UserListScreen.id:
-      return MaterialPageRoute(builder: (_) =>  const UserListScreen());
+    case UserListScreen.id:
+      return MaterialPageRoute(builder: (_) => const UserListScreen());
 
-   case ChooseUserScreen.id:
-      return MaterialPageRoute(builder: (_) =>  const ChooseUserScreen());
+    case ChooseUserScreen.id:
+      return MaterialPageRoute(builder: (_) => const ChooseUserScreen());
 
     case PrinterPage.id:
       Key? key = routeSetting.arguments as Key?;
@@ -131,20 +130,25 @@ Route generateRoute(RouteSettings routeSetting) {
     case LocalServerScreen.id:
       return MaterialPageRoute(builder: (_) => const LocalServerScreen());
 
-
-      ///waiter app screens
+    ///waiter app screens
     case AppTypeScreen.id:
       return MaterialPageRoute(builder: (_) => const AppTypeScreen());
 
     case WaiterHomeScreen.id:
       return MaterialPageRoute(builder: (_) => const WaiterHomeScreen());
 
-    case WaiterSettingScreen.id:
-      return MaterialPageRoute(builder: (_) => const WaiterSettingScreen());
+    case WaiterNetworkScreen.id:
+      return MaterialPageRoute(builder: (_) => const WaiterNetworkScreen());
 
+    case WaiterAddOrderScreen.id:
+      Order? order = routeSetting.arguments as Order?;
+      return MaterialPageRoute(builder: (_) => WaiterAddOrderScreen(oldOrder: order));
 
+   case WaiterAppSettingScreen.id:
 
-///default screen
+      return MaterialPageRoute(builder: (_) => const WaiterAppSettingScreen());
+
+    ///default screen
     default:
       return MaterialPageRoute(
           builder: (_) => const Scaffold(

@@ -1,4 +1,3 @@
-import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
@@ -39,7 +38,9 @@ class Shop extends HiveObject {
   @HiveField(15)
   User? activeUser;
   @HiveField(16)
-  AppType? appType;
+  String? appType;
+  @HiveField(17)
+  int? userLevel=0;
 
 }
 

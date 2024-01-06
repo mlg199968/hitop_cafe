@@ -35,23 +35,22 @@ class _AddWareScreenState extends State<AddWareScreen> {
 
   ///save ware on local storage
   void saveWare({String? id}) {
-    RawWare rawWare = RawWare(
-      wareName: wareNameController.text,
-      unit: unitItem,
-      category: Provider.of<WareProvider>(context, listen: false)
-          .selectedRawWareCategory,
-      cost: costPriceController.text.isEmpty
+    RawWare rawWare = RawWare()
+     .. wareName= wareNameController.text
+     .. unit= unitItem
+     .. category= Provider.of<WareProvider>(context, listen: false)
+          .selectedRawWareCategory
+     .. cost= costPriceController.text.isEmpty
           ? 0
-          : stringToDouble(costPriceController.text),
-      quantity: quantityController.text.isEmpty
+          : stringToDouble(costPriceController.text)
+     .. quantity= quantityController.text.isEmpty
           ? 1000
-          : stringToDouble(quantityController.text),
-      description:
-          descriptionController.text.isEmpty ? "" : descriptionController.text,
-      wareId: id ?? const Uuid().v1(),
-      createDate: id != null ? widget.oldRawWare!.createDate : DateTime.now(),
-      modifiedDate: DateTime.now(),
-    );
+          : stringToDouble(quantityController.text)
+     .. description=
+          descriptionController.text.isEmpty ? "" : descriptionController.text
+     .. wareId= id ?? const Uuid().v1()
+     .. createDate= id != null ? widget.oldRawWare!.createDate : DateTime.now()
+     .. modifiedDate= DateTime.now();
     // Debuger.maxWare(RawWare, 100);
     HiveBoxes.getRawWare().put(rawWare.wareId, rawWare);
   }

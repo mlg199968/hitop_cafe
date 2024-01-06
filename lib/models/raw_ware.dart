@@ -37,21 +37,6 @@ class RawWare extends HiveObject {
 
 
 
-  RawWare({
-    required this.wareName,
-    required this.unit,
-    required this.category,
-    required this.description,
-    required this.cost,
-    required this.quantity,
-    this.demand=0,
-    required this.modifiedDate,
-    required this.createDate,
-    required this.wareId,
-    this.isChecked=false,
-    this.imagePath,
-    this.color,
-  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -71,24 +56,28 @@ class RawWare extends HiveObject {
     };
   }
 
-  factory RawWare.fromMap(Map<String, dynamic> map) {
-    return RawWare(
-      wareName: map['wareName'] ?? "",
-      unit: map['unit'] ?? "",
-      category: map['category'] ?? "",
-      description: map['description'] ?? "",
-      cost: map['cost'] as num,
-      quantity: map['quantity'] ?? 0,
-      demand: map['demand'] ?? 0,
-      modifiedDate:DateTime.parse (map['modifiedDate']),
-      createDate: DateTime.parse(map['createDate']),
-      wareId: map['wareId'] as String,
-      isChecked: map['isChecked'] ==1 ? true :false,
-      imagePath: map['imagePath'] ?? "",
-      color: map['color'] ?? "",
-    );
+   RawWare fromMap(Map<String, dynamic> map) {
+     RawWare rawWare =RawWare()
+     ..wareName= map['wareName'] ?? ""
+     ..unit= map['unit'] ?? ""
+     ..category= map['category'] ?? ""
+     ..description= map['description'] ?? ""
+     ..cost= map['cost'] as num
+     ..quantity= map['quantity'] ?? 0
+     ..demand= map['demand'] ?? 0
+     ..modifiedDate=DateTime.parse (map['modifiedDate'])
+     ..createDate= DateTime.parse(map['createDate'])
+     ..wareId= map['wareId'] as String
+     ..isChecked= map['isChecked'] ==1 ? true :false
+     ..imagePath= map['imagePath'] ?? ""
+     ..color= map['color'] ?? "";
+     return rawWare;
   }
 
 String toJson()=>jsonEncode(toMap());
-  RawWare fromJson(String source)=>RawWare.fromMap(jsonDecode(source));
+  RawWare fromJson(String source)=>fromMap(jsonDecode(source));
 }
+
+//run this code for create adaptor:
+//flutter packages pub run build_runner build --delete-conflicting-outputs
+//dart run build_runner build --delete-conflicting-outputs

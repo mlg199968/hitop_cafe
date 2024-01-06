@@ -31,3 +31,11 @@
     const AppType(this.value);
    final String value;
   }
+
+ enum PackType{
+  order("order"),
+    itemList("itemList"),
+    wareList("wareList");
+    const PackType(this.value);
+   final String value;
+  }

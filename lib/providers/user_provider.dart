@@ -6,20 +6,22 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/user.dart';
+import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:printing/printing.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class UserProvider extends ChangeNotifier{
 
-  int userLevel=0;
+  int _userLevel=0;
+  int get userLevel=>_userLevel;
+
   //ceil count is for how many item you can add to list
-  int _ceilCount=10;
-  int get ceilCount =>_ceilCount;
+  int get ceilCount =>_userLevel==0?10:1000;
   String ceilCountMessage="این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
   User? _user;
   User? get activeUser=>_user;
-  AppType? _appType;
- AppType? get appType=>_appType;
+  String? _appType;
+ String? get appType=>_appType;
 
   //*****
   String shopName="نام فروشگاه";
@@ -55,35 +57,40 @@ class UserProvider extends ChangeNotifier{
     currency=shop.currency;
     preDiscount=shop.preTax ;
     preBillNumber=shop.preBillNumber;
+    fontFamily=shop.fontFamily ?? kFonts[0];
     _selectedPrinter=shop.printer==null?null:Printer.fromMap(shop.printer!);
     printerIp=shop.printerIp ?? "192.168.1.1" ;
-
+    _user=shop.activeUser;
+    _appType=shop.appType;
+    _userLevel=shop.userLevel ?? 0;
+    ///this for just use complete for debug app
+    _userLevel=1;
   }
 
   void setUserLevel(int input) async{
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    prefs.setInt("level",input);
-    userLevel=input;
-    if(userLevel==1) {
-      _ceilCount=1000;
-    }
+    // SharedPreferences prefs= await SharedPreferences.getInstance();
+    // prefs.setInt("level",input);
+    Shop shop=HiveBoxes.getShopInfo().getAt(0)!;
+    shop.userLevel=input;
+    HiveBoxes.getShopInfo().putAt(0, shop);
+    _userLevel=input;
     notifyListeners();
   }
 
-  void getUserLevel() async{
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    int? subsInfo= prefs.getInt("level");
-
-    if(subsInfo!=null){
-      userLevel=subsInfo;
-      if(userLevel==1) {
-        _ceilCount=1000;
-      }
-    }else{
-    }
-
-    notifyListeners();
-  }
+  // void getUserLevel() async{
+  //   SharedPreferences prefs= await SharedPreferences.getInstance();
+  //   int? subsInfo= prefs.getInt("level");
+  //
+  //   if(subsInfo!=null){
+  //     _userLevel=subsInfo;
+  //     if(_userLevel==1) {
+  //       _ceilCount=1000;
+  //     }
+  //   }else{
+  //   }
+  //
+  //   notifyListeners();
+  // }
 
 
   Printer? getDefaultPrinter() {
@@ -100,6 +107,11 @@ class UserProvider extends ChangeNotifier{
 setUser(User? user){
     _user=user;
     notifyListeners();
+    if(_appType==AppType.waiter.value){
+      Shop old=HiveBoxes.getShopInfo().getAt(0)!;
+      old.activeUser=user;
+      HiveBoxes.getShopInfo().putAt(0, old);
+    }
 }
 removeUser(){
     _user=null;
@@ -107,7 +119,7 @@ removeUser(){
 }
 ///appType Functions
 setAppType(AppType? type){
-    _appType=type;
+    _appType=type?.value;
     notifyListeners();
 }
 removeAppType(){

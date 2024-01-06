@@ -68,7 +68,7 @@ class Order extends HiveObject {
 
   Order fromMap(Map<String, dynamic> map) {
     List<Item> mapItems=map['items']==null?[]:List<Item>.from((map['items'] as List).map((e)=>Item().fromMap(e),),);
-    List<Payment> mapPayments=map['payments']==null?[]:List<Payment>.from((map['payments'] as List).map((e)=>Payment.fromMap(e),),);
+    List<Payment> mapPayments=map['payments']==null?[]:List<Payment>.from((map['payments'] as List).map((e)=>Payment().fromMap(e),),);
     Order order=Order()
       ..items= mapItems
       ..tableNumber= map['tableNumber'] ?? 0

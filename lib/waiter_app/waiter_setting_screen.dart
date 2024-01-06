@@ -5,18 +5,17 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/providers/client_provider.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
-import 'package:ping_discover_network_plus/ping_discover_network_plus.dart';
 import 'package:provider/provider.dart';
 
-class WaiterSettingScreen extends StatefulWidget {
+class WaiterNetworkScreen extends StatefulWidget {
   static const String id = "/waiter-setting-screen";
-  const WaiterSettingScreen({super.key});
+  const WaiterNetworkScreen({super.key});
 
   @override
-  State<WaiterSettingScreen> createState() => _WaiterSettingScreenState();
+  State<WaiterNetworkScreen> createState() => _WaiterNetworkScreenState();
 }
 
-class _WaiterSettingScreenState extends State<WaiterSettingScreen> {
+class _WaiterNetworkScreenState extends State<WaiterNetworkScreen> {
   final _formKey = GlobalKey<FormState>();
   final subnetController = TextEditingController();
   final portController = TextEditingController();
@@ -51,7 +50,7 @@ class _WaiterSettingScreenState extends State<WaiterSettingScreen> {
                 child: CircularProgressIndicator(strokeWidth: 1.5,),
               )
               else
-              Container(
+              SizedBox(
                 height: 150,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

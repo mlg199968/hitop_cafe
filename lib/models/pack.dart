@@ -12,7 +12,7 @@ class Pack extends HiveObject {
   @HiveField(2)
   String? device;
   @HiveField(3)
-  List<Map<String,dynamic>?> object=[];
+  List? object;
   @HiveField(4)
   DateTime date = DateTime.now();
   @HiveField(5)
@@ -34,7 +34,7 @@ class Pack extends HiveObject {
       ..type= map['type']
       ..message= map['message']
       ..device= map['device']
-      ..object= map['object']
+       ..object= map['object']
       ..date= map['date']!=null?DateTime.parse(map['date']):DateTime.now()
       ..packId= map['packId'] ?? "0";
      return pack;

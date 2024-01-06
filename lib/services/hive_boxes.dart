@@ -3,6 +3,7 @@
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
+import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
@@ -37,6 +38,10 @@ static Box<Bug> getBugs(){
 
 static Box<User> getUsers(){
     return Hive.box<User>("user_db");
+  }
+
+static Box<Pack> getPack(){
+    return Hive.box<Pack>("pack_db");
   }
 
 
