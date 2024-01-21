@@ -3,7 +3,7 @@
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 customAlert(
     {required BuildContext context,
     VoidCallback? onYes,

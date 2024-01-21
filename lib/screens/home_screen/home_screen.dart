@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
@@ -13,12 +16,15 @@ import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/services/notice_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/panels/active_user_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
+import 'package:lottie/lottie.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
-
+bool showAlertNotice=true;
   final List screens = [
     const OrderScreen(),
     const PresentOrderScreen(),
@@ -59,19 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     ///get start up data
-    GlobalFunc.getInitData(context);
+    // GlobalTask.getInitData(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: mainScaffoldKey,
-      extendBodyBehindAppBar: true,
+     // extendBodyBehindAppBar: true,
       drawer: const SideBarPanel(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-            color: Colors.white54,
+          color: Colors.black54,
             onPressed: () {
               mainScaffoldKey.currentState!.openDrawer();
             },
@@ -98,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(
                 "HITOP Cafe ",
                 style: TextStyle(
-                    color: Colors.white70,
+                    color: Colors.black87,
                     fontSize: 20,
                     fontWeight: FontWeight.w600),
               ),
@@ -118,22 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           )
-
-          ///hitop icon
-          // Container(
-          //   alignment: Alignment.center,
-          //   padding: const EdgeInsets.only(right: 0),
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       //Navigator.pushNamed(context, SignInScreen.id);
-          //     },
-          //     child: Image.asset(
-          //       'assets/icons/hitop-white.png',
-          //       width: 100,
-          //       height: 40,
-          //     ),
-          //   ),
-          // ),
         ],
       ),
       body: Directionality(
@@ -142,16 +132,70 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             ///home screen header
             Container(
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * .35,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              height: 200,
               decoration: const BoxDecoration(
                 gradient: kMainGradiant,
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
+                //borderRadius:
+                  //  BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
               ),
               child: Center(
-                child: Wrap(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    ///Notification snack
+                    AnimatedSize(
+                      curve: Curves.easeInOutExpo,
+                      duration: const Duration(milliseconds: 400),
+                      child: (!NoticeTools.checkNewNotifications() ||
+                          !showAlertNotice)
+                          ? const SizedBox()
+                          : Container(
+                        width: 350,
+                        height: 50,
+                        decoration:  BoxDecoration(
+                            color: Colors.red,
+                        borderRadius: BorderRadius.circular(50)
+                        ),
+                        child: Row(
+                          textDirection: TextDirection.rtl,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ActionButton(
+                              label: "مشاهده",
+                              bgColor: Colors.black12,
+                              icon: Icons.remove_red_eye_outlined,
+                              height: 30,
+                              onPress: () {
+                                Navigator.pushNamed(
+                                    context, NoticeScreen.id)
+                                    .then((value) {
+                                  setState(() {});
+                                });
+                              },
+                            ),
+                            const CText(
+                              "اطلاع رسانی جدید!",
+                              color: Colors.white,
+                              textDirection: TextDirection.rtl,
+                            )
+                                .animate()
+                                .fade(duration: const Duration(seconds: 1)),
+                            Lottie.asset(
+                                "assets/animations/notification.json"),
+                            IconButton(
+                                color: Colors.white60,
+                                onPressed: () {
+                                  showAlertNotice = false;
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.close_rounded))
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Gap(10),
                     Text(
                       "امروز: ${DateTime.now().toPersianDateStr()}",
                       style: const TextStyle(color: Colors.white, fontSize: 17),
@@ -162,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Container(
               margin:
-                  EdgeInsets.only(top: MediaQuery.of(context).size.height * .2),
+                  const EdgeInsets.only(top:120),
               padding: const EdgeInsets.all(20),
               child: Row(
                 textDirection: TextDirection.ltr,

@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-
+const String kAppName="hitop-cafe";
 const String hostUrl="https://mlggrand.ir/db";
 
 const kMainGradiant2 = LinearGradient(

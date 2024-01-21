@@ -31,7 +31,7 @@ import 'package:provider/provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GlobalFunc.init();
+  GlobalTask.init();
   // To turn off landscape mode
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
@@ -63,6 +63,7 @@ Future main() async {
   await Hive.openBox<Bug>("bug_db",path: await Address.hiveDirectory());
   await Hive.openBox<User>("user_db",path: await Address.hiveDirectory());
   await Hive.openBox<Pack>("pack_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Notice>("notice_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),

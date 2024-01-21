@@ -22,6 +22,7 @@ class BackendServices {
       if (res.statusCode == 200) {
         print(res.body);
         var backData = jsonDecode(res.body);
+
         if (backData["success"] == true) {
           showSnackBar(context,"Subscription successfully saved",type: SnackType.success);
           return true;
@@ -62,12 +63,12 @@ class BackendServices {
   }
 
 ///read Notifications from host
-  Future<List<Notice?>?> readNotice(context, String appName) async {
+  Future<List<Notice?>?> readNotice(context, {String appName=kAppName,int timeout=20}) async {
     try {
 
       http.Response res = await http.post(
           Uri.parse("$hostUrl/notification/read_notice.php"),
-          body: {"app-name": appName});
+          body: {"app-name":appName}).timeout(Duration(seconds:timeout ));
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {

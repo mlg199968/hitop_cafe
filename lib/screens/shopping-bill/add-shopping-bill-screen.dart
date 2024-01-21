@@ -22,7 +22,7 @@ import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/bill_action_button.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/shopping-bill/panels/ware_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/shopping-bill/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/shopping-bill/services/bill_tools.dart';

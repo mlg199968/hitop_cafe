@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/pack.dart';
 typedef Unit8ListCallback=Function(Uint8List data);
 typedef DynamicCallback=Function(dynamic data);
@@ -24,15 +25,17 @@ class ServerServices{
       serverSocket!.asBroadcastStream();
       serverSocket!.listen(onRequest).onError((e){
         close(pack);
-        print("start function serverSocket error*****\n$e");
+        debugPrint("start function serverSocket error*****\n$e");
       });
-        pack.message = "serverSocket is listening in port 4000";
+        pack.message = "serverSocket is listening in port $port";
         onData!(utf8.encode(pack.toJson()));
 
       },onError:onError );
     }
   void onRequest(Socket socket){
+
     if(!sockets.contains(socket)){
+
       sockets.add(socket);
     }
     socket.listen((Uint8List event) {

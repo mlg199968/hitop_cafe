@@ -7,7 +7,7 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class CardTile extends StatelessWidget {
@@ -28,13 +28,12 @@ class CardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String payable = addSeparator(orderDetail.payable);
-    // String dueDate = "تعیین نشده";
-    // if (orderDetail.dueDate != null || orderDetail.dueDate==DateTime(1999)) {
-    //   dueDate = orderDetail.dueDate!.toPersianDate();
-    // }
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Card(
+        surfaceTintColor: Colors.white,
+        color: Colors.white,
         elevation: 5,
         child: SizedBox(
           width: 170,
@@ -45,17 +44,15 @@ class CardTile extends StatelessWidget {
             child: MyListTile(
               enable: false,
               title:
-                  "سفارش${(orderDetail.billNumber ?? 0).toString().toPersianDigit()}",
+                  "کاربر: ${orderDetail.user?.name}",
               leadingIcon: FontAwesomeIcons.table,
               type: TimeTools.showHour(orderDetail.orderDate),
               subTitle: TimeTools.showHour(orderDetail.orderDate),
-              topTrailingLabel: "میز: ",
-              topTrailing: orderDetail.tableNumber.toString().toPersianDigit(),
+              topTrailingLabel: "سفارش: ",
+              topTrailing: orderDetail.billNumber.toString().toPersianDigit(),
               trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
               bottomLeading:orderDetail.tableNumber.toString().toPersianDigit(),
-              onButton:() {
-          Navigator.of(context).pushNamed(AddOrderScreen.id,arguments:orderDetail);
-          },
+              onButton:onSee,
             ),
           ),
         ),
@@ -94,7 +91,6 @@ class MyListTile extends StatelessWidget {
   final tileGlobalKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    //TODO: order tile responsive added
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Column(

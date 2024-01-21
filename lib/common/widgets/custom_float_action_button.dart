@@ -6,7 +6,7 @@ class CustomFloatActionButton extends StatelessWidget {
       {Key? key,
       required this.onPressed,
       this.icon,
-      this.bgColor=kMainColor,
+      this.bgColor=kSecondaryColor,
       this.fgColor=Colors.white,
       this.label})
       : super(key: key);
@@ -22,6 +22,7 @@ class CustomFloatActionButton extends StatelessWidget {
       height: label==null?null:50,
       width: label==null?60:null,
       child: FloatingActionButton.extended(
+        key: key,
         label:Text(label ?? "",style: const TextStyle(fontSize: 20),),
         icon:  Icon(
           icon ?? Icons.add_rounded,

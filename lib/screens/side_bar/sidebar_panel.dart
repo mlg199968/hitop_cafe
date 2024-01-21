@@ -5,9 +5,10 @@ import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
@@ -99,7 +100,7 @@ class SideBarPanel extends StatelessWidget {
                       text: "تنظیمات",
                       icon: Icons.settings_outlined,
                       onPress: () {
-                        if(UserTools.userPermission(context,userTypes: [])) {
+                        if(UserTools.userPermission(context,userTypes: [UserType.waiter])) {
                         Navigator.pushNamed(context, SettingScreen.id);}
                       },
                     ),

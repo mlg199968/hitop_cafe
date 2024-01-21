@@ -5,16 +5,14 @@ import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
-import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
-import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/providers/user_provider.dart';
+import 'package:hitop_cafe/providers/client_provider.dart';
+import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
-import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
-import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
+import 'package:hitop_cafe/screens/present_orders/widgets/card_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
@@ -43,126 +41,166 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
   String? keyWord;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: waiterScaffoldKey,
-      floatingActionButton: CustomFloatActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, WaiterAddOrderScreen.id);
-        },
-      ),
-      extendBodyBehindAppBar: true,
-      drawer: const WaiterSideBarPanel(),
 
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const CText(
-          "Hitop Waiter",
-          fontSize: 18,
-        ),
-        leading: IconButton(
-          color: Colors.white54,
-          onPressed: () {
-            waiterScaffoldKey.currentState!.openDrawer();
-          },
-          icon: const Icon(
-            FontAwesomeIcons.bars,
-            size: 30,
-            color: Colors.black87,
-          )),
-        actions: [
-          const Gap(5),
-          Flexible(
-            flex: 3,
-            child: ActionButton(
-                label: "شبکه",
-                icon: Icons.circle,
-                bgColor: Colors.indigo,
-                onPress: () {
-                  Navigator.pushNamed(context, WaiterNetworkScreen.id);
-                }),
+    return Consumer<ClientProvider>(
+      builder: (context,clientProvider,child) {
+        return Scaffold(
+          key: waiterScaffoldKey,
+          floatingActionButton: CustomFloatActionButton(
+            bgColor: kSecondaryColor,
+            onPressed: () {
+              Navigator.pushNamed(context, WaiterAddOrderScreen.id);
+            },
           ),
-          const Gap(5),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  height: 150,
-                  margin: const EdgeInsets.only(top: 80),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-                  decoration: const BoxDecoration(
-                    gradient: kMainGradiant,
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CustomSearchBar(
-                        // focusNode: focusNode,
-                        controller: searchCustomerController,
-                        hint: "جست و جو سفارش",
-                        onChange: (val) {
-                          keyWord = val;
-                          setState(() {});
-                        },
-                        selectedSort: sortItem,
-                        sortList: sortList,
-                        onSort: (val) {
-                          sortItem = val;
-                          setState(() {});
-                        }),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: ValueListenableBuilder<Box<Pack>>(
-                      valueListenable: HiveBoxes.getPack().listenable(),
-                      builder: (context, box, _) {
-                        List<Order> orderList =[];
-                          for (var e in box.values) {
-                              if(e.type==PackType.order.value) {
-                                orderList.add(Order().fromJson(e.object!.first));
-                              }
+          extendBodyBehindAppBar: true,
+          drawer: const WaiterSideBarPanel(),
 
-                        }
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            title: const CText(
+              "Hitop Waiter",
+              fontSize: 18,
+            ),
+            leading: IconButton(
+              color: Colors.white54,
+              onPressed: () {
+                waiterScaffoldKey.currentState!.openDrawer();
+              },
+              icon: const Icon(
+                FontAwesomeIcons.bars,
+                size: 30,
+                color: Colors.black87,
+              )),
+            actions: [
+              const Gap(5),
+              Flexible(
+                flex: 3,
+                child: ActionButton(
+                    label: "شبکه",
+                    icon: Icons.circle,
+                    bgColor: Colors.indigo,
+                    iconColor: clientProvider.isConnected?Colors.lightGreenAccent:Colors.red,
+                    onPress: () {
+                      Navigator.pushNamed(context, WaiterNetworkScreen.id);
+                    }),
+              ),
+              const Gap(5),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      height: 80,
+                      margin: const EdgeInsets.only(top: 80),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                      decoration: const BoxDecoration(
+                        gradient: kMainGradiant,
+                      ),
+                      child: CustomSearchBar(
+                          // focusNode: focusNode,
+                          controller: searchCustomerController,
+                          hint: "جست و جو سفارش",
+                          onChange: (val) {
+                            keyWord = val;
+                            setState(() {});
+                          },
+                          selectedSort: sortItem,
+                          sortList: sortList,
+                          onSort: (val) {
+                            sortItem = val;
+                            setState(() {});
+                          }),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: ValueListenableBuilder<Box<Pack>>(
+                          valueListenable: HiveBoxes.getPack().listenable(),
+                          builder: (context, box, _) {
+                            List<Order> orderList =[];
+                              for (var e in box.values) {
+                                  if(e.type==PackType.order.value) {
+                                    orderList.add(Order().fromJson(e.object!.first));
+                                  }
 
-                        //filter the list in order to the search results
-                        List<Order> filteredList = orderList;
-                        OrderTools.filterList(orderList, keyWord, sortItem);
-                        filteredList
-                            .removeWhere((element) => element.payable <= 0);
-                        if (filteredList.isNotEmpty) {
-                          return CreditListPart(
-                            orderList: filteredList,
-                            key: widget.key,
-                          );
+                            }
 
-                          ///empty screen show
-                        } else {
-                          return Container(
-                            height: 400,
-                            alignment: Alignment.center,
-                            child: const Text(
-                              "سفارش حاضری یافت نشد!",
-                              textDirection: TextDirection.rtl,
-                            ),
-                          );
-                        }
-                      }),
-                ),
-                // CustomButton(
-                //     text: "text",
-                //     onPressed: () {
-                //       Navigator.pushNamed(context, LocalServerScreen.id);
-                //     })
-              ],
-            )),
-      ),
+                            //filter the list in order to the search results
+                            List<Order> filteredList = orderList;
+                            OrderTools.filterList(orderList, keyWord, sortItem);
+                            filteredList
+                                .removeWhere((element) => element.payable <= 0);
+                            if (filteredList.isNotEmpty) {
+                              return WaiterHomeScreenListPart(
+                                orderList: filteredList,
+                                key: widget.key,
+                              );
+
+                              ///empty screen show
+                            } else {
+                              return Container(
+                                height: 400,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "سفارش حاضری یافت نشد!",
+                                  textDirection: TextDirection.rtl,
+                                ),
+                              );
+                            }
+                          }),
+                    ),
+                  ],
+                )),
+          ),
+        );
+      }
     );
+  }
+}
+
+
+class WaiterHomeScreenListPart extends StatefulWidget {
+  const WaiterHomeScreenListPart({Key? key, required this.orderList}) : super(key: key);
+  final List<Order> orderList;
+
+  @override
+  State<WaiterHomeScreenListPart> createState() => _CreditListPartState();
+}
+
+class _CreditListPartState extends State<WaiterHomeScreenListPart> {
+  Order? selectedOrder;
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraint) {
+      return Wrap(
+        runSpacing: 10,
+        spacing: 10,
+        alignment: WrapAlignment.center,
+        children: List.generate(widget.orderList.length, (index) {
+          Order order=widget.orderList[index];
+          if (Provider.of<FilterProvider>(context, listen: false).compareData(
+              order.dueDate,
+              order.payable,
+              order.orderDate)) {
+            return CardTile(
+              color: order.isChecked?Colors.teal:kMainColor,
+              orderDetail: widget.orderList[index],
+              onSee: () {
+                  Navigator.pushNamed(context, WaiterAddOrderScreen.id,
+                      arguments: order);
+              },
+            );
+          } else {
+            return const SizedBox();
+          }
+        }),
+      );
+    });
   }
 }

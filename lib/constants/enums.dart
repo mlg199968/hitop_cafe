@@ -35,7 +35,8 @@
  enum PackType{
   order("order"),
     itemList("itemList"),
-    wareList("wareList");
+    wareList("wareList"),
+    respond("respond");
     const PackType(this.value);
    final String value;
   }

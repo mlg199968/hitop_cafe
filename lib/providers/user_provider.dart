@@ -6,6 +6,7 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/user.dart';
+import 'package:hitop_cafe/screens/side_bar/notice_screen/services/notice_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:printing/printing.dart';
 
@@ -108,7 +109,7 @@ setUser(User? user){
     _user=user;
     notifyListeners();
     if(_appType==AppType.waiter.value){
-      Shop old=HiveBoxes.getShopInfo().getAt(0)!;
+      Shop old=HiveBoxes.getShopInfo().values.single;
       old.activeUser=user;
       HiveBoxes.getShopInfo().putAt(0, old);
     }
@@ -126,9 +127,13 @@ removeAppType(){
     _appType=null;
     notifyListeners();
 }
-
   getFontFamily(String font){
     fontFamily=font;
     notifyListeners();
   }
+  // loadNotification(context) async {
+  //   if(context.mounted) {
+  //     await NoticeTools.readNotifications(context,timeout: 5);
+  //   }
+  // }
 }

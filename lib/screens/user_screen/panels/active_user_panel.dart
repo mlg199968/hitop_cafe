@@ -6,7 +6,7 @@ import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/raw_ware_screen/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/info_panel_row.dart';
 import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/choose_user_screen.dart';

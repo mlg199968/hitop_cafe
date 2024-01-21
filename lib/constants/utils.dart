@@ -232,7 +232,7 @@ Future<File?> pickFile(String imageName,{String? root}) async {
   }
   return copyFile;
 }
-
+///resize selected image
 reSizeImage(String iPath,{int width=600})async{
   await (img.Command()
   // Read a jpj image from a file.
@@ -284,21 +284,30 @@ DateTime findMinDate(List<DateTime> dateList) {
   return minDate;
 }
 /// get device id for copy right
-Future<String> getDeviceInfo()async{
+Future<String> getDeviceInfo({String? info})async{
+  late final String deviceName;
+  late final String deviceId;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   if(Platform.isAndroid) {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    return androidInfo.id;
+    deviceName=androidInfo.device;
+    deviceId= androidInfo.id;
   }
-  if(Platform.isWindows) {
+  else if(Platform.isWindows) {
     WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
-    return windowsInfo.deviceId;
+    deviceName=windowsInfo.computerName;
+    deviceId =windowsInfo.deviceId;
   }
-  if(Platform.isIOS){
+  else if(Platform.isIOS){
     IosDeviceInfo iosInfo=await deviceInfo.iosInfo;
-    return iosInfo.model;
+    deviceName=iosInfo.name;
+    deviceId= iosInfo.model;
   }
-  return "public info";
+  if(info=="name") {
+    return deviceName;
+  }else{
+    return deviceId;
+  }
 }
 
 ///custom target focus for coach mark tutorial

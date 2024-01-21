@@ -54,6 +54,32 @@ class Notice extends HiveObject {
 
   String toJson() => jsonEncode(toMap());
   Notice fromJson(String source) => fromMap(jsonDecode(source));
+
+  Notice copyWith({
+    String? title,
+    String? content,
+    String? link,
+    String? linkTitle,
+    String? image,
+    DateTime? noticeDate,
+    bool? seen,
+    bool? important,
+    String? noticeId,
+    Notice? notice,
+  }) {
+    Notice copyNotice=Notice()
+      ..title= title ?? this.title
+      ..content= content ?? this.content
+      ..link= link ?? this.link
+      ..linkTitle= linkTitle ?? this.linkTitle
+      ..image= image ?? this.image
+      ..noticeDate= noticeDate ?? this.noticeDate
+      ..seen= seen ?? this.seen
+      ..important= important ?? this.important
+      ..noticeId= noticeId ?? this.noticeId;
+
+    return copyNotice;
+  }
 }
 
 

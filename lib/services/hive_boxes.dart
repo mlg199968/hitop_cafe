@@ -2,6 +2,7 @@
 
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
@@ -38,6 +39,10 @@ static Box<Bug> getBugs(){
 
 static Box<User> getUsers(){
     return Hive.box<User>("user_db");
+  }
+
+static Box<Notice> getNotice(){
+    return Hive.box<Notice>("notice_db");
   }
 
 static Box<Pack> getPack(){

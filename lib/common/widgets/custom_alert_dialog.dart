@@ -11,9 +11,9 @@ class CustomDialog extends StatelessWidget {
     required this.child,
     this.height,
     this.textDirection = TextDirection.rtl,
-    this.opacity = .6,
+    this.opacity = .8,
     this.image,
-    this.borderRadius=20,
+    this.borderRadius=20, this.contentPadding,
   });
   final String? title;
   final Widget child;
@@ -23,6 +23,7 @@ class CustomDialog extends StatelessWidget {
   final double opacity;
   final double borderRadius;
   final String? image;
+  final EdgeInsets? contentPadding;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -33,6 +34,7 @@ class CustomDialog extends StatelessWidget {
       scrollable: true,
       content: HideKeyboard(
         child: BlurryContainer(
+          blur: 10,
           padding: const EdgeInsets.all(0),
           borderRadius: BorderRadius.circular(borderRadius),
           child: Stack(
@@ -116,7 +118,7 @@ class CustomDialog extends StatelessWidget {
                           height:
                               height, // ?? MediaQuery.of(context).size.height,
                           width: width, // ?? MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.all(20).copyWith(top: 10),
+                          padding:contentPadding ?? const EdgeInsets.all(20).copyWith(top: 10),
                           child: child),
                     ),
                   ),

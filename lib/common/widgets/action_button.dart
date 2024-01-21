@@ -10,13 +10,14 @@ class ActionButton extends StatelessWidget {
       this.label,
       this.height = 35,
       this.width,
-      this.direction = TextDirection.rtl, this.onLongPress});
+      this.direction = TextDirection.rtl, this.onLongPress, this.iconColor});
 
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
   final IconData icon;
   final String? label;
   final Color bgColor;
+  final Color? iconColor;
   final double height;
   final double? width;
   final TextDirection direction;
@@ -55,7 +56,7 @@ class ActionButton extends StatelessWidget {
                     : const SizedBox(width: 3,),
                 Icon(
                   icon,
-                  color: Colors.white,
+                  color:iconColor ?? Colors.white,
                 ),
               ],
             ),
