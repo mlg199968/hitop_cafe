@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/models/pack.dart';
 
 typedef Unit8ListCallback = Function(Uint8List data);
@@ -32,11 +33,11 @@ class Client {
         isConnected = false;
       });
       isConnected = true;
-        const String message = "user get connected";
+        const String message = "user got connected";
         pack.message=message;
          write(pack.toJson());
     } catch (e) {
-      debugPrint("error on connect client to server \n ${e.toString()}");
+      ErrorHandler.errorManger(null, e,title:"********* error on connect client to server *********");
     }
   }
 

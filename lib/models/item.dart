@@ -66,7 +66,7 @@ class Item extends HiveObject{
     List<RawWare> ingredients = List<RawWare>.from(
         (map['ingredients']).map((e) => RawWare().fromMap(e)));
 
-     Item item=Item ()
+     Item item=Item()
       ..itemName= map['itemName'] ?? ""
       ..unit= map['unit'] as String
       ..category= map['category'] ?? ""

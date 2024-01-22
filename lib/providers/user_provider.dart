@@ -25,6 +25,7 @@ class UserProvider extends ChangeNotifier{
  String? get appType=>_appType;
 
   //*****
+  Shop sampleShop=Shop()..shopName="shopName"..address="address"..phoneNumber="phoneNumber"..phoneNumber2=""..preBillNumber=1..preTax=0..currency="ریال";
   String shopName="نام فروشگاه";
   String address="آدرس فروشگاه";
   String phoneNumber="شماره تلفن اول";

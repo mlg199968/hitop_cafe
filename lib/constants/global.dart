@@ -15,9 +15,12 @@ class GlobalTask {
 
   static getInitData(context)async{
     Provider.of<WareProvider>(context, listen: false).loadCategories();
+    Shop shop=Shop();
     if(HiveBoxes.getShopInfo().values.isNotEmpty){
-      Shop? shop = HiveBoxes.getShopInfo().values.single;
+      shop = HiveBoxes.getShopInfo().values.single;
       Provider.of<UserProvider>(context, listen: false).getData(shop);
+    }else{
+      HiveBoxes.getShopInfo().add(shop);
     }
     ///get notifications
     if(context.mounted) {

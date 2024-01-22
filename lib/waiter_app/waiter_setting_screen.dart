@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/providers/client_provider.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
@@ -151,9 +152,11 @@ class _WaiterNetworkScreenState extends State<WaiterNetworkScreen> {
 
                       ///send message button button
                       IconButton(
-                          onPressed: () {
-                            Pack newPack = clientProvider.pack;
+                          onPressed: () async{
+                            String deviceName=await getDeviceInfo(info:"name");
+                            Pack newPack = clientProvider.samplePack;
                             newPack.message = messageController.text;
+                            newPack.device=deviceName;
                             clientProvider.sendPack(newPack);
                             messageController.clear();
                             setState(() {});

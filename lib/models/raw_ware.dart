@@ -69,8 +69,8 @@ class RawWare extends HiveObject {
      ..createDate= DateTime.parse(map['createDate'])
      ..wareId= map['wareId'] as String
      ..isChecked= map['isChecked'] ==1 ? true :false
-     ..imagePath= map['imagePath'] ?? ""
-     ..color= map['color'] ?? "";
+     ..imagePath= map['imagePath']
+     ..color= map['color'] ;
      return rawWare;
   }
 

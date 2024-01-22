@@ -80,9 +80,10 @@ class ServerProvider extends ChangeNotifier {
           samplePack.message = "کاربر احراز نشد";
           handleMessage(samplePack);
         }
-        serverLogs.add(samplePack);
-        notifyListeners();
-      } else if (pack.type == "order") {}
+
+      }
+      serverLogs.add(pack);
+      notifyListeners();
     }
   }
 

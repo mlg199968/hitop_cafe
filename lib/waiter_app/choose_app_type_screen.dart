@@ -49,7 +49,8 @@ class _AppTypeScreenState extends State<AppTypeScreen> {
                     icon: FontAwesomeIcons.person,
                     label: "سفارشگیر",
                     onPress:() {
-                      Shop shop=HiveBoxes.getShopInfo().getAt(0)!;
+
+                      Shop shop=HiveBoxes.getShopInfo().values.single;
                       shop.appType=AppType.waiter.value;
                       HiveBoxes.getShopInfo().putAt(0, shop);
                       Provider.of<UserProvider>(context,listen:false).getData(shop);
