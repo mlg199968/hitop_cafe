@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -49,47 +50,60 @@ class ServerProvider extends ChangeNotifier {
     await server!.broadcast(nPack.toJson());
     notifyListeners();
   }
-
-  void onData(Uint8List? data) {
+  List<int> fullData=[];
+  void onData(Uint8List? data) async{
     if (data != null) {
-      Pack? pack = Pack().fromJson(utf8.decode(data));
-      if (pack.type == "order" &&
-          pack.object != null &&
-          pack.object!.isNotEmpty) {
-        Order order = Order().fromJson(pack.object!.first);
-        //after the user client send the order we compare the user auth data with database user
-        bool isAuth = false;
-        HiveBoxes.getUsers().values.forEach((dbUser) {
-          (dbUser.password == order.user?.password && dbUser.userName == order.user?.userName) ? isAuth = true : false;
-        });
-        if (isAuth) {
-          Order? oldOrder = HiveBoxes.getOrders().get(order.orderId);
-          if (oldOrder != null) {
-            order.billNumber = oldOrder.billNumber;
+      fullData.addAll(data);
+      await Future.delayed(const Duration(milliseconds: 1000));
+      String rawData=utf8.decode(Uint8List.fromList(fullData));
+      fullData.clear();
+      //log(rawData);
+        Pack? pack = await Pack().fromJson(rawData);
+        if (pack.type == "order" &&
+            pack.object != null &&
+            pack.object!.isNotEmpty) {
+          Order order = Order().fromJson(pack.object!.first);
+          notifyListeners();
+          //after the user client send the order we compare the user auth data with database user
+          bool isAuth = false;
+          HiveBoxes
+              .getUsers()
+              .values
+              .forEach((dbUser) {
+            (dbUser.password == order.user?.password &&
+                dbUser.userName == order.user?.userName)
+                ? isAuth = true
+                : false;
+          });
+          if (isAuth) {
+            Order? oldOrder = HiveBoxes.getOrders().get(order.orderId);
+            if (oldOrder != null) {
+              order.billNumber = oldOrder.billNumber;
+            } else {
+              order.billNumber = OrderTools.getOrderNumber();
+            }
+            OrderTools.subtractFromWareStorage(order.items, oldOrder: oldOrder);
+            HiveBoxes.getOrders().put(order.orderId, order);
+            pack.object = [order.toJson()];
+            pack.type = PackType.order.value;
+            pack.message = "سفارش ${order.billNumber}دریافت شد";
+            handleMessage(pack);
+            notifyListeners();
           } else {
-            order.billNumber = OrderTools.getOrderNumber();
+            samplePack.type = PackType.respond.value;
+            samplePack.message = "کاربر احراز نشد";
+            handleMessage(samplePack);
           }
-          OrderTools.subtractFromWareStorage(order.items, oldOrder: oldOrder);
-          HiveBoxes.getOrders().put(order.orderId, order);
-          pack.object = [order.toJson()];
-          pack.type = PackType.order.value;
-          pack.message = "سفارش ${order.billNumber}دریافت شد";
-          handleMessage(pack);
-        } else {
-          samplePack.type = PackType.respond.value;
-          samplePack.message = "کاربر احراز نشد";
-          handleMessage(samplePack);
         }
-
-      }
-      serverLogs.add(pack);
-      notifyListeners();
+        serverLogs.add(pack);
+        notifyListeners();
     }
   }
 
-  void onError(dynamic error) {
+  void onError(Object error,StackTrace trace) {
     ErrorHandler.errorManger(null, error,
-        title: "**** server provider onError ****");
+        title: "**** server provider onError ****",
+    route: trace.toString());
   }
 
   setIpAndPort(String ipAddress, int port1) {

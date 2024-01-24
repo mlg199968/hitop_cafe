@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/pack.dart';
 typedef Unit8ListCallback=Function(Uint8List data);
-typedef DynamicCallback=Function(dynamic data);
+typedef DynamicCallback=Function(Object data,StackTrace trace);
 
 class ServerServices{
   Unit8ListCallback? onData;
@@ -19,18 +19,22 @@ class ServerServices{
   List<Socket> sockets=[];
   
   Future<void> start(Pack pack,{required String ip,required int port}) async{
-      runZoned (()async{
+      runZonedGuarded (()async{
       serverSocket = await ServerSocket.bind(ip, port);
       running = true;
-      serverSocket!.asBroadcastStream();
-      serverSocket!.listen(onRequest).onError((e){
+      //serverSocket!.asBroadcastStream();
+      serverSocket!.listen(onRequest,
+          onError:(e){
         close(pack);
         debugPrint("start function serverSocket error*****\n$e");
+      },
+      onDone: (){
+        close(pack);
       });
         pack.message = "serverSocket is listening in port $port";
         onData!(utf8.encode(pack.toJson()));
 
-      },onError:onError );
+      },onError!, );
     }
   void onRequest(Socket socket){
 
@@ -46,14 +50,14 @@ class ServerServices{
 
 
   Future<void> broadcast(String data)async{
-    onData!(utf8.encode(data));
+   // onData!(utf8.encode(data));
     for(final socket in sockets){
       socket.write(data);
     }
   }
 
   Future<void> close(Pack pack)async{
-    pack.message="user closed";
+    pack.message="server closed";
     await broadcast(pack.toJson());
     await serverSocket!.close();
     serverSocket=null;

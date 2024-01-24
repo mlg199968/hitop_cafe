@@ -64,21 +64,21 @@ class Item extends HiveObject{
   Item fromMap(Map<String, dynamic> map) {
 
     List<RawWare> ingredients = List<RawWare>.from(
-        (map['ingredients']).map((e) => RawWare().fromMap(e)));
+        (map['ingredients']?? []).map((e) => RawWare().fromMap(e)));
 
      Item item=Item()
       ..itemName= map['itemName'] ?? ""
       ..unit= map['unit'] as String
       ..category= map['category'] ?? ""
-      ..description= map['description']
-      ..sale= map['sale'] as num
+      ..description= map['description'] ?? ""
+      ..sale= map['sale'] ?? 0
       ..ingredients= ingredients
       ..modifiedDate= DateTime.parse(map['modifiedDate'])
       ..createDate= DateTime.parse(map['createDate'])
       ..itemId= map['itemId'] as String
       ..isChecked= map['isChecked'] == 1 ? true : false
-      ..imagePath= map['imagePath']
-      ..color= map['color']
+      ..imagePath= map['imagePath'] ?? ""
+      ..color= map['color'] ?? ""
       ..quantity= map['quantity'] ?? 0
       ..discount= map['discount'] ?? 0
     ;
@@ -86,7 +86,7 @@ class Item extends HiveObject{
   }
 
   String toJson() => jsonEncode(toMap());
-  Item fromJson(String source) => fromMap(jsonDecode(source));
+  Future<Item> fromJson(String source)async => fromMap(await jsonDecode(source));
 }
 
 //run this code for create adaptor:

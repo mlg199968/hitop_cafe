@@ -62,20 +62,20 @@ class RawWare extends HiveObject {
      ..unit= map['unit'] ?? ""
      ..category= map['category'] ?? ""
      ..description= map['description'] ?? ""
-     ..cost= map['cost'] as num
+     ..cost= map['cost'] ?? 0
      ..quantity= map['quantity'] ?? 0
      ..demand= map['demand'] ?? 0
      ..modifiedDate=DateTime.parse (map['modifiedDate'])
      ..createDate= DateTime.parse(map['createDate'])
-     ..wareId= map['wareId'] as String
+     ..wareId= map['wareId'] ??""
      ..isChecked= map['isChecked'] ==1 ? true :false
-     ..imagePath= map['imagePath']
-     ..color= map['color'] ;
+     ..imagePath= map['imagePath'] =""
+     ..color= map['color'] ?? "" ;
      return rawWare;
   }
 
 String toJson()=>jsonEncode(toMap());
-  RawWare fromJson(String source)=>fromMap(jsonDecode(source));
+  Future<RawWare> fromJson(String source)async=>fromMap(await jsonDecode(source));
 }
 
 //run this code for create adaptor:

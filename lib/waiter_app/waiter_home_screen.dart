@@ -14,6 +14,7 @@ import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/present_orders/widgets/card_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:hitop_cafe/waiter_app/panels/waiter_order_info_panel.dart';
 import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_side_bar_panel.dart';
@@ -134,11 +135,10 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                             //filter the list in order to the search results
                             List<Order> filteredList = orderList;
                             OrderTools.filterList(orderList, keyWord, sortItem);
-                            filteredList
-                                .removeWhere((element) => element.payable <= 0);
                             if (filteredList.isNotEmpty) {
                               return WaiterHomeScreenListPart(
                                 orderList: filteredList,
+                                packList: box.values.toList(),
                                 key: widget.key,
                               );
 
@@ -166,8 +166,9 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
 
 class WaiterHomeScreenListPart extends StatefulWidget {
-  const WaiterHomeScreenListPart({Key? key, required this.orderList}) : super(key: key);
+  const WaiterHomeScreenListPart({Key? key, required this.orderList, required this.packList}) : super(key: key);
   final List<Order> orderList;
+  final List<Pack> packList;
 
   @override
   State<WaiterHomeScreenListPart> createState() => _CreditListPartState();
@@ -188,13 +189,18 @@ class _CreditListPartState extends State<WaiterHomeScreenListPart> {
               order.dueDate,
               order.payable,
               order.orderDate)) {
-            return CardTile(
-              color: order.isChecked?Colors.teal:kMainColor,
-              orderDetail: widget.orderList[index],
-              onSee: () {
-                  Navigator.pushNamed(context, WaiterAddOrderScreen.id,
-                      arguments: order);
+            return InkWell(
+              onTap: (){
+                showDialog(context: context, builder: (context)=>WaiterOrderInfoPanel(order: order, pack: widget.packList[index]));
               },
+              child: CardTile(
+                color: order.isChecked?Colors.teal:kMainColor,
+                orderDetail: widget.orderList[index],
+                onSee: () {
+                    Navigator.pushNamed(context, WaiterAddOrderScreen.id,
+                        arguments: order);
+                },
+              ),
             );
           } else {
             return const SizedBox();

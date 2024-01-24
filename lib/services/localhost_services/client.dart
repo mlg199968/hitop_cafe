@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -41,8 +43,8 @@ class Client {
     }
   }
 
-  void write(String message) {
-    socket.write(message);
+  void write(String packJson) {
+    socket.write(packJson);
   }
 
   void disconnect(Pack pack) {

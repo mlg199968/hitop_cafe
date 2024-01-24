@@ -73,7 +73,6 @@ class ClientProvider extends ChangeNotifier {
   }
 
   bool sendPack(Pack pack) {
-    Uint8List.fromList(utf8.encode(pack.toJson()));
     if (_client != null) {
       _client!.write(pack.toJson());
       logs.add(pack);
@@ -83,38 +82,46 @@ class ClientProvider extends ChangeNotifier {
     }
   }
 
-  onData(Uint8List data) {
-    Pack pack = Pack().fromJson(utf8.decode(data));
-    ///get sent item list from server
-    if (pack.type == PackType.itemList.value && pack.object != null) {
-      for (var itemJson in pack.object!) {
-        Item item = Item().fromJson(itemJson);
-        HiveBoxes.getItem().put(item.itemId, item);
 
+  List<int> fullData=[];
+  onData(Uint8List data) async{
+    fullData.addAll(data);
+    await Future.delayed(const Duration(milliseconds: 1000));
+    String rawData=utf8.decode(Uint8List.fromList(fullData));
+    fullData.clear();
+      Pack pack = await Pack().fromJson(rawData);
+      ///get sent item list from server
+      if (pack.type == PackType.itemList.value && pack.object != null) {
+        for (var itemJson in pack.object!) {
+          Item item = await Item().fromJson(itemJson);
+          HiveBoxes.getItem().put(item.itemId, item);
+        }
+
+        ///get sent ware list from server
+      } else if (pack.type == PackType.wareList.value && pack.object != null) {
+        for (String itemJson in pack.object!) {
+          RawWare ware = await RawWare().fromJson(itemJson);
+          HiveBoxes.getRawWare().put(ware.wareId, ware);
+        }
+
+        ///refund send order to sure it's send
+      } else if (pack.type == PackType.order.value &&
+          pack.object != null &&
+          pack.object!.isNotEmpty) {
+        if (HiveBoxes.getPack()
+            .values
+            .map((e) => e.packId)
+            .contains(pack.packId)) {
+          Order order = Order().fromJson(pack.object!.first);
+          order.isChecked = true;
+          pack.object = [order.toJson()];
+          HiveBoxes.getPack().put(pack.packId, pack);
+          notifyListeners();
+        }
       }
-      ///get sent ware list from server
-    } else if (pack.type == PackType.wareList.value && pack.object != null) {
-      for (String itemJson in pack.object!) {
-        RawWare ware = RawWare().fromJson(itemJson);
-        HiveBoxes.getRawWare().put(ware.wareId, ware);
-      }
-      ///refund send order to sure it's send
-    } else if (pack.type == PackType.order.value &&
-        pack.object != null &&
-        pack.object!.isNotEmpty) {
-      if (HiveBoxes.getPack()
-          .values
-          .map((e) => e.packId)
-          .contains(pack.packId)) {
-        Order order = Order().fromJson(pack.object!.first);
-        order.isChecked = true;
-        pack.object = [order.toJson()];
-        HiveBoxes.getPack().put(pack.packId, pack);
-        // notifyListeners();
-      }
-    }
-    logs.add(pack);
-    notifyListeners();
+      logs.add(pack);
+      notifyListeners();
+
   }
 
   onError(dynamic error) {
