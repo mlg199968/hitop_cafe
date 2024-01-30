@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
       this.width,
       this.height = 40,
         this.fontSize=15,
-        this.radius=5, this.icon, this.replacementIcon,
+        this.radius=5, this.icon, this.replacementIcon, this.margin,
       })
       : super(key: key);
   final String text;
@@ -23,6 +23,7 @@ class CustomButton extends StatelessWidget {
   final double radius;
   final Icon? icon;
   final IconData? replacementIcon;
+  final EdgeInsets? margin;
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -31,6 +32,7 @@ class CustomButton extends StatelessWidget {
           padding: MaterialStatePropertyAll(EdgeInsets.all(0))),
       onPressed: onPressed,
       child: Container(
+        margin: margin,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           height: height,
           width: width,

@@ -16,10 +16,11 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 
 
 class WaiterOrderInfoPanel extends StatelessWidget {
-  const WaiterOrderInfoPanel({super.key,  required this.order,required this.pack,});
+  const WaiterOrderInfoPanel({super.key,required this.pack,});
 
-  final Order order;
+  Order get order=>Order().fromJson(pack.object!.single);
   final Pack pack;
+
 
   List<Widget> get _infoLines => [
     InfoPanelRow(title: "شماره سفارش", infoList: order.billNumber.toString().toPersianDigit()),
@@ -50,7 +51,7 @@ class WaiterOrderInfoPanel extends StatelessWidget {
           .of(context)
           .size
           .height * .5,
-      title: "مشخصات کالا",
+      title: "مشخصات سفارش",
       child: Column(
         children: [
           Expanded(
@@ -70,7 +71,8 @@ class WaiterOrderInfoPanel extends StatelessWidget {
                   label: "حذف",
                   bgColor: Colors.red,
                   onPress: () {
-                    HiveBoxes.getPack().delete(pack.packId);
+                    pack.delete();
+                    //HiveBoxes.getPack().delete(pack.packId);
                     Navigator.pop(context);
                     showSnackBar(context, "کالا مورد نظر حذف شد!",
                         type: SnackType.success);

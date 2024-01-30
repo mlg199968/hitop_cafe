@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 
 const String kAppName="hitop-cafe";
 const String hostUrl="https://mlggrand.ir/db";
@@ -34,6 +35,11 @@ const List<String> unitList=['عدد','متر','کیلو','متر مربع','م�
 const List<String> kFonts=['Shabnam','Koodak','Roya','Terafik','Elham','Titr',];
 const List<String> sortList=['تاریخ تسویه','حروف الفبا','تاریخ ثبت'];
 const List<String> kCurrencyList=["ریال","تومان","دلار","لیر","درهم"];
+final List<String> kPrintTemplateList = [
+  PrintType.p80mm.value,
+  PrintType.p72mm.value,
+  PrintType.pA4.value,
+];
 
 ///text properties
 const String kCustomFont="persian";

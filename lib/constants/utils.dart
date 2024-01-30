@@ -3,7 +3,7 @@ import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/shape/shape02.dart';
+import 'package:hitop_cafe/common/shape/background_shape2.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:image/image.dart' as img;
@@ -234,6 +234,7 @@ Future<File?> pickFile(String imageName,{String? root}) async {
 }
 ///resize selected image
 reSizeImage(String iPath,{int width=600})async{
+
   await (img.Command()
   // Read a jpj image from a file.
     ..decodeJpgFile(iPath)

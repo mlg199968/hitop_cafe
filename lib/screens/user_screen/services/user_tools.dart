@@ -38,10 +38,10 @@ class UserTools{
 
     if (keyWord != null && keyWord != "") {
       list = list.where((element) {
-        String itemName = element.name.toLowerCase().replaceAll(" ", "");
-        //String serial=element.serialNumber.toLowerCase().replaceAll(" ", "");
+        String userName = (element.userName ?? "").toLowerCase().replaceAll(" ", "");
+        String name = element.name.toLowerCase().replaceAll(" ", "");
         String key = keyWord.toLowerCase().replaceAll(" ", "");
-        if (itemName.contains(key)) {
+        if (userName.contains(key.toLowerCase().replaceAll(" ", "")) || (name.contains(key.toLowerCase().replaceAll(" ", ""))) ) {
           return true;
         } else {
           return false;

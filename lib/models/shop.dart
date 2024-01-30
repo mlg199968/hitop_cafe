@@ -41,6 +41,10 @@ class Shop extends HiveObject {
   String? appType;
   @HiveField(17)
   int? userLevel=0;
+  @HiveField(18)
+  String? printerIp2;
+  @HiveField(19)
+  String? printTemplate;
 
 }
 

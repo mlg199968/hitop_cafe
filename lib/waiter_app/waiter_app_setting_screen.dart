@@ -127,7 +127,7 @@ class _WaiterAppSettingScreenState extends State<WaiterAppSettingScreen> {
                           dropWidth: 120,
                           onChange: (val) {
                             selectedFont = val;
-                            userProvider.getFontFamily(val);
+                            userProvider.setFontFamily(val);
                             setState(() {});
                           },
                         ),

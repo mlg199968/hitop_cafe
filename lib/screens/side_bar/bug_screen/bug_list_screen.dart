@@ -18,20 +18,30 @@ class BugListScreen extends StatelessWidget {
       ),
       body: Directionality(
         textDirection: TextDirection.ltr,
-        child: Container(
-          decoration: const BoxDecoration(gradient: kBlackWhiteGradiant),
-          child: ValueListenableBuilder(
-            valueListenable: HiveBoxes.getBugs().listenable(),
-            builder: (context, snap,child) {
-                if (snap.isNotEmpty) {
-                  return Column(
-                      children: snap.values.map((bug) => ErrorTile(bug: bug),).toList()
-                  );
-                } else {
-                  return const Center(child: Text("خطایی یافت نشد"));
-                }
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: const BoxDecoration(gradient: kBlackWhiteGradiant),
+            child: ValueListenableBuilder(
+              valueListenable: HiveBoxes.getBugs().listenable(),
+              builder: (context, snap,child) {
+               List<Bug> bugList=snap.values.toList();
 
-            },
+                  if (snap.isNotEmpty) {
+                    bugList.sort((b,a){
+                      return a.bugDate.compareTo(b.bugDate);
+                    });
+                    if(bugList.length>200){
+                      bugList.last.delete();
+                    }
+                    return Column(
+                        children: bugList.map((bug) => ErrorTile(bug: bug),).toList()
+                    );
+                  } else {
+                    return const Center(child: Text("خطایی یافت نشد"));
+                  }
+
+              },
+            ),
           ),
         ),
       ),
@@ -51,12 +61,15 @@ class ErrorTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
+      surfaceTintColor: Colors.white,
       elevation: 1,
       child: ListTile(
         title: Text(bug.title ?? ""),
         subtitle: Text(
           bug.errorText ?? "",
           style: const TextStyle(fontSize: 11),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: () {
           showDialog(

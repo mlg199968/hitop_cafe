@@ -7,6 +7,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
@@ -36,9 +37,11 @@ class _SettingScreenState extends State<SettingScreen> {
   final TextEditingController taxController = TextEditingController();
   final TextEditingController billNumberController = TextEditingController();
   final TextEditingController printerIpController = TextEditingController();
+  final TextEditingController printerIp2Controller = TextEditingController();
   late String selectedCurrency;
   String selectedFont = kFonts[0];
   late UserProvider provider;
+  String printTemplate = PrintType.p80mm.value;
 
   ///printer
   Printer? selectedPrinter;
@@ -60,7 +63,9 @@ class _SettingScreenState extends State<SettingScreen> {
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
       ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap()
-    ..printerIp=printerIpController.text;
+    ..printerIp=printerIpController.text==""?null:printerIpController.text
+    ..printerIp2=printerIp2Controller.text==""?null:printerIp2Controller.text
+    ..printTemplate=printTemplate;
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
@@ -73,9 +78,12 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedFont = shopInfo.fontFamily ?? kFonts[0];
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
-      printerIpController.text=shopInfo.printerIp ?? provider.printerIp;
+      printerIpController.text=shopInfo.printerIp ?? "192.168.1.1";
+      printerIp2Controller.text=shopInfo.printerIp2 ?? "192.168.1.2";
       selectedPrinter =
           shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
+      printTemplate=shopInfo.printTemplate ?? PrintType.p80mm.value;
+      setState(() {});
     }
   }
 
@@ -128,6 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       width: 450,
                       child: Column(
                         children: [
+                          ///backup buttons
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 20),
                             child: Row(
@@ -203,7 +212,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             dropWidth: 120,
                             onChange: (val) {
                               selectedFont = val;
-                              userProvider.getFontFamily(val);
+                              userProvider.setFontFamily(val);
                               setState(() {});
                             },
                           ),
@@ -214,7 +223,17 @@ class _SettingScreenState extends State<SettingScreen> {
                             fontSize: 16,
                             color: Colors.white60,
                           ),
-
+                          ///change font family entire app
+                          DropListItem(
+                            title: "قاب پیشفرض چاپ",
+                            selectedValue: printTemplate,
+                            listItem: kPrintTemplateList,
+                            dropWidth: 120,
+                            onChange: (val) {
+                              printTemplate = val;
+                              setState(() {});
+                            },
+                          ),
                           ///list of windows printers when platform is windows
                           if (Platform.isWindows)
                             ButtonTile(
@@ -229,7 +248,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 },
                                 label: "انتخاب پرینتر",
                                 buttonLabel: selectedPrinter == null
-                                    ? "پرینتری یافت نشد"
+                                    ? "انتخاب نشده"
                                     : selectedPrinter!.name),
 
                           ///list of bluetooth devices in android and ios if exist
@@ -276,7 +295,9 @@ class _SettingScreenState extends State<SettingScreen> {
                                         .toList());
                               },
                             ),
+                          ///printer ip textfield
                           InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip"),
+                          InputItem(controller: printerIp2Controller, label: "ای پی پرینتر 2", inputLabel: "ip"),
                           ///local network options section
                           const CText(
                             "تنظیمات شبکه",
@@ -362,6 +383,7 @@ class SwitchItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      surfaceTintColor: Colors.white,
       margin: const EdgeInsets.all(5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
@@ -398,6 +420,8 @@ class DropListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
       margin: const EdgeInsets.all(5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
@@ -440,6 +464,8 @@ class InputItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -480,6 +506,8 @@ class ButtonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

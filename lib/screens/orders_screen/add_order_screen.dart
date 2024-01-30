@@ -27,6 +27,7 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/print_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
@@ -283,20 +284,18 @@ addToItemList(List<Item> iList){
                   }),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            title: const Text(
-              "فاکتور فروش",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+            title:CText(
+              widget.oldOrder==null ?"سفارش جدید":"ویرایش سفارش",
+              color: Colors.white, fontSize: 20,
             ),
             actions: [
               ///print button action
               ActionButton(
                 label: "چاپ",
                 onPress: () {
-                  // saveBillOnLocalStorage(
-                  //     id: widget.oldOrder == null
-                  //         ? null
-                  //         : widget.oldOrder!.orderId);
-                  printPdf();
+                 Order order= createBillObject();
+                  showDialog(context: context, builder: (context)=>PrintPanel(order:order,));
+                 // printPdf();
                 },
                 bgColor: Colors.indigoAccent,
                 icon: Icons.local_printshop_outlined,

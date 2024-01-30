@@ -10,7 +10,7 @@ class ActionButton extends StatelessWidget {
       this.label,
       this.height = 35,
       this.width,
-      this.direction = TextDirection.rtl, this.onLongPress, this.iconColor});
+      this.direction = TextDirection.rtl, this.onLongPress, this.iconColor, this.margin, this.padding});
 
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
@@ -21,19 +21,22 @@ class ActionButton extends StatelessWidget {
   final double height;
   final double? width;
   final TextDirection direction;
+  final EdgeInsets? margin;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       return Directionality(
         textDirection: TextDirection.rtl,
-        child: SizedBox(
+        child: Container(
+          margin:margin ?? const EdgeInsets.all(3),
           width: width,
           height: height,
           child: ElevatedButton(
             style: ButtonStyle(
-                padding: const MaterialStatePropertyAll(
-                    EdgeInsets.symmetric(horizontal: 5, vertical: 0)),
+                padding:  MaterialStatePropertyAll(
+                    padding ?? const EdgeInsets.symmetric(horizontal: 5, vertical: 0)),
                 backgroundColor: MaterialStateProperty.all(bgColor)),
             onPressed: onPress,
             onLongPress: onLongPress,

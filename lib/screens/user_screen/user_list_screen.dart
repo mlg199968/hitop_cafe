@@ -64,9 +64,6 @@ class _UserListScreenState extends State<UserListScreen> {
               ),
             ),
           ],
-          leading: const BackButton(),
-          flexibleSpace: Container(
-          ),
           title: Container(
             padding: const EdgeInsets.only(right: 5),
             child: const Row(
@@ -77,7 +74,6 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
           ),
           elevation: 0,
-          automaticallyImplyLeading: false,
         ),
         body:Container(
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),

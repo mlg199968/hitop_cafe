@@ -1,12 +1,11 @@
 import 'dart:io';
 
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/screens/side_bar/notice_screen/services/notice_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:printing/printing.dart';
 
@@ -41,7 +40,9 @@ class UserProvider extends ChangeNotifier{
   String fontFamily=kFonts[0];
   Printer? _selectedPrinter;
   Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
+  String? printTemplate=PrintType.p80mm.value;
   String printerIp="192.168.1.1";
+  String printerIp2="192.168.1.2";
 
 
 
@@ -61,12 +62,16 @@ class UserProvider extends ChangeNotifier{
     preBillNumber=shop.preBillNumber;
     fontFamily=shop.fontFamily ?? kFonts[0];
     _selectedPrinter=shop.printer==null?null:Printer.fromMap(shop.printer!);
+    printTemplate=shop.printTemplate;
     printerIp=shop.printerIp ?? "192.168.1.1" ;
+    printerIp2=shop.printerIp2 ?? "192.168.1.2" ;
     _user=shop.activeUser;
     _appType=shop.appType;
     _userLevel=shop.userLevel ?? 0;
     ///this for just use complete for debug app
-    _userLevel=1;
+    if(kDebugMode) {
+      _userLevel = 1;
+    }
   }
 
   void setUserLevel(int input) async{
@@ -128,7 +133,7 @@ removeAppType(){
     _appType=null;
     notifyListeners();
 }
-  getFontFamily(String font){
+  setFontFamily(String font){
     fontFamily=font;
     notifyListeners();
   }

@@ -40,3 +40,13 @@
     const PackType(this.value);
    final String value;
   }
+
+
+  enum PrintType{
+    p80mm("p80mm"),
+    p72mm("p72mm"),
+    pA4("pA4"),
+    pA5("pA5");
+    const PrintType(this.value);
+   final String value;
+  }

@@ -2,7 +2,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
+import 'package:hitop_cafe/common/shape/background_shape1.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -44,7 +44,7 @@ class BillTile extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Card(
-            child: BackgroundClipper(
+            child: BackgroundShape1(
               height: height,
               child: ExpandablePanel(
                 key: key,

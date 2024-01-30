@@ -6,9 +6,12 @@ import 'package:hitop_cafe/constants/permission_handler.dart';
 
 class ImagePickerHolder extends StatelessWidget {
   const ImagePickerHolder(
-      {super.key, this.text, required this.onPress, this.imageFile,this.onDelete});
+      {super.key, this.text, required this.onPress, this.imageFile,this.onDelete, this.icon, this.width, this.height});
   final String? text;
+  final IconData? icon;
   final File? imageFile;
+  final double? width;
+  final double? height;
   final VoidCallback onPress;
   final VoidCallback? onDelete;
   @override
@@ -26,13 +29,21 @@ class ImagePickerHolder extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.white54,
                 border: Border.all(color: Colors.black26)),
-            width: MediaQuery.of(context).size.width / 4,
+            width: width,
+            height: height,
             child: imageFile == null
-                ? Text(
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if(icon!=null)
+                    Icon(icon,color: Colors.black38,size: 40,),
+                    Text(
               text ?? "",
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black38),
-            )
+              style: const TextStyle(color: Colors.black38,fontSize: 14),
+            ),
+                  ],
+                )
                 : Image.file(imageFile!),
           ),
         ),

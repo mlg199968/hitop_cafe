@@ -79,8 +79,6 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                   ),
                 ),
               ],
-              leading: const BackButton(),
-              flexibleSpace: Container(),
               title: Container(
                 padding: const EdgeInsets.only(right: 5),
                 child: const Row(
@@ -91,7 +89,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                 ),
               ),
               elevation: 0,
-              automaticallyImplyLeading: false,
+              automaticallyImplyLeading: true,
             ),
             body: Container(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -195,9 +193,14 @@ class _CreditListPartState extends State<CreditListPart> {
             return CardTile(
               color: order.isChecked?Colors.teal:kMainColor,
               orderDetail: widget.orderList[index],
-              onSee: () {
-                Navigator.of(context).pushNamed(AddOrderScreen.id,arguments:order);
-              },
+              button: ActionButton(
+                label: "تسویه",
+                icon: Icons.credit_score,
+                bgColor: Colors.deepOrangeAccent,
+                onPress:() {
+                  Navigator.of(context).pushNamed(AddOrderScreen.id,arguments:order);
+                },
+              ),
             );
           } else {
             return const SizedBox();

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/permission_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 
@@ -54,24 +54,34 @@ class _ItemImageHolderState extends State<ItemImageHolder> {
             onTap: () async {
               if (widget.imagePath == null) {
                 try {
-                  await storagePermission(context, Allow.storage);
+                    await storagePermission(context, Allow.storage);
+                  if(context.mounted) {
+                    await storagePermission(context, Allow.externalStorage);
+                  }
                   isLoading = true;
                   setState(() {});
                   FilePickerResult? pickedFile =
                       await FilePicker.platform.pickFiles();
                   if (pickedFile != null) {
+                    String path=pickedFile.files.single.path!;
+                    String fileName=pickedFile.files.single.name;
+                    if(Platform.isWindows) {
+                         path=path.replaceAll(
+                              fileName, "resized-$fileName");
+                      await File(pickedFile.files.single.path!).copy(path);
+                    }
                     debugPrint("Start resizing");
-                    await reSizeImage(pickedFile.files.single.path!);
+                    await reSizeImage(path);
                     debugPrint("after resizing");
                     isLoading = false;
-                    widget.onSet(pickedFile.files.single.path!);
+                    widget.onSet(path);
                   }else{
                     isLoading=false;
                     setState(() {});
                   }
                 } catch (e) {
-                  if (kDebugMode) {
-                    print(e);
+                  if(context.mounted) {
+                    ErrorHandler.errorManger(context, e,title: "ItemImageHolder widget error");
                   }
                 }
               }

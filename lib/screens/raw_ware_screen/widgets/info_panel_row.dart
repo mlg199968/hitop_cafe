@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class InfoPanelRow extends StatelessWidget {
@@ -22,7 +23,7 @@ class InfoPanelRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title.toPersianDigit()),
+          CText(title.toPersianDigit(),fontSize: 12,color: Colors.black45,textDirection: TextDirection.rtl,),
           const SizedBox(
             width: 10,
           ),

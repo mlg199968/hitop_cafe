@@ -34,13 +34,15 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..printerIp = fields[14] as String?
       ..activeUser = fields[15] as User?
       ..appType = fields[16] as String?
-      ..userLevel = fields[17] as int?;
+      ..userLevel = fields[17] as int?
+      ..printerIp2 = fields[18] as String?
+      ..printTemplate = fields[19] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Shop obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.shopName)
       ..writeByte(1)
@@ -76,7 +78,11 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..writeByte(16)
       ..write(obj.appType)
       ..writeByte(17)
-      ..write(obj.userLevel);
+      ..write(obj.userLevel)
+      ..writeByte(18)
+      ..write(obj.printerIp2)
+      ..writeByte(19)
+      ..write(obj.printTemplate);
   }
 
   @override

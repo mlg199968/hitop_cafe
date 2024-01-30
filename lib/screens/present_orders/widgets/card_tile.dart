@@ -1,12 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
+import 'package:hitop_cafe/common/shape/background_shape3.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
-import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
@@ -17,11 +16,11 @@ class CardTile extends StatelessWidget {
       this.enabled = true,
       this.height = 70,
       this.color=kMainColor,
-      required this.onSee});
+      required this.button});
 
   final Order orderDetail;
   final bool enabled;
-  final VoidCallback onSee;
+  final Widget button;
   final double height;
   final Color color;
 
@@ -38,7 +37,7 @@ class CardTile extends StatelessWidget {
         child: SizedBox(
           width: 170,
           height: 200,
-          child: BackgroundClipper(
+          child: BackgroundShape3(
             height: 500,
             color: color,
             child: MyListTile(
@@ -52,7 +51,7 @@ class CardTile extends StatelessWidget {
               topTrailing: orderDetail.billNumber.toString().toPersianDigit(),
               trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
               bottomLeading:orderDetail.tableNumber.toString().toPersianDigit(),
-              onButton:onSee,
+              button:button,
             ),
           ),
         ),
@@ -73,7 +72,7 @@ class MyListTile extends StatelessWidget {
     required this.topTrailing,
     required this.trailing,
     this.selected = false,
-    this.bottomLeading="", required this.onButton,
+    this.bottomLeading="", required this.button,
   });
 
   final bool enable;
@@ -86,7 +85,7 @@ class MyListTile extends StatelessWidget {
   final String topTrailing;
   final String trailing;
   final String bottomLeading;
-  final VoidCallback onButton;
+  final Widget button;
 
   final tileGlobalKey = GlobalKey();
   @override
@@ -168,12 +167,7 @@ class MyListTile extends StatelessWidget {
                   ),
                 ),
               ),
-              ActionButton(
-                  label: "تسویه",
-                  icon: Icons.credit_score,
-                  bgColor: Colors.deepOrangeAccent,
-                onPress:onButton,
-                  ),
+              button,
             ],
           ),
         ],

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 class SmallCardButton extends StatelessWidget {
   const SmallCardButton(
@@ -24,7 +25,7 @@ class SmallCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
@@ -34,9 +35,12 @@ class SmallCardButton extends StatelessWidget {
               width: width,
               height: height,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow:  [BoxShadow(spreadRadius: 1,blurRadius: 5,color: Colors.black.withOpacity(.3),offset: const Offset(2, 2))],
+                //shape: BoxShape.circle,
                 color: Colors.white,
+                gradient: kMainGradiant.scale(.9),
+                borderRadius: BorderRadius.circular(borderRadius),
+                boxShadow:  [BoxShadow(spreadRadius: 1,blurRadius: 5,color: Colors.black.withOpacity(.3),offset: const Offset(2, 2))],
+
                 image:image==null?null:DecorationImage(image: AssetImage("assets/icons/$image"),fit: BoxFit.cover) ,
               ),
               alignment: Alignment.bottomRight,

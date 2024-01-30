@@ -10,7 +10,7 @@ class CardButton extends StatelessWidget {
         this.child,
       this.height = 200,
       this.width = 150,
-        this.borderRadius=10,
+        this.borderRadius=7,
       required this.onTap,
       this.verticalDirection = true})
       : super(key: key);
@@ -36,7 +36,7 @@ class CardButton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            border: Border.all(width: 1,color:Colors.black54),
+            border: Border.all(width: 0,color:kSecondaryColor),
             color: Colors.white,
             image:image==null?null:DecorationImage(image: AssetImage("assets/images/$image.jpg"),fit: BoxFit.cover) ,
               borderRadius: BorderRadius.circular(borderRadius)),

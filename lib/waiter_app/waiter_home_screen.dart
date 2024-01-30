@@ -15,6 +15,7 @@ import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/present_orders/widgets/card_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/panels/waiter_order_info_panel.dart';
+import 'package:hitop_cafe/waiter_app/services/pack_tools.dart';
 import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_side_bar_panel.dart';
@@ -125,20 +126,17 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                           valueListenable: HiveBoxes.getPack().listenable(),
                           builder: (context, box, _) {
                             List<Order> orderList =[];
+                            List<Pack> packList =[];
                               for (var e in box.values) {
                                   if(e.type==PackType.order.value) {
-                                    orderList.add(Order().fromJson(e.object!.first));
+                                    packList.add(e);
                                   }
-
                             }
-
                             //filter the list in order to the search results
-                            List<Order> filteredList = orderList;
-                            OrderTools.filterList(orderList, keyWord, sortItem);
+                            List<Pack> filteredList = PackTools.filterList(packList, keyWord, sortItem);
                             if (filteredList.isNotEmpty) {
                               return WaiterHomeScreenListPart(
-                                orderList: filteredList,
-                                packList: box.values.toList(),
+                                packList: filteredList,
                                 key: widget.key,
                               );
 
@@ -166,9 +164,10 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
 
 class WaiterHomeScreenListPart extends StatefulWidget {
-  const WaiterHomeScreenListPart({Key? key, required this.orderList, required this.packList}) : super(key: key);
-  final List<Order> orderList;
+  const WaiterHomeScreenListPart({Key? key,required this.packList}) : super(key: key);
+
   final List<Pack> packList;
+  List<Order> get orderList=>packList.map((e) => Order().fromJson(e.object!.single)).toList();
 
   @override
   State<WaiterHomeScreenListPart> createState() => _CreditListPartState();
@@ -191,15 +190,20 @@ class _CreditListPartState extends State<WaiterHomeScreenListPart> {
               order.orderDate)) {
             return InkWell(
               onTap: (){
-                showDialog(context: context, builder: (context)=>WaiterOrderInfoPanel(order: order, pack: widget.packList[index]));
+                showDialog(context: context, builder: (context)=>WaiterOrderInfoPanel( pack: widget.packList[index]));
               },
               child: CardTile(
                 color: order.isChecked?Colors.teal:kMainColor,
                 orderDetail: widget.orderList[index],
-                onSee: () {
+                button: ActionButton(
+                  label: "ویرایش",
+                  icon: Icons.mode_edit_outline_rounded,
+                  bgColor: Colors.deepOrangeAccent,
+                  onPress:() {
                     Navigator.pushNamed(context, WaiterAddOrderScreen.id,
                         arguments: order);
-                },
+                  },
+                ),
               ),
             );
           } else {

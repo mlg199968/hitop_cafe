@@ -158,39 +158,33 @@ class _LocalServerScreenState extends State<LocalServerScreen> {
                         ),
                       ),
                     const Gap(20),
+                    ///send items and wares button
                     ActionButton(
                       label: "ارسال آیتم ها به کاربران",
                       icon: Icons.warehouse,
                       bgColor: Colors.indigoAccent,
-                      onPress: () {
-                        List itemsJson = HiveBoxes.getItem()
-                            .values
-                            .map((e) => e.toJson())
-                            .toList();
-                        Pack newPack = serverProvider.samplePack;
-                        newPack
-                          ..type = PackType.itemList.value
-                          ..object = itemsJson
-                          ..message = "لیست آیتم های ارسال شده از سمت سرور";
-                        serverProvider.handleMessage(newPack);
-                        setState(() {});
-                      },
-                    ),
-                    const Gap(10),
-                    ActionButton(
-                      label: "ارسال پیش نیاز ها به کاربران",
-                      icon: Icons.medical_information,
-                      onPress: () {
+                      onPress: () async{
                         List waresJson = HiveBoxes.getRawWare()
                             .values
                             .map((e) => e.toJson())
                             .toList();
-                        Pack newPack = serverProvider.samplePack;
-                        newPack
+                        Pack itemsPack = serverProvider.samplePack;
+                        itemsPack
                           ..type = PackType.wareList.value
                           ..object = waresJson
                           ..message = "لیست پیش نیاز های ارسال شده از سمت سرور";
-                        serverProvider.handleMessage(newPack);
+                        serverProvider.handleMessage(itemsPack);
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        List itemsJson = HiveBoxes.getItem()
+                            .values
+                            .map((e) => e.toJson())
+                            .toList();
+                        Pack waresPack = serverProvider.samplePack;
+                        waresPack
+                          ..type = PackType.itemList.value
+                          ..object = itemsJson
+                          ..message = "لیست آیتم های ارسال شده از سمت سرور";
+                        serverProvider.handleMessage(waresPack);
                         setState(() {});
                       },
                     ),

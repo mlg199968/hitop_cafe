@@ -1,7 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
+import 'package:hitop_cafe/common/shape/background_shape1.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
@@ -43,7 +43,7 @@ class OrderTile extends StatelessWidget {
               scrollOnExpand: false,
               child: Card(
                 elevation: 5,
-                child: BackgroundClipper(
+                child: BackgroundShape1(
                   height: height,
                   color: color,
                   child: ExpandablePanel(

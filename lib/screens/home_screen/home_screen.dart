@@ -126,225 +126,220 @@ bool showAlertNotice=true;
           )
         ],
       ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Stack(
-          children: [
-            ///home screen header
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(10),
-              height: 200,
-              decoration: const BoxDecoration(
-                gradient: kMainGradiant,
-                //borderRadius:
-                  //  BorderRadius.vertical(bottom: Radius.elliptical(500, 70)),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ///Notification snack
-                    AnimatedSize(
-                      curve: Curves.easeInOutExpo,
-                      duration: const Duration(milliseconds: 400),
-                      child: (!NoticeTools.checkNewNotifications() ||
-                          !showAlertNotice)
-                          ? const SizedBox()
-                          : Container(
-                        width: 350,
-                        height: 50,
-                        decoration:  BoxDecoration(
-                            color: Colors.red,
-                        borderRadius: BorderRadius.circular(50)
-                        ),
-                        child: Row(
-                          textDirection: TextDirection.rtl,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ActionButton(
-                              label: "مشاهده",
-                              bgColor: Colors.black12,
-                              icon: Icons.remove_red_eye_outlined,
-                              height: 30,
-                              onPress: () {
-                                Navigator.pushNamed(
-                                    context, NoticeScreen.id)
-                                    .then((value) {
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                            const CText(
-                              "اطلاع رسانی جدید!",
-                              color: Colors.white,
-                              textDirection: TextDirection.rtl,
-                            )
-                                .animate()
-                                .fade(duration: const Duration(seconds: 1)),
-                            Lottie.asset(
-                                "assets/animations/notification.json"),
-                            IconButton(
-                                color: Colors.white60,
-                                onPressed: () {
-                                  showAlertNotice = false;
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.close_rounded))
-                          ],
-                        ),
-                      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        alignment: Alignment.center,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            children: [
+              ///extent panel in desktop view
+              if (screenType(context) == ScreenType.desktop)
+                Expanded(
+                  flex: 3,
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 20,left: 20),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.red),
+                      child: screens[screenIndex],
                     ),
-                    const Gap(10),
-                    Text(
-                      "امروز: ${DateTime.now().toPersianDateStr()}",
-                      style: const TextStyle(color: Colors.white, fontSize: 17),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              margin:
-                  const EdgeInsets.only(top:120),
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                textDirection: TextDirection.ltr,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ///extent panel in desktop view
-                  if (screenType(context) == ScreenType.desktop)
-                    Expanded(
-                      flex: 3,
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.red),
-                          child: screens[screenIndex],
+              Flexible(
+                flex: 2,
+                child: SingleChildScrollView(
+                  child: Stack(
+                    children: [
+                      ///home screen header
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        height: 200,
+                        decoration: const BoxDecoration(
+                          gradient: kMainGradiant,
                         ),
-                      ),
-                    ),
-                  Flexible(
-                    flex: 2,
-                    child: SingleChildScrollView(
-                      child: Center(
-
-                          ///card button sections
+                        child: Center(
                           child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Flexible(
-                                flex: 3,
-                                child: CardButton(
-                                    label: "سفارشات حاضر",
-                                    width: 300,
-                                    image: "active-orders",
-                                    onTap: () {
-                                      onTapFunction(1, () {
-                                        Navigator.pushNamed(
-                                            context, PresentOrderScreen.id);
-                                      });
-                                    }),
+                              ///Notification snack
+                              AnimatedSize(
+                                curve: Curves.easeInOutExpo,
+                                duration: const Duration(milliseconds: 400),
+                                child: (!NoticeTools.checkNewNotifications() ||
+                                    !showAlertNotice)
+                                    ? const SizedBox()
+                                    : Container(
+                                  width: 350,
+                                  height: 50,
+                                  decoration:  BoxDecoration(
+                                      color: Colors.red,
+                                  borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: Row(
+                                    textDirection: TextDirection.rtl,
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      ActionButton(
+                                        label: "مشاهده",
+                                        bgColor: Colors.black12,
+                                        icon: Icons.remove_red_eye_outlined,
+                                        height: 30,
+                                        onPress: () {
+                                          Navigator.pushNamed(
+                                              context, NoticeScreen.id)
+                                              .then((value) {
+                                            setState(() {});
+                                          });
+                                        },
+                                      ),
+                                      const CText(
+                                        "اطلاع رسانی جدید!",
+                                        color: Colors.white,
+                                        textDirection: TextDirection.rtl,
+                                      )
+                                          .animate()
+                                          .fade(duration: const Duration(seconds: 1)),
+                                      Lottie.asset(
+                                          "assets/animations/notification.json"),
+                                      IconButton(
+                                          color: Colors.white60,
+                                          onPressed: () {
+                                            showAlertNotice = false;
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(Icons.close_rounded))
+                                    ],
+                                  ),
+                                ),
                               ),
-                              Flexible(
-                                flex: 2,
-                                child: CardButton(
-                                    label: "تاریخچه سفارشات",
-                                    width: 200,
-                                    image: "orders-history",
-                                    onTap: () {
-                                      onTapFunction(0, () {
-                                        Navigator.pushNamed(
-                                            context, OrderScreen.id);
-                                      });
-                                    }),
+                              const Gap(10),
+                              ///show time
+                              Text(
+                                "امروز: ${DateTime.now().toPersianDateStr()}",
+                                style: const TextStyle(color: Colors.white, fontSize: 17),
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top:120),
+                        padding: const EdgeInsets.all(20),
+                        child: Center(
 
-                          ///ware house button raw wares and main items
-
-                          CardButton(
-                              label: "لیست آیتم ها ",
-                              width: 400,
-                              height: 100,
-                              image: "items",
-                              verticalDirection: false,
-                              onTap: () {
-                                onTapFunction(2, () {
-                                  Navigator.pushNamed(context, ItemsScreen.id);
-                                });
-                              }),
-                          CardButton(
-                              label: "لیست مواد خام ",
-                              width: 400,
-                              height: 100,
-                              image: "raw-wares",
-                              verticalDirection: false,
-                              onTap: () {
-                                onTapFunction(3, () {
-                                  Navigator.pushNamed(
-                                      context, WareListScreen.id);
-                                });
-                              }),
-
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Wrap(
+                            ///card button sections
+                            child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SmallCardButton(
-                                    label: "فاکتور خرید",
-                                    image: "bills.jpg",
-                                    onTap: () {
-                                      onTapFunction(4, () {
-                                        if(UserTools.userPermission(context,userTypes: [UserType.accountant,UserType.manager,])) {
+                                Flexible(
+                                  flex: 3,
+                                  child: CardButton(
+                                      label: "سفارشات حاضر",
+                                      width: 300,
+                                      image: "active-orders",
+                                      onTap: () {
+                                        onTapFunction(1, () {
                                           Navigator.pushNamed(
-                                            context, ShoppingBillScreen.id);
-                                        }
-                                      });
-                                    }),
-                                SmallCardButton(
-                                    label: "آنالیز",
-                                    image: "analytics.png",
-                                    onTap: () {
-                                      onTapFunction(5, () {
-                                        if(UserTools.userPermission(context,userTypes: [UserType.accountant])) {
+                                              context, PresentOrderScreen.id);
+                                        });
+                                      }),
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  child: CardButton(
+                                      label: "تاریخچه سفارشات",
+                                      width: 200,
+                                      image: "orders-history",
+                                      onTap: () {
+                                        onTapFunction(0, () {
                                           Navigator.pushNamed(
-                                              context, AnalyticsScreen.id);
-                                        }
-                                      });
-                                    }),
-                                SmallCardButton(
-                                    label: "کاربران",
-                                    image: "analytics.png",
-                                    onTap: () {
-                                      onTapFunction(6, () {
-                                        if(UserTools.userPermission(context,userTypes: [UserType.manager])) {
-                                          Navigator.pushNamed(
-                                            context, UserListScreen.id);
-                                        }
-                                      });
-                                    }),
+                                              context, OrderScreen.id);
+                                        });
+                                      }),
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 100,
-                          ),
-                        ],
-                      )),
-                    ),
+
+                            ///ware house button raw wares and main items
+
+                            CardButton(
+                                label: "لیست آیتم ها ",
+                                width: 400,
+                                height: 100,
+                                image: "items",
+                                verticalDirection: false,
+                                onTap: () {
+                                  onTapFunction(2, () {
+                                    Navigator.pushNamed(context, ItemsScreen.id);
+                                  });
+                                }),
+                            CardButton(
+                                label: "لیست مواد خام ",
+                                width: 400,
+                                height: 100,
+                                image: "raw-wares",
+                                verticalDirection: false,
+                                onTap: () {
+                                  onTapFunction(3, () {
+                                    Navigator.pushNamed(
+                                        context, WareListScreen.id);
+                                  });
+                                }),
+
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    SmallCardButton(
+                                        label: "فاکتور خرید",
+                                        image: "bills.jpg",
+                                        onTap: () {
+                                          onTapFunction(4, () {
+                                            if(UserTools.userPermission(context,userTypes: [UserType.accountant,UserType.manager,])) {
+                                              Navigator.pushNamed(
+                                                context, ShoppingBillScreen.id);
+                                            }
+                                          });
+                                        }),
+                                    SmallCardButton(
+                                        label: "آنالیز",
+                                        image: "analytics3.png",
+                                        onTap: () {
+                                          onTapFunction(5, () {
+                                            if(UserTools.userPermission(context,userTypes: [UserType.accountant])) {
+                                              Navigator.pushNamed(
+                                                  context, AnalyticsScreen.id);
+                                            }
+                                          });
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 100,
+                            ),
+                          ],
+                        )),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

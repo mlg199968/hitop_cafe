@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -23,8 +25,6 @@ class GlobalTask {
       HiveBoxes.getShopInfo().add(shop);
     }
     ///get notifications
-    if(context.mounted) {
-      await NoticeTools.readNotifications(context,timeout: 5);
-    }
+    runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
   }
 }

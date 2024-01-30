@@ -343,7 +343,6 @@ class _AddWareScreenState extends State<AddItemScreen> {
                               if (widget.oldItem != null) {
                                 saveItem(id: widget.oldItem!.itemId);
                                 Navigator.pop(context, false);
-                                Navigator.pop(context, false);
                               } else {
                                 ///condition for demo mode
                                 if (UserTools.userPermission(context,count: HiveBoxes.getItem().values.length)) {

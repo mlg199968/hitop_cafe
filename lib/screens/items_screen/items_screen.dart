@@ -67,7 +67,6 @@ class _WareListScreenState extends State<ItemsScreen> {
                   setState(() {});
                 },
               ),
-
               ///search bar
               CustomSearchBar(
                 controller: searchController,
@@ -146,14 +145,13 @@ class _ListPartState extends State<ListPart> {
             },
       child: Expanded(
         child: LayoutBuilder(builder: (context, constraint) {
-          bool widthCondition = constraint.maxWidth < 500;
+          bool widthCondition = constraint.maxWidth > 500;
           return Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               ///info panel on desktop
-              widthCondition
-                  ? const SizedBox()
-                  : Flexible(
+              if(widthCondition)
+                Flexible(
                       child: SizedBox(
                         width: 400,
                         child: selectedWare == null
@@ -193,7 +191,7 @@ class _ListPartState extends State<ListPart> {
                                     } else {
                                       selectedWare = ware;
                                       setState(() {});
-                                      !widthCondition
+                                      widthCondition
                                           ? null
                                           : showDialog(
                                               context: context,

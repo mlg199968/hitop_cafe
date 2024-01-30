@@ -46,7 +46,7 @@ class NoticeTools {
       }
     } catch (e) {
       ErrorHandler.errorManger(context, e,
-          title: "NoticeTools-readNotifications error", showSnackbar: true);
+          title: "NoticeTools-readNotifications error",);
     }
   }
 

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 
 class CustomDialog extends StatelessWidget {
   const CustomDialog({
@@ -13,10 +15,11 @@ class CustomDialog extends StatelessWidget {
     this.textDirection = TextDirection.rtl,
     this.opacity = .8,
     this.image,
-    this.borderRadius=20, this.contentPadding,
+    this.borderRadius=20, this.contentPadding, this.topTrail,
   });
   final String? title;
   final Widget child;
+  final Widget? topTrail;
   final double? height;
   final double width = 450;
   final TextDirection textDirection;
@@ -70,26 +73,34 @@ class CustomDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ///close button
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.red,
-                        size: 30,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      topTrail ?? const SizedBox(),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: Colors.red,
+                            size: 30,
+                          ),
+                        ),
                       ),
-                    ),
+
+                    ],
                   ),
-                  Center(
-                      child: title == null
-                          ? null
-                          : Text(
-                              title!,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 18),
+                  Container(
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(gradient: kMainGradiant),
+                      child:CText(
+                              title,
+                        color: Colors.white,
+                        fontSize: 18,
                             )),
                   Directionality(
                     textDirection: textDirection,

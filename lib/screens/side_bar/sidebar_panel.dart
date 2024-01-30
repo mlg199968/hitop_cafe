@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -15,6 +16,7 @@ import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dar
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
+import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
 import 'package:provider/provider.dart';
 
 class SideBarPanel extends StatelessWidget {
@@ -29,7 +31,7 @@ class SideBarPanel extends StatelessWidget {
       child: Consumer<UserProvider>(builder: (context, userProvider, child) {
         return Container(
           margin:
-              EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 3),
+              EdgeInsets.only(bottom: MediaQuery.of(context).size.height*.3),
           child: BlurryContainer(
             color: Colors.white70.withOpacity(.4),
             blur: 5,
@@ -90,11 +92,20 @@ class SideBarPanel extends StatelessWidget {
                   children: [
                     menu_button(
                       text: "مشخصات فروشگاه",
-                      icon: Icons.factory,
+                      icon: Icons.storefront_outlined,
                       onPress: () {
                         if(UserTools.userPermission(context,userTypes: [])) {
                         Navigator.pushNamed(context, ShopInfoScreen.id);}
                       },
+                    ),
+                    menu_button(
+                      text: "کاربران",
+                      icon: Icons.person_outlined,
+                      onPress: () {
+                        if(UserTools.userPermission(context,userTypes: [UserType.manager])) {
+                          Navigator.pushNamed(
+                              context, UserListScreen.id);
+                        }},
                     ),
                     menu_button(
                       text: "تنظیمات",
@@ -268,9 +279,9 @@ class menu_button extends StatelessWidget {
     Color textColor = Colors.black.withOpacity(.7);
     Color borderColor = kMainColor;
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(.4),
+          color: Colors.white.withOpacity(.7),
           border: Border(
             bottom: BorderSide(
               width: 2,
@@ -286,7 +297,7 @@ class menu_button extends StatelessWidget {
           data: const TextButtonThemeData(
             style: ButtonStyle(
               alignment: Alignment.centerRight,
-              padding: MaterialStatePropertyAll(EdgeInsets.all(0)),
+              padding: MaterialStatePropertyAll(EdgeInsets.all(5)),
             ),
           ),
           child: TextButton(
@@ -294,16 +305,16 @@ class menu_button extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
+                  CText(
                     text,
-                    style: TextStyle(fontSize: 18, color: textColor),
+                    fontSize: 15, color: textColor,
                   ),
                   const SizedBox(
                     width: 5,
                   ),
                   SizedBox(
                       child:
-                          icon == null ? null : Icon(icon, color: textColor)),
+                          icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
                 ],
               )),
         ));

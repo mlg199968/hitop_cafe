@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/shape/custom_bg_shape.dart';
+import 'package:hitop_cafe/common/shape/background_shape1.dart';
 import '../../../constants/constants.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -89,7 +89,7 @@ class CustomTile extends StatelessWidget {
             width: 450,
             child: Card(
               margin: selected ?const EdgeInsets.only(right: 20):null,
-              child: BackgroundClipper(
+              child: BackgroundShape1(
                 color: color,
                 height: height,
                 child: MyListTile(
