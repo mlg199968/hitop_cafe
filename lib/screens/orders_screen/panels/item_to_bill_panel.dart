@@ -209,7 +209,6 @@ void replaceOldPurchase(Item? old){
                         ..discount = discount
                         ..quantity = quantity
                         ..description=descriptionController.text;
-                      print(selectedItem!.toMap());
                       Navigator.pop(
                           context,selectedItem!);
                     }

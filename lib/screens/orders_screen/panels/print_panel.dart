@@ -20,9 +20,9 @@ import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:provider/provider.dart';
 
 class PrintPanel extends StatefulWidget {
-  const PrintPanel({super.key, required this.order, this.onReload});
+  const PrintPanel({super.key, required this.order,this.reOrder=false});
   final Order order;
-  final VoidCallback? onReload;
+  final bool reOrder;
 
   @override
   State<PrintPanel> createState() => _PrintPanelState();
@@ -32,19 +32,48 @@ class _PrintPanelState extends State<PrintPanel> {
   String printTemplate = PrintType.p80mm.value;
 
 
-  ///export pdf function
-  Future<void> printPdf(String printType) async {
+  ///print pdf function and view pdf function
+  Future<void> printPdf(String printType,{bool isView=false}) async {
     try {
-      Uint8List file = await PdfInvoiceApi.generatePdf80(widget.order, context);
+      PdfInvoiceApi pdfInvoice=PdfInvoiceApi(context, bill: widget.order);
+      Uint8List file = await pdfInvoice.generatePdf80();
       if (printType == PrintType.p80mm.value && context.mounted) {
-        file = await PdfInvoiceApi.generatePdf80(widget.order, context);
+        file = await pdfInvoice.generatePdf80();
       } else if (printType == PrintType.pA4.value && context.mounted) {
-        file = await PdfInvoiceApi.generatePdfA4(widget.order, context);
-      } else if (printType == PrintType.p72mm.value && context.mounted) {
-        file = await PdfInvoiceApi.generatePdfA4(widget.order, context);
+        file = await pdfInvoice.generatePdfA4();
       }
-
+      else if (printType == PrintType.p72mm.value && context.mounted) {
+        file = await pdfInvoice.generatePdfA4();
+      }
+      else if (printType == PrintType.p57mm.value && context.mounted) {
+        file = await pdfInvoice.generatePdf57();
+      }
+      if (isView) {
+        File pdfFile =
+        await PdfApi.saveUni8File(name: "cache pdf.pdf", uni8file: file);
+        await PdfApi.openFile(pdfFile);
+      }
+      else if(!isView && context.mounted){
+        await PrintServices().printPriority(context, unit8File: file);
+      }
+    } catch (e) {
       if (context.mounted) {
+        ErrorHandler.errorManger(context, e,
+            title: "addOrderScreen-print pdf error", showSnackbar: true);
+      }
+    }
+  }
+  ///print pdf function for kitchen orders
+  Future<void> printPdfIp2({bool isView=false}) async {
+    try {
+      PdfInvoiceApi pdfInvoice=PdfInvoiceApi(context, bill: widget.order);
+      Uint8List file = await pdfInvoice.generateOrderPdf(reOrder:widget.reOrder );
+      if(isView){
+        File pdfFile =
+        await PdfApi.saveUni8File(name: "cache pdf.pdf", uni8file: file);
+        await PdfApi.openFile(pdfFile);
+      }
+      else if (!isView && context.mounted) {
         await PrintServices().printPriority(context, unit8File: file);
       }
     } catch (e) {
@@ -55,22 +84,8 @@ class _PrintPanelState extends State<PrintPanel> {
     }
   }
 
-  ///view pdf function
-  Future<void> viewPdf(String printType) async {
-    Uint8List uni8file =
-        await PdfInvoiceApi.generatePdf80(widget.order, context);
-    if (printType == PrintType.p80mm.value && context.mounted) {
-      uni8file = await PdfInvoiceApi.generatePdf80(widget.order, context);
-    } else if (printType == PrintType.pA4.value && context.mounted) {
-      uni8file = await PdfInvoiceApi.generatePdfA4(widget.order, context);
-    } else if (printType == PrintType.p72mm.value && context.mounted) {
-      uni8file = await PdfInvoiceApi.generatePdfA4(widget.order, context);
-    }
 
-    File file =
-        await PdfApi.saveUni8File(name: "cache pdf.pdf", uni8file: uni8file);
-    await PdfApi.openFile(file);
-  }
+
 
   @override
   void initState() {
@@ -141,7 +156,7 @@ class _PrintPanelState extends State<PrintPanel> {
                     ActionButton(
                       label: "نمایش",
                       onPress: () async {
-                        await viewPdf(printTemplate);
+                        await printPdf(printTemplate,isView: true);
                       },
                       bgColor: Colors.red,
                       icon: Icons.picture_as_pdf_outlined,
@@ -165,7 +180,7 @@ class _PrintPanelState extends State<PrintPanel> {
                     ActionButton(
                       label: "چاپ سفارش",
                       onPress: () {
-                        printPdf(printTemplate);
+                        printPdfIp2(isView: true);
                       },
                       bgColor: Colors.deepOrange,
                       icon: Icons.local_printshop_outlined,

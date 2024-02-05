@@ -10,7 +10,6 @@ import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/providers/client_provider.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
-import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/present_orders/widgets/card_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
@@ -125,7 +124,6 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                       child: ValueListenableBuilder<Box<Pack>>(
                           valueListenable: HiveBoxes.getPack().listenable(),
                           builder: (context, box, _) {
-                            List<Order> orderList =[];
                             List<Pack> packList =[];
                               for (var e in box.values) {
                                   if(e.type==PackType.order.value) {

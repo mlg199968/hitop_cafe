@@ -11,10 +11,8 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
-import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/waiter_app/waiter_app_setting_screen.dart';
 import 'package:provider/provider.dart';
 

@@ -48,21 +48,22 @@ class _AppTypeScreenState extends State<AppTypeScreen> {
                   _LabelButton(
                     icon: FontAwesomeIcons.person,
                     label: "سفارشگیر",
-                    onPress:() {
-
-                      Shop shop=HiveBoxes.getShopInfo().values.single;
-                      shop.appType=AppType.waiter.value;
+                    onPress: () {
+                      Shop shop = HiveBoxes.getShopInfo().values.single;
+                      shop.appType = AppType.waiter.value;
                       HiveBoxes.getShopInfo().putAt(0, shop);
-                      Provider.of<UserProvider>(context,listen:false).getData(shop);
-                      Navigator.pushReplacementNamed(context, WaiterHomeScreen.id);
-                    } ,
+                      Provider.of<UserProvider>(context, listen: false)
+                          .getData(shop);
+                      Navigator.pushReplacementNamed(
+                          context, WaiterHomeScreen.id);
+                    },
                   ),
                   _LabelButton(
                     icon: FontAwesomeIcons.computer,
                     label: "برنامه اصلی",
                     onPress: () {
-                      Shop shop=HiveBoxes.getShopInfo().values.first;
-                      shop.appType=AppType.main.value;
+                      Shop shop = HiveBoxes.getShopInfo().values.first;
+                      shop.appType = AppType.main.value;
                       HiveBoxes.getShopInfo().putAt(0, shop);
                       Navigator.pushReplacementNamed(context, SplashScreen.id);
                     },
@@ -79,7 +80,8 @@ class _LabelButton extends StatelessWidget {
   const _LabelButton({
     this.onPress,
     this.icon,
-    this.label, this.image,
+    this.label,
+    this.image,
   });
 
   final VoidCallback? onPress;

@@ -3,7 +3,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/shape/shape2.dart';
 import 'package:hitop_cafe/common/shape/shape1.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 

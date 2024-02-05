@@ -104,7 +104,6 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
 
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
-    print("create border object");
     Order orderBill = Order()
       ..user = user
       ..items = items
@@ -187,7 +186,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   void printPdf() async {
     try {
       Order orderBill = createBillObject();
-      final file = await PdfInvoiceApi.generatePdf80(orderBill, context);
+      final file = await PdfInvoiceApi(context,bill: orderBill).generatePdf80();
       if(context.mounted) {
         await PrintServices().printPriority(context, unit8File: file);
       }
@@ -239,7 +238,6 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   @override
   void dispose() {
     tableNumberController.dispose();
-    // TODO: implement dispose
     super.dispose();
   }
   ///********************************** widget *********************************************

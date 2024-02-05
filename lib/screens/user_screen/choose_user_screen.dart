@@ -37,7 +37,7 @@ class _ChooseUserScreenState extends State<ChooseUserScreen> {
         padding: const EdgeInsets.all(8).copyWith(top: 50),
         alignment: Alignment.center,
         decoration: const BoxDecoration(gradient: kMainGradiant),
-        child: Container(
+        child: SizedBox(
           width: 450,
           child: ValueListenableBuilder(
               valueListenable: HiveBoxes.getUsers().listenable(),

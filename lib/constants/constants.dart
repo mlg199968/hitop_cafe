@@ -32,12 +32,13 @@ const kMainColor3=Colors.black87;
 
 
 const List<String> unitList=['عدد','متر','کیلو','متر مربع','متر مکعب','لیتر','سی سی','گرم','شاخه','بسته','فنجان','لیوان','بسته'];
-const List<String> kFonts=['Shabnam','Koodak','Roya','Terafik','Elham','Titr',];
+const List<String> kFonts=['Shabnam','Sahel','Koodak','Roya','Terafik','Elham','Titr'];
 const List<String> sortList=['تاریخ تسویه','حروف الفبا','تاریخ ثبت'];
 const List<String> kCurrencyList=["ریال","تومان","دلار","لیر","درهم"];
 final List<String> kPrintTemplateList = [
   PrintType.p80mm.value,
   PrintType.p72mm.value,
+  PrintType.p57mm.value,
   PrintType.pA4.value,
 ];
 

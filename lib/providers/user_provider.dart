@@ -37,7 +37,8 @@ class UserProvider extends ChangeNotifier{
   String currency="تومان";
   double preDiscount=0;
   int preBillNumber=1;
-  String fontFamily=kFonts[0];
+  String _fontFamily=kFonts[0];
+  String get fontFamily=>_fontFamily;
   Printer? _selectedPrinter;
   Printer? get selectedPrinter=>_selectedPrinter ?? getDefaultPrinter();
   String? printTemplate=PrintType.p80mm.value;
@@ -60,7 +61,7 @@ class UserProvider extends ChangeNotifier{
     currency=shop.currency;
     preDiscount=shop.preTax ;
     preBillNumber=shop.preBillNumber;
-    fontFamily=shop.fontFamily ?? kFonts[0];
+    _fontFamily=shop.fontFamily ?? kFonts[0];
     _selectedPrinter=shop.printer==null?null:Printer.fromMap(shop.printer!);
     printTemplate=shop.printTemplate;
     printerIp=shop.printerIp ?? "192.168.1.1" ;
@@ -134,8 +135,14 @@ removeAppType(){
     notifyListeners();
 }
   setFontFamily(String font){
-    fontFamily=font;
+    _fontFamily=font;
     notifyListeners();
+  }
+  setFontFromHive() {
+    Shop? shop = HiveBoxes.getShopInfo().get(0);
+    if(shop!=null && shop.fontFamily != null ) {
+      _fontFamily = shop.fontFamily!;
+    }
   }
   // loadNotification(context) async {
   //   if(context.mounted) {

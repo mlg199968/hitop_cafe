@@ -16,7 +16,7 @@ class UserTile extends StatelessWidget {
       this.enabled = true,
       this.selected = false,
       this.height = 100,
-      this.color=kMainColor,
+      this.color = kMainColor,
       required this.onSee});
 
   final User userDetail;
@@ -27,72 +27,93 @@ class UserTile extends StatelessWidget {
   final Color color;
   @override
   Widget build(BuildContext context) {
-
-    return Consumer<UserProvider>(
-      builder: (context,userProvider,child) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: InkWell(
-            onTap: onSee,
-            child: SizedBox(
-              width: 400,
-              child: Card(shape: RoundedRectangleBorder(
-                side: BorderSide(color: selected?kSecondaryColor:Colors.black26,width: 2),
-                  borderRadius: BorderRadius.circular(selected ?30:20),
+    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: InkWell(
+          onTap: onSee,
+          child: SizedBox(
+            width: 400,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    color: selected ? kSecondaryColor : Colors.black26,
+                    width: 2),
+                borderRadius: BorderRadius.circular(selected ? 30 : 20),
               ),
-                surfaceTintColor: Colors.white,
-                color:Colors.white,
-                elevation: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: kMainColor,
-                        foregroundImage: userDetail.image==null?null:FileImage(File(userDetail.image!)),
-                        child: const Icon(Icons.person,color: Colors.white,size: 50,),
+              surfaceTintColor: Colors.white,
+              color: Colors.white,
+              elevation: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: kMainColor,
+                      foregroundImage: userDetail.image == null
+                          ? null
+                          : FileImage(File(userDetail.image!)),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 50,
                       ),
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(userDetail.name),
-                                Text(UserType().englishToPersian(userDetail.userType),style: const TextStyle(color: kMainColor2),),
-                              ],
-                            ),
-                            ///left side data
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if(userProvider.activeUser?.userId==userDetail.userId)
-                                  const CircleAvatar(backgroundColor: Colors.teal,radius: 10,),
-                                Text(userDetail.createDate.toPersianDate(),style: const TextStyle(fontSize:10,color: Colors.black26),),
-                                Text(userDetail.phone ?? "",style: const TextStyle(fontSize:12,color: Colors.black38),),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(userDetail.name),
+                              Text(
+                                UserType()
+                                    .englishToPersian(userDetail.userType),
+                                style: const TextStyle(color: kMainColor2),
+                              ),
+                            ],
+                          ),
 
-                              ],
-                            ),
-                          ],
-                        ),
+                          ///left side data
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (userProvider.activeUser?.userId ==
+                                  userDetail.userId)
+                                const CircleAvatar(
+                                  backgroundColor: Colors.teal,
+                                  radius: 10,
+                                ),
+                              Text(
+                                userDetail.createDate.toPersianDate(),
+                                style: const TextStyle(
+                                    fontSize: 10, color: Colors.black26),
+                              ),
+                              Text(
+                                userDetail.phone ?? "",
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black38),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-
-
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                ),
+              ),
             ),
           ),
-          );
-      }
-    );
-    }
+        ),
+      );
+    });
   }
+}
 
 // _CardListTile(
 // enable: true,
@@ -113,7 +134,14 @@ class _CardListTile extends StatelessWidget {
     required this.enable,
     required this.title,
     required this.topTrailing,
-    required this.trailing, required this.onTap, required this.selected, this.leadingIcon, this.type, this.subTitle, this.topTrailingLabel, required this.bottomLeading,
+    required this.trailing,
+    required this.onTap,
+    required this.selected,
+    this.leadingIcon,
+    this.type,
+    this.subTitle,
+    this.topTrailingLabel,
+    required this.bottomLeading,
   });
 
   final bool enable;
@@ -166,9 +194,10 @@ class _CardListTile extends StatelessWidget {
             ///middle section
             RichText(
               text: TextSpan(
-                text:"",
+                text: "",
                 style: TextStyle(
-                    color: selected ? Colors.blue : Colors.black54, fontSize: 11),
+                    color: selected ? Colors.blue : Colors.black54,
+                    fontSize: 11),
                 children: [
                   TextSpan(
                       text: title,

@@ -102,7 +102,7 @@ class ItemInfoPanel {
                 } ),
               ),
             ),
-            Gap(20),
+            const Gap(20),
             Expanded(
               child: ListView(children: _infoLines),
             ),

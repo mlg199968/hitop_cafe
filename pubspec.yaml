@@ -90,8 +90,8 @@ dependencies:
   gap: ^3.0.1
   ping_discover_network_plus: ^0.0.2
   network_info_plus: ^4.1.0
-#  thermal_printer: ^1.0.4
-#  pdfx: ^2.5.0
+  thermal_printer: ^1.0.4
+  pdfx: ^2.5.0
   flutter_animate: ^4.4.0
   lottie: ^2.6.0
 
@@ -183,5 +183,9 @@ flutter:
     - family: Elham
       fonts:
         - asset: assets/fonts/elham.ttf
+    - family: Sahel
+      fonts:
+        - asset: assets/fonts/sahel.ttf
+        - asset: assets/fonts/sahel-Bold.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -17,11 +17,11 @@ class NoticeTools {
         for (var onNotice in onlineNotices) {
           if (hiveNotices.isNotEmpty) {
             bool exist = false;
-            hiveNotices.forEach((hiveNotice) {
+            for (var hiveNotice in hiveNotices) {
               if(hiveNotice.noticeId == onNotice!.noticeId){
                 exist=true;
-              };
-            });
+              }
+            }
             if (!exist) {
               HiveBoxes.getNotice().put(onNotice!.noticeId, onNotice);
             }
@@ -34,11 +34,11 @@ class NoticeTools {
         ///delete notice form hive if notice was deleted from server
         for (var hvNotice in hiveNotices) {
           bool isExist = false;
-          onlineNotices.forEach((onNotice) {
+          for (var onNotice in onlineNotices) {
             if (hvNotice.noticeId == onNotice!.noticeId) {
               isExist = true;
             }
-          });
+          }
           if (!isExist) {
             hvNotice.delete();
           }

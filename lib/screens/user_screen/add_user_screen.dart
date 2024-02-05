@@ -75,7 +75,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
         ..createDate = id != null ? widget.oldUser!.createDate : DateTime.now()
         ..modifiedDate = DateTime.now()
         ..score = 10
-        ..image = imagePath
         ..userType = UserType().persianToEnglish(selectedUserType)
         ..userId = id ?? const Uuid().v1();
 
@@ -83,9 +82,11 @@ class _AddUserScreenState extends State<AddUserScreen> {
       if (imagePath != user.image) {
         final String newPath = await Address.profileDirectory();
         user.image = await saveImage(imagePath, user.userId, newPath);
+      }else{
+        user.image=imagePath;
       }
       HiveBoxes.getUsers().put(user.userId, user);
-      if (userProvider.appType==AppType.waiter.value && context.mounted) {
+      if (userProvider.appType==AppType.waiter.value || userProvider.activeUser?.userId==user.userId) {
       userProvider.setUser(user);
       }
     }
