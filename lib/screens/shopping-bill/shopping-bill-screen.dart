@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 class ShoppingBillScreen extends StatefulWidget {
   static const String id = "/shopping-bill-screen";
-  const ShoppingBillScreen({Key? key}) : super(key: key);
+  const ShoppingBillScreen({super.key});
   @override
   State<ShoppingBillScreen> createState() => _CustomerListScreenState();
 }
@@ -131,7 +131,7 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
 }
 
 class CreditListPart extends StatefulWidget {
-  const CreditListPart({Key? key, required this.billList}) : super(key: key);
+  const CreditListPart({super.key, required this.billList});
   final List<Bill> billList;
 
   @override

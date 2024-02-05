@@ -6,7 +6,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 
 class SaleChart extends StatelessWidget {
-   const SaleChart({Key? key,required this.tooltipBehavior,required this.orderList}): super(key: key);
+   const SaleChart({super.key,required this.tooltipBehavior,required this.orderList});
   final TooltipBehavior tooltipBehavior;
   final List<Order> orderList;
 
@@ -16,11 +16,11 @@ class SaleChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return SfCartesianChart(
 
-        primaryXAxis: CategoryAxis(),
+        primaryXAxis: const CategoryAxis(),
         // Chart title
-        title: ChartTitle(text: 'Half yearly sales analysis'),
+        title: const ChartTitle(text: 'Half yearly sales analysis'),
         // Enable legend
-        legend: Legend(isVisible: true),
+        legend: const Legend(isVisible: true),
         // Enable tooltip
         tooltipBehavior: tooltipBehavior,
 

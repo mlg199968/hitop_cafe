@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 class CustomDivider extends StatelessWidget {
-  const CustomDivider({Key? key,this.color,this.title}) : super(key: key);
+  const CustomDivider({super.key,this.color,this.title});
       final Color? color;
       final String? title;
 

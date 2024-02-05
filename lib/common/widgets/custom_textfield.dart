@@ -9,7 +9,7 @@ enum TextFormatter { price, normal, number }
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
-    Key? key,
+    super.key,
     this.label,
     required this.controller,
     this.maxLine = 1,
@@ -28,7 +28,7 @@ class CustomTextField extends StatelessWidget {
     this.obscure = false,
     this.prefixIcon,
     this.symbol,
-  }) : super(key: key);
+  });
 
   final String? label;
   final TextEditingController controller;

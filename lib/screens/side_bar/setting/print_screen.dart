@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class PrinterPage extends StatefulWidget {
   static const String id = "/printer-screen";
-  const PrinterPage({Key? key, this.orderBill}) : super(key: key);
+  const PrinterPage({super.key, this.orderBill});
 
   final Order? orderBill;
 

@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 class SettingScreen extends StatefulWidget {
   static const String id = "/SettingScreen";
 
-  const SettingScreen({Key? key}) : super(key: key);
+  const SettingScreen({super.key});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -447,13 +447,12 @@ class DropListItem extends StatelessWidget {
 ///text field field
 class InputItem extends StatelessWidget {
   const InputItem(
-      {Key? key,
+      {super.key,
       required this.controller,
       this.onChange,
       this.width = 150,
       required this.label,
-      required this.inputLabel})
-      : super(key: key);
+      required this.inputLabel});
 
   final String label;
   final String inputLabel;
@@ -489,13 +488,13 @@ class InputItem extends StatelessWidget {
 ///text field field
 class ButtonTile extends StatelessWidget {
   const ButtonTile({
-    Key? key,
+    super.key,
     required this.onPress,
     this.width = 150,
     required this.label,
     required this.buttonLabel,
     this.extra,
-  }) : super(key: key);
+  });
 
   final String label;
   final String buttonLabel;

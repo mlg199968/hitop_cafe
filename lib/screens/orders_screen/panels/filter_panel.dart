@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class FilterPanel extends StatefulWidget {
-  const FilterPanel({Key? key}) : super(key: key);
+  const FilterPanel({super.key});
 
 
   @override

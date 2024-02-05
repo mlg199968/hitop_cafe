@@ -71,7 +71,7 @@ class UserProvider extends ChangeNotifier{
     _userLevel=shop.userLevel ?? 0;
     ///this for just use complete for debug app
     if(kDebugMode) {
-      _userLevel = 1;
+      _userLevel = 0;
     }
   }
 

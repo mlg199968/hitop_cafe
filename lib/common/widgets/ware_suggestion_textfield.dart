@@ -10,7 +10,7 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 
 class WareSuggestionTextField extends StatelessWidget {
   const WareSuggestionTextField(
-      {Key? key,
+      {super.key,
       required this.label,
       required this.controller,
       this.maxLine = 1,
@@ -21,8 +21,7 @@ class WareSuggestionTextField extends StatelessWidget {
       this.onChange,
       this.validate = false,
       this.enable = true,
-      required this.onSuggestionSelected})
-      : super(key: key);
+      required this.onSuggestionSelected});
 
   final String label;
   final TextEditingController controller;

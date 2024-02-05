@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 
 class TextDataField extends StatelessWidget {
-  const TextDataField({Key? key, required this.title, required this.value,this.color=Colors.black87,this.showCurrency=false}) : super(key: key);
+  const TextDataField({super.key, required this.title, required this.value,this.color=Colors.black87,this.showCurrency=false});
   final String title;
   final num value;
   final Color color;

@@ -5,14 +5,13 @@ import 'package:persian_number_utility/persian_number_utility.dart';
 
 class CustomDateRangePicker extends StatelessWidget {
   const CustomDateRangePicker(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.startDate,
       required this.endDate,
       required this.onPress,
       this.enable = true,
-      required this.onSwitch})
-      : super(key: key);
+      required this.onSwitch});
   final String title;
   final DateTime startDate;
   final DateTime endDate;

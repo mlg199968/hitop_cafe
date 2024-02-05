@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 class CustomButton extends StatelessWidget {
   const CustomButton(
-      {Key? key,
+      {super.key,
       required this.text,
       required this.onPressed,
         this.color,
@@ -11,8 +11,7 @@ class CustomButton extends StatelessWidget {
       this.height = 40,
         this.fontSize=15,
         this.radius=5, this.icon, this.replacementIcon, this.margin,
-      })
-      : super(key: key);
+      });
   final String text;
   // ignore: prefer_typing_uninitialized_variables
   final  onPressed;

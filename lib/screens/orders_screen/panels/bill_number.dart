@@ -5,7 +5,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 
 class BillNumber extends StatefulWidget {
-  const BillNumber({Key? key}) : super(key: key);
+  const BillNumber({super.key});
 
   @override
   State<BillNumber> createState() => _WareToBillPanelState();

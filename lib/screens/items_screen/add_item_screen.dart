@@ -26,7 +26,7 @@ import '../../models/raw_ware.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const String id = "/add-item-screen";
-  const AddItemScreen({Key? key, this.oldItem}) : super(key: key);
+  const AddItemScreen({super.key, this.oldItem});
   final Item? oldItem;
 
   @override

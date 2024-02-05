@@ -1,4 +1,5 @@
 /// Package import
+library;
 import 'package:flutter/material.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 
@@ -8,7 +9,7 @@ import 'model.dart';
 /// Base class of the sample's stateful widget class
 abstract class SampleView extends StatefulWidget {
   /// base class constructor of sample's stateful widget class
-  const SampleView({Key? key}) : super(key: key);
+  const SampleView({super.key});
 }
 
 /// Base class of the sample's state class
@@ -42,7 +43,7 @@ abstract class SampleViewState<T extends SampleView> extends State<T> {
 /// Base class of the localization sample's stateful widget class
 class LocalizationSampleView extends SampleView {
   /// base class constructor of sample's stateful widget class
-  const LocalizationSampleView({Key? key}) : super(key: key);
+  const LocalizationSampleView({super.key});
 
   @override
   State<StatefulWidget> createState() => LocalizationSampleViewState();
@@ -176,7 +177,7 @@ class LocalizationSampleViewState<T extends LocalizationSampleView>
 /// Base class of the directionality sample's stateful widget class
 class DirectionalitySampleView extends LocalizationSampleView {
   /// base class constructor of sample's stateful widget class
-  const DirectionalitySampleView({Key? key}) : super(key: key);
+  const DirectionalitySampleView({super.key});
 }
 
 /// Base class of the directionality sample's state class

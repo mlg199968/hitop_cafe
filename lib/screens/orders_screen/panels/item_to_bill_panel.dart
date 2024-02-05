@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 class ItemToBillPanel extends StatefulWidget {
  static const String id="/item-to-bill-panel";
-  const ItemToBillPanel({Key? key,this.oldItem}) : super(key: key);
+  const ItemToBillPanel({super.key,this.oldItem});
 final Item? oldItem;
   @override
   State<ItemToBillPanel> createState() => _WareToBillPanelState();

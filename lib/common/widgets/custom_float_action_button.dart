@@ -3,13 +3,12 @@ import 'package:hitop_cafe/constants/constants.dart';
 
 class CustomFloatActionButton extends StatelessWidget {
   const CustomFloatActionButton(
-      {Key? key,
+      {super.key,
       required this.onPressed,
       this.icon,
       this.bgColor=kSecondaryColor,
       this.fgColor=Colors.white,
-      this.label})
-      : super(key: key);
+      this.label});
 
   final IconData? icon;
   final String? label;

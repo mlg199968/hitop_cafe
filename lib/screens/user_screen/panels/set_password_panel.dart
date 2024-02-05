@@ -38,73 +38,71 @@ class _SetPasswordPanelState extends State<SetPasswordPanel> {
     return CustomDialog(
       opacity: .8,
       title: "تنظیم رمزعبور",
-      child: Container(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (widget.oldPass != null ||
-                  widget.oldPass !=
-                      ""
-                          "")
-                PassTextField(
-                  label: "رمز حاضر",
-                  controller: oldPasswordController,
-                  obscure: obscureOldPassword,
-                  onChange: (val) {
-                    obscureOldPassword = val;
-                    setState(() {});
-                  },
-                  // validate: (val){
-                  //   // if(widget.oldPass!=null && widget.oldPass! !=val){
-                  //   //   return "رمز اشتباه است";
-                  //   // }
-                  // },
-                ),
-              const SizedBox(
-                height: 30,
-              ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.oldPass != null ||
+                widget.oldPass !=
+                    ""
+                        "")
               PassTextField(
-                obscure: obscureNewPassword,
-                label: "رمز جدید",
-                controller: newPasswordController,
+                label: "رمز حاضر",
+                controller: oldPasswordController,
+                obscure: obscureOldPassword,
                 onChange: (val) {
-                  obscureNewPassword = val;
+                  obscureOldPassword = val;
                   setState(() {});
                 },
+                // validate: (val){
+                //   // if(widget.oldPass!=null && widget.oldPass! !=val){
+                //   //   return "رمز اشتباه است";
+                //   // }
+                // },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              PassTextField(
-                obscure: obscureNewPasswordReaped,
-                label: "تکرار رمز جدید",
-                controller: newPasswordReapedController,
-                onChange: (val) {
-                  obscureNewPasswordReaped = val;
-                  setState(() {});
-                },
-                validate: (val) {
-                  if (newPasswordController.text !=
-                      newPasswordReapedController.text) {
-                    return "تکرار رمز اشتباه است";
-                  }
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomButton(
-                text: "تغییر",
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.pop(context, newPasswordReapedController.text);
-                  }
-                },
-              )
-            ],
-          ),
+            const SizedBox(
+              height: 30,
+            ),
+            PassTextField(
+              obscure: obscureNewPassword,
+              label: "رمز جدید",
+              controller: newPasswordController,
+              onChange: (val) {
+                obscureNewPassword = val;
+                setState(() {});
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            PassTextField(
+              obscure: obscureNewPasswordReaped,
+              label: "تکرار رمز جدید",
+              controller: newPasswordReapedController,
+              onChange: (val) {
+                obscureNewPasswordReaped = val;
+                setState(() {});
+              },
+              validate: (val) {
+                if (newPasswordController.text !=
+                    newPasswordReapedController.text) {
+                  return "تکرار رمز اشتباه است";
+                }
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomButton(
+              text: "تغییر",
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Navigator.pop(context, newPasswordReapedController.text);
+                }
+              },
+            )
+          ],
         ),
       ),
     );

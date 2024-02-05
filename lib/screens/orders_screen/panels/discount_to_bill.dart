@@ -5,7 +5,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 class DiscountToBill extends StatefulWidget {
-  const DiscountToBill({Key? key}) : super(key: key);
+  const DiscountToBill({super.key});
 
   @override
   State<DiscountToBill> createState() => _WareToBillPanelState();

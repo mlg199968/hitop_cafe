@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   static const String id = "/analyticsScreen";
-  const AnalyticsScreen({Key? key}) : super(key: key);
+  const AnalyticsScreen({super.key});
 
   @override
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();

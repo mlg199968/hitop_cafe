@@ -56,26 +56,24 @@ class ActiveUserPanel extends StatelessWidget {
 
             ///if there is no user found
           } else {
-            return Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("حسابکاربری یافت نشد"),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ActionButton(
-                    label: "افزودن اکانت ادمین",
-                    icon: Icons.person,
-                    onPress: () {
-                      Navigator.pushNamed(
-                        context,
-                        AddUserScreen.id,
-                      );
-                    },
-                  ),
-                ],
-              ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("حسابکاربری یافت نشد"),
+                const SizedBox(
+                  height: 10,
+                ),
+                ActionButton(
+                  label: "افزودن اکانت ادمین",
+                  icon: Icons.person,
+                  onPress: () {
+                    Navigator.pushNamed(
+                      context,
+                      AddUserScreen.id,
+                    );
+                  },
+                ),
+              ],
             );
           }
         }));

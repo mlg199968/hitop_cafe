@@ -33,29 +33,38 @@ class DropListModel extends StatelessWidget {
         elevation: icon==null?elevation:0,
         child: DropdownButtonHideUnderline(
           child: DropdownButton2(
-            iconDisabledColor: Colors.black26,
-            iconEnabledColor: kMainColor,
-            icon: const Icon(Icons.keyboard_arrow_down),
-            iconOnClick: const Icon(Icons.keyboard_arrow_up),
+            iconStyleData: const IconStyleData(
+              icon: Icon(Icons.keyboard_arrow_down),
+              openMenuIcon: Icon(Icons.keyboard_arrow_up),
+              iconDisabledColor: Colors.black26,
+              iconEnabledColor: kMainColor,),
+            dropdownStyleData: DropdownStyleData(
+              width: width,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                //border: Border.all(color: kColorController)
+              ),
+              scrollbarTheme: const ScrollbarThemeData(radius:Radius.circular(20), ),
+              padding: const EdgeInsets.all(0),
+            ),
+            buttonStyleData: ButtonStyleData(
+              width: width,
+              height: height,
+              decoration:BoxDecoration(
+              color:icon!=null?null:Colors.white,
+              borderRadius: BorderRadius.circular(200),
+              //border: Border.all(color: kColorController)
+            ), ),
+
+
 
             isExpanded: true,
-            itemPadding: const EdgeInsets.all(0),
+
 
             customButton:icon,
             isDense: true,
-            dropdownWidth: width,
             alignment: Alignment.centerRight,
-            scrollbarRadius: const Radius.circular(20),
-            dropdownDecoration:BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              //border: Border.all(color: kColorController)
-            ),
-            buttonDecoration: BoxDecoration(
-                color:icon!=null?null:Colors.white,
-                borderRadius: BorderRadius.circular(200),
-                //border: Border.all(color: kColorController)
-            ),
             hint: const Text(
               'no Group',
               style: TextStyle(fontSize: 20, color: Colors.black38),
@@ -85,11 +94,6 @@ class DropListModel extends StatelessWidget {
             onChanged: (val) {
               onChanged(val);
             },
-
-
-            buttonHeight: height,
-            buttonWidth: width,
-            itemHeight: height,
           ),
         ),
       ),

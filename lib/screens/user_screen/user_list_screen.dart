@@ -13,7 +13,7 @@ import 'package:hive_flutter/adapters.dart';
 
 class UserListScreen extends StatefulWidget {
   static const String id = "/user-list-screen";
-  const UserListScreen({Key? key}) : super(key: key);
+  const UserListScreen({super.key});
   @override
   State<UserListScreen> createState() => _UserListScreenState();
 }
@@ -145,7 +145,7 @@ class _UserListScreenState extends State<UserListScreen> {
 }
 
 class UserListPart extends StatefulWidget {
-  const UserListPart({Key? key, required this.userList}) : super(key: key);
+  const UserListPart({super.key, required this.userList});
   final List<User> userList;
 
   @override

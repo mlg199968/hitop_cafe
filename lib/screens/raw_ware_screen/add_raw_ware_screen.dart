@@ -17,7 +17,7 @@ import 'package:uuid/uuid.dart';
 
 class AddWareScreen extends StatefulWidget {
   static const String id = "/add-ware-screen";
-  const AddWareScreen({Key? key, this.oldRawWare}) : super(key: key);
+  const AddWareScreen({super.key, this.oldRawWare});
   final RawWare? oldRawWare;
 
   @override

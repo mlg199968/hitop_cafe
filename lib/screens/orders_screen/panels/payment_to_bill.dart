@@ -10,7 +10,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class PaymentToBill extends StatefulWidget {
-  const PaymentToBill({Key? key}) : super(key: key);
+  const PaymentToBill({super.key});
 
   @override
   State<PaymentToBill> createState() => _CashToBillState();

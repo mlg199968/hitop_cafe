@@ -162,7 +162,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
 
 class WaiterHomeScreenListPart extends StatefulWidget {
-  const WaiterHomeScreenListPart({Key? key,required this.packList}) : super(key: key);
+  const WaiterHomeScreenListPart({super.key,required this.packList});
 
   final List<Pack> packList;
   List<Order> get orderList=>packList.map((e) => Order().fromJson(e.object!.single)).toList();

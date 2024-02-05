@@ -25,13 +25,13 @@ import 'package:syncfusion_flutter_sliders/sliders.dart' as slider;
 class RangeSelectorLabelCustomization extends StatefulWidget {
   /// Renders the range selector with line chart label customization option
   const RangeSelectorLabelCustomization({
-    Key? key,
+    super.key,
     required this.onChange,
     required this.orderList,
     required this.billList,
     this.payments = true,
     this.sales = true,
-  }) : super(key: key);
+  });
 
   final Function(slider.SfRangeValues values) onChange;
 
@@ -125,21 +125,21 @@ class _RangeSelectorLabelCustomizationState
     splineSeriesData = saleChartData;
     columnChart = SfCartesianChart(
       margin: EdgeInsets.zero,
-      primaryXAxis: DateTimeAxis(
+      primaryXAxis: const DateTimeAxis(
         isVisible: false,
       ),
-      primaryYAxis: NumericAxis(isVisible: false),
+      primaryYAxis: const NumericAxis(isVisible: false),
       plotAreaBorderWidth: 0,
       series: <LineSeries<ChartData, DateTime>>[
         LineSeries<ChartData, DateTime>(
-          isVisible: widget.sales,
+          initialIsVisible: widget.sales,
           dataSource: saleChartData,
           color: Colors.blue,
           xValueMapper: (ChartData sales, _) => sales.date,
           yValueMapper: (ChartData sales, _) => sales.value,
         ),
         LineSeries<ChartData, DateTime>(
-          isVisible: widget.payments,
+          initialIsVisible: widget.payments,
           dataSource: paymentsChartData,
           color: Colors.red,
           xValueMapper: (ChartData pays, _) => pays.date,
@@ -164,7 +164,7 @@ class _RangeSelectorLabelCustomizationState
         themeData.colorScheme.brightness == Brightness.light;
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     splineChart = SfCartesianChart(
-legend: Legend(
+legend: const Legend(
     isVisible: true,
   position: LegendPosition.bottom,
 ),
@@ -180,8 +180,8 @@ legend: Legend(
           isVisible: false,
           minimum: min,
           maximum: max,
-          visibleMinimum: rangeController.start,
-          visibleMaximum: rangeController.end,
+          initialVisibleMinimum: rangeController.start,
+          initialVisibleMaximum: rangeController.end,
           rangeController: rangeController),
       primaryYAxis: NumericAxis(
         labelFormat: "{value}",
@@ -194,7 +194,7 @@ legend: Legend(
       ),
       series: <LineSeries<ChartData, DateTime>>[
         LineSeries<ChartData, DateTime>(
-          isVisible: widget.sales,
+          initialIsVisible: widget.sales,
           name: 'فروش',
           dataSource: saleChartData,
           color: Colors.blue,
@@ -204,7 +204,7 @@ legend: Legend(
         ),
         LineSeries<ChartData, DateTime>(
           name: 'درآمد',
-          isVisible: widget.payments,
+          initialIsVisible: widget.payments,
           dataSource: paymentsChartData,
           color: Colors.red,
           xValueMapper: (ChartData pays, _) => pays.date,

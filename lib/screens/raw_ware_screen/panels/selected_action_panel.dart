@@ -8,8 +8,7 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 
 class SelectedWareActionPanel extends StatefulWidget {
   const SelectedWareActionPanel(
-      {Key? key, required this.wares})
-      : super(key: key);
+      {super.key, required this.wares});
   final List<RawWare> wares;
 
 

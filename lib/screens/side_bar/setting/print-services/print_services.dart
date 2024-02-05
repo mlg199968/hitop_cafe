@@ -1,9 +1,7 @@
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
-
 
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
@@ -15,35 +13,44 @@ import 'package:provider/provider.dart';
 import 'package:thermal_printer/esc_pos_utils_platform/esc_pos_utils_platform.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 
-
-
 class PrintServices {
-///printer priority for print
-  printPriority(BuildContext context,{required Uint8List unit8File})async{
-    UserProvider userProvider=Provider.of<UserProvider>(context,listen: false);
-if(Platform.isWindows){
- await windowsDirectPrint(userProvider.selectedPrinter, unit8File,);
-}
-else if(Platform.isAndroid || Platform.isIOS){
- await escPosPrint(context,unit8File,ip: userProvider.printerIp);
-}
+  ///printer priority for print
+  printPriority(BuildContext context, {required Uint8List unit8File}) async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    if (Platform.isWindows) {
+      await windowsDirectPrint(
+        userProvider.selectedPrinter,
+        unit8File,
+      );
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      await escPosPrint(context, unit8File, ip: userProvider.printerIp);
+    }
   }
+
   static List devices = [];
   _scan(PrinterType type, {bool isBle = false}) {
     // Find printers
-    PrinterManager.instance.discovery(type: type, isBle: isBle).listen((device) {
+    PrinterManager.instance
+        .discovery(type: type, isBle: isBle)
+        .listen((device) {
       devices.add(device);
     });
   }
-  _connectDevice(PrinterDevice selectedPrinter, PrinterType type, {bool reconnect = false, bool isBle = false, String? ipAddress}) async {
+
+  _connectDevice(PrinterDevice selectedPrinter, PrinterType type,
+      {bool reconnect = false, bool isBle = false, String? ipAddress}) async {
     switch (type) {
-    // only windows and android
+      // only windows and android
       case PrinterType.usb:
         await PrinterManager.instance.connect(
             type: type,
-            model: UsbPrinterInput(name: selectedPrinter.name, productId: selectedPrinter.productId, vendorId: selectedPrinter.vendorId));
+            model: UsbPrinterInput(
+                name: selectedPrinter.name,
+                productId: selectedPrinter.productId,
+                vendorId: selectedPrinter.vendorId));
         break;
-    // only iOS and android
+      // only iOS and android
       case PrinterType.bluetooth:
         await PrinterManager.instance.connect(
             type: type,
@@ -54,14 +61,19 @@ else if(Platform.isAndroid || Platform.isIOS){
                 autoConnect: reconnect));
         break;
       case PrinterType.network:
-        await PrinterManager.instance.connect(type: type, model: TcpPrinterInput(ipAddress: ipAddress ?? selectedPrinter.address!));
+        await PrinterManager.instance.connect(
+            type: type,
+            model: TcpPrinterInput(
+                ipAddress: ipAddress ?? selectedPrinter.address!));
         break;
       default:
     }
   }
+
   _sendBytesToPrint(List<int> bytes, PrinterType type) async {
     PrinterManager.instance.send(type: type, bytes: bytes);
   }
+
   disconnectDevice(PrinterType type) async {
     await PrinterManager.instance.disconnect(type: type);
   }
@@ -80,41 +92,39 @@ else if(Platform.isAndroid || Platform.isIOS){
       final generator = Generator(paperSize, profile);
       //
       img.Image? image = img.decodeImage(pageImage!.bytes);
-      image=img.copyResize(image!,width:500);
+      image = img.copyResize(image!, width: 500);
       bytes += generator.image(image);
       bytes += generator.feed(2);
       bytes += generator.cut();
       // _scan(PrinterType.network);
       await PrinterManager.instance.connect(
-          type: PrinterType.network,
-          model: TcpPrinterInput(ipAddress: ip));
-      _sendBytesToPrint(bytes, PrinterType.network);
-
+          type: PrinterType.network, model: TcpPrinterInput(ipAddress: ip));
+      await _sendBytesToPrint(bytes, PrinterType.network);
 
       await PrinterManager.instance.disconnect(type: PrinterType.network);
-    }catch(e){
-      ErrorHandler.errorManger(context, e,title:"print Services-escPosPrint function error",);
-
+    } catch (e) {
+      ErrorHandler.errorManger(
+        context,
+        e,
+        title: "print Services-escPosPrint function error",
+      );
     }
-
   }
-  ///direct printing windows
-  Future<void> windowsDirectPrint(printing.Printer? printer,Uint8List unit8File) async {
 
+  ///direct printing windows
+  Future<void> windowsDirectPrint(
+      printing.Printer? printer, Uint8List unit8File) async {
     if (printer != null && Platform.isWindows) {
       await printing.Printing.directPrintPdf(
           usePrinterSettings: true,
           printer: printer,
-          onLayout: (_) =>unit8File) ;
+          onLayout: (_) => unit8File);
       // await Printing.layoutPdf(
       //     onLayout: (_) => file);
     }
   }
 
-
-
-
-///scan the bluetooth devices from simpleBluetoothPrinter package
+  ///scan the bluetooth devices from simpleBluetoothPrinter package
   static Future<void> scanSimpleBluetoothDevices(bool isOnBT,
       {required Function(List<BluetoothDevice>? btList, bool? isScaning)
           onChange}) async {

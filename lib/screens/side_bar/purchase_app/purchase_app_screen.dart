@@ -57,7 +57,10 @@ purchaseButtonFunc()async{
   }
   @override
   void dispose() {
-    // TODO: implement dispose
+    phoneNumberController.dispose();
+    emailController.dispose();
+    userFullNameController.dispose();
+    authCodeController.dispose();
     super.dispose();
   }
 

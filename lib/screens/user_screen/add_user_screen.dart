@@ -21,7 +21,7 @@ import 'package:uuid/uuid.dart';
 
 class AddUserScreen extends StatefulWidget {
   static const String id = "/add-user-screen";
-  const AddUserScreen({Key? key, this.oldUser}) : super(key: key);
+  const AddUserScreen({super.key, this.oldUser});
   final User? oldUser;
 
   @override

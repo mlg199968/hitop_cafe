@@ -28,7 +28,7 @@ import 'package:provider/provider.dart';
 class WareListScreen extends StatefulWidget {
   static const String id = "/ware-list-screen";
 
-  const WareListScreen({Key? key}) : super(key: key);
+  const WareListScreen({super.key});
 
   @override
   State<WareListScreen> createState() => _WareListScreenState();

@@ -4,7 +4,7 @@ import 'package:hitop_cafe/constants/constants.dart';
 
 class CardButton extends StatelessWidget {
   const CardButton(
-      {Key? key,
+      {super.key,
       required this.label,
       this.image,
         this.child,
@@ -12,8 +12,7 @@ class CardButton extends StatelessWidget {
       this.width = 150,
         this.borderRadius=7,
       required this.onTap,
-      this.verticalDirection = true})
-      : super(key: key);
+      this.verticalDirection = true});
   final String label;
   final String? image;
   final Widget? child;

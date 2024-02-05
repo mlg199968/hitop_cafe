@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class TitleButton extends StatelessWidget {
-  const TitleButton({Key? key, required this.title, required this.value, required this.onPress,this.color=Colors.black54}) : super(key: key);
+  const TitleButton({super.key, required this.title, required this.value, required this.onPress,this.color=Colors.black54});
   final String title;
   final String value;
   final VoidCallback onPress;

@@ -15,8 +15,7 @@ import '../../../services/hive_boxes.dart';
 
 class WareActionsPanel extends StatefulWidget {
   const WareActionsPanel(
-      {Key? key, required this.wares, required this.subGroup})
-      : super(key: key);
+      {super.key, required this.wares, required this.subGroup});
   final List<RawWare> wares;
   final String subGroup;
 

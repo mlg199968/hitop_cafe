@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 class ShopInfoScreen extends StatefulWidget {
   static const String id = "/ShopInfoScreen";
-  const ShopInfoScreen({Key? key}) : super(key: key);
+  const ShopInfoScreen({super.key});
 
   @override
   State<ShopInfoScreen> createState() => _AddCustomerScreenState();
