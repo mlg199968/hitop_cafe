@@ -2,10 +2,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_divider.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -13,6 +15,7 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/discount_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
@@ -47,7 +50,7 @@ class AddShoppingBillScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddShoppingBillScreen>
     with SingleTickerProviderStateMixin {
   late UserProvider userProvider;
-  final billNumberController = TextEditingController();
+  final descriptionController = TextEditingController();
   Function eq = const ListEquality().equals;
   late final AddShoppingBillScreen oldState;
   List<Purchase> wares = [];
@@ -59,7 +62,9 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
   Jalali date = Jalali.now();
   DateTime dueDate = DateTime.now();
   DateTime modifiedDate = DateTime.now();
-  // String time = intl.DateFormat('kk:mm').format(DateTime.now());
+  User? user;
+  bool showDescription = false;
+
 
 
   ///calculate payable amount
@@ -101,7 +106,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
         discount: discount,
         payable: payable(),
         billDate: id != null ? widget.oldBill!.billDate : DateTime.now(),
-
+        user: user,
         billNumber: billNumber,
         dueDate: dueDate,
         modifiedDate: DateTime.now(),
@@ -143,6 +148,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
     date = Jalali.fromDateTime(oldBill.billDate);
     modifiedDate = oldBill.modifiedDate;
     dueDate = oldBill.dueDate!;
+    user=oldBill.user;
   }
 
   @override
@@ -152,7 +158,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
       oldOrderReplace(widget.oldBill!);
     } else {
       billNumber = BillTools.getBillNumber();
-      billNumberController.text = BillTools.getBillNumber().toString().toPersianDigit();
+      user = userProvider.activeUser;
     }
 
     ///initState animation part
@@ -196,8 +202,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
   @override
   void dispose() {
-
-    // TODO: implement dispose
     super.dispose();
   }
 ///******************************************* widget ***************************************************
@@ -248,11 +252,15 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                 screenType(context) == ScreenType.mobile
                     ? const SizedBox()
                     : Container(
+                  alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 20),
                   width: 200,
-                  decoration: const BoxDecoration(color: Colors.white),
-                  child: Column(
+                  decoration: const BoxDecoration(gradient: kBlackWhiteGradiant),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    spacing: 10,
+                    runSpacing: 5,
                     children: [
                       const SizedBox(
                         height: 30,
@@ -260,76 +268,95 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
                       ///orderBill date and orderBill number section
                       SizedBox(
-                        height: 120,
+                        height: 220,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment:
                           MainAxisAlignment.spaceEvenly,
                           children: [
-                            ///invoice number
-                            TitleButton(
-                              title: "شماره فاکتور:",
-                              value: billNumber.toString(),
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                    const BillNumber()).then((value) {
-                                  if (value != null) {
-                                    billNumber = value.round();
-                                  }
-                                  setState(() {});
-                                });
-                              },
+                            //user name
+                            Wrap(
+                              children: [
+                                const CText(
+                                  "کاربر:",
+                                ),
+                                CText(
+                                  user?.name ?? "نامشخص",
+                                  fontSize: 15,
+                                ),
+                              ],
                             ),
-                            const Divider(
-                              thickness: 1,
-                              height: 5,
-                            ),
+                            const Gap(10),
 
-                            ///choose orderBill date
-                            TitleButton(
-                              title: "تاریخ فاکتور:",
-                              value: date.formatCompactDate(),
-                              onPress: () async {
-                                Jalali? picked =
-                                await TimeTools.chooseDate(context);
-                                if (picked != null) {
-                                  setState(() {
-                                    date = picked;
-                                  });
-                                }
-                              },
-                            ),
-                            const Divider(
-                              thickness: 1,
-                              height: 5,
-                            ),
-                            TitleButton(
-                              title: "تاریخ تسویه:",
-                              value: dueDate.toPersianDate(),
-                              onPress: () async {
-                                Jalali? picked =
-                                await TimeTools.chooseDate(context);
-                                if (picked != null) {
-                                  setState(() {
-                                    dueDate = picked.toDateTime();
-                                  });
-                                }
-                              },
+                            Column(
+                              children: [
+                                ///invoice number desktop
+                                TitleButton(
+                                  title: "شماره فاکتور:",
+                                  value: billNumber.toString(),
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                        const BillNumber()).then((value) {
+                                      if (value != null) {
+                                        billNumber = value.round();
+                                      }
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+                                const Divider(
+                                  thickness: 1,
+                                  height: 5,
+                                ),
+                                ///choose orderBill date desktop
+                                TitleButton(
+                                  title: "تاریخ فاکتور:",
+                                  value: date.formatCompactDate(),
+                                  onPress: () async {
+                                    Jalali? picked =
+                                    await TimeTools.chooseDate(context);
+                                    if (picked != null) {
+                                      setState(() {
+                                        date = picked;
+                                      });
+                                    }
+                                  },
+                                ),
+                                const Divider(
+                                  thickness: 1,
+                                  height: 5,
+                                ),
+                                ///choose due date desktop
+                                TitleButton(
+                                  title: "تاریخ تسویه:",
+                                  value: dueDate.toPersianDate(),
+                                  onPress: () async {
+                                    Jalali? picked =
+                                    await TimeTools.chooseDate(context);
+                                    if (picked != null) {
+                                      setState(() {
+                                        dueDate = picked.toDateTime();
+                                      });
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      const Expanded(child: SizedBox()),
-                      BillActionButton(
+                      ///add ware button desktop
+                      ActionButton(
+                        width: 200,
                         label: "افزودن کالا",
                         icon: Icons.add_shopping_cart_sharp,
                         onPress: () {
                           showDialog(
                               context: context,
                               builder: (context) =>
-                              const ItemToBillPanel()).then((value) {
+                              const WareToBillPanel()).then((value) {
                             if (value != null) {
                               wares.add(value);
                             }
@@ -337,36 +364,25 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                           });
                         },
                       ),
-                      BillActionButton(
-                        label: "پرداخت چکی",
-                        icon: Icons.featured_play_list_outlined,
-                        bgColor: Colors.green,
-                        onPress: () {
-                          // showDialog(
-                          //     context: context,
-                          //     builder: (context) => const ChequeToBill()).then((value) {
-                          //   if (value != null) {
-                          //     atmPayments.add(value);
-                          //   }
-                          //   setState(() {});
-                          // });
-                        },
-                      ),
-                      BillActionButton(
-                        label: "پرداخت نقدی",
+                      ///payment Button desktop
+                      ActionButton(
+                        width: 200,
+                        label: "پرداخت",
                         icon: Icons.monetization_on_outlined,
-                        bgColor: Colors.green,
+                        bgColor: Colors.teal,
                         onPress: () {
-                          // showDialog(context: context, builder: (context) => PaymentToBill())
-                          //     .then((value) {
-                          //   if (value != null) {
-                          //     cashPayments.add(value);
-                          //   }
-                          //   setState(() {});
-                          // });
+                          showDialog(context: context, builder: (context) => const PaymentToBill())
+                              .then((value) {
+                            if (value != null) {
+                              payments.add(value);
+                            }
+                            setState(() {});
+                          });
                         },
                       ),
-                      BillActionButton(
+                      ///discount Button desktop
+                      ActionButton(
+                        width: 200,
                         label: "تخفیف",
                         icon: Icons.discount_outlined,
                         bgColor: Colors.orangeAccent,
@@ -381,6 +397,42 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                             setState(() {});
                           });
                         },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+
+                      ///sidebar desktop description textField
+                      if (screenType(context) != ScreenType.mobile)
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: TextButton.icon(
+                              onPressed: () {
+                                showDescription = !showDescription;
+                                setState(() {});
+                              },
+                              icon: Icon(
+                                showDescription
+                                    ? CupertinoIcons.minus_square
+                                    : CupertinoIcons.plus_square,
+                                color: Colors.teal,
+                                size: 20,
+                              ),
+                              label: const CText(
+                                "توضیحات",
+                                color: Colors.teal,
+                              )),
+                        ),
+                      if (showDescription)
+                        CustomTextField(
+                          controller: descriptionController,
+                          label: "توضیحات سفارش",
+                          width: double.maxFinite,
+                          maxLine: 3,
+                          maxLength: 300,
+                        ),
+                      const SizedBox(
+                        height: 70,
                       ),
                     ],
                   ),
@@ -399,10 +451,10 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                             ? const SizedBox()
                             : Container(
                           decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
                               color: Colors.white.withOpacity(.8)),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
-                          margin: const EdgeInsets.only(bottom: 20),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment:
@@ -411,24 +463,18 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                               ///top right
                               Column(
                                 children: [
-                                  const Text("شماره فاکتور:"),
-                                  CustomTextField(
-                                    width: 70,
-                                    controller: billNumberController,
-                                    textFormat: TextFormatter.number,
-                                    onChange: (val){
-                                      //logic for textfield if field is empty the logic put a last bill number in the field
-                                      //and change the english number to persian
-                                     if(val=="" || val.isEmpty){
-                                       billNumberController.text=BillTools.getBillNumber().toString().toPersianDigit();
-                                       setState(() {});
-                                     }else{
-                                       billNumberController.text=val.toPersianDigit();
-                                       setState(() {});
-                                     }
-
-                                    },
+                                  Wrap(
+                                    children: [
+                                      const CText(
+                                        "کاربر:",
+                                      ),
+                                      CText(
+                                        user?.name ?? "نامشخص",
+                                        fontSize: 15,
+                                      ),
+                                    ],
                                   ),
+                                  const Gap(5),
                                 ],
                               ),
                               const SizedBox(width: 10),
@@ -476,16 +522,42 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                                         }
                                       },
                                     ),
-                                    const Divider(
-                                      thickness: 1,
-                                      height: 5,
-                                    ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        ///description textField
+                        if (screenType(context) == ScreenType.mobile)
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: TextButton.icon(
+                                onPressed: () {
+                                  showDescription = !showDescription;
+                                  setState(() {});
+                                },
+                                icon: Icon(
+                                  showDescription
+                                      ? CupertinoIcons.minus_square
+                                      : CupertinoIcons.plus_square,
+                                  color: Colors.teal,
+                                  size: 20,
+                                ),
+                                label: const CText(
+                                  "توضیحات",
+                                  color: Colors.teal,
+                                )),
+                          ),
+                        if (showDescription &&
+                            screenType(context) == ScreenType.mobile)
+                          CustomTextField(
+                            controller: descriptionController,
+                            label: "توضیحات فاکتور",
+                            width: double.maxFinite,
+                            maxLine: 3,
+                            maxLength: 300,
+                          ),
                         ///quick action button like add items and add payments
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -543,34 +615,24 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                               TextDataField(
                                   title: "پرداخت با کارت", value: atmSum),
                               TextDataField(title: "تخفیف", value: discount),
+                              ///total payment
+                              Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: kBoxDecoration.copyWith(
+                                    color: payable() == 0
+                                        ? Colors.green
+                                        : (payable() < 0 ? Colors.blue : Colors.red),
+                                  ),
+                                  child: TextDataField(
+                                    title: "قابل پرداخت",
+                                    value: payable(),
+                                    color: Colors.white,
+                                  )),
                             ],
                           ),
                         ),
-
-                        ///total payment
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: kBoxDecoration.copyWith(
-                              color: payable() == 0
-                                  ? Colors.green
-                                  : (payable() < 0 ? Colors.blue : Colors.red),
-                            ),
-                            child: TextDataField(
-                              title: "قابل پرداخت",
-                              value: payable(),
-                              color: Colors.white,
-                            )),
-
                         ///Product List Part
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "لیست خرید",
-                            style: TextStyle(
-                                fontSize: 17, color: Colors.white),
-                          ),
-                        ),
                         ShoppingRawList(
                           wares: wares,
                           onChange: () {
@@ -579,47 +641,13 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                         ),
 
                         ///Payment List Part
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "لیست پرداخت",
-                            style: TextStyle(
-                                fontSize: 17, color: Colors.white),
-                          ),
-                        ),
-                        screenType(context) == ScreenType.desktop
-                            ? const SizedBox()
-                            : PaymentList(
-                          payments: payments,
-                          onChange: () {
-                            setState(() {});
-                          },
-                        ),
-                        const SizedBox(height: 90),
-                      ],
-                    ),
-                  ),
-                ),
-
-                ///Payment List Part on desktop mode
-                screenType(context) != ScreenType.desktop
-                    ? const SizedBox()
-                    : Flexible(
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    width: 450,
-                    child: Column(
-                      children: [
-                        const CustomDivider(
-                          title: "پرداختی ها",
-                          color: Colors.white,
-                        ),
                         PaymentList(
                           payments: payments,
                           onChange: () {
                             setState(() {});
                           },
                         ),
+                        const SizedBox(height: 90),
                       ],
                     ),
                   ),

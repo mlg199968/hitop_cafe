@@ -257,14 +257,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.10"
-  dart_ping:
-    dependency: transitive
-    description:
-      name: dart_ping
-      sha256: "2f5418d0a5c64e53486caaac78677b25725b1e13c33c5be834ce874ea18bd24f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.0.1"
   dart_style:
     dependency: transitive
     description:
@@ -321,14 +313,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.9"
-  enum_to_string:
-    dependency: transitive
-    description:
-      name: enum_to_string
-      sha256: bd9e83a33b754cb43a75b36a9af2a0b92a757bfd9847d2621ca0b1bed45f8e7a
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   expandable:
     dependency: "direct main"
     description:
@@ -337,14 +321,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.1"
-  extension:
-    dependency: transitive
-    description:
-      name: extension
-      sha256: be3a6b7f8adad2f6e2e8c63c895d19811fcf203e23466c6296267941d0ff4f24
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.0"
   fake_async:
     dependency: transitive
     description:
@@ -1030,14 +1006,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.10.7"
-  pdfx:
-    dependency: "direct main"
-    description:
-      name: pdfx
-      sha256: cff993dcbcc08b5ecb10b24d4d10ee91fc7934a3ddf72db13a70c25a8bd0f176
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.0"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1102,22 +1070,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.1"
-  photo_view:
-    dependency: transitive
-    description:
-      name: photo_view
-      sha256: "8036802a00bae2a78fc197af8a158e3e2f7b500561ed23b4c458107685e645bb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.14.0"
-  ping_discover_network_forked:
-    dependency: transitive
-    description:
-      name: ping_discover_network_forked
-      sha256: d3975c4f3fbaa388f78fb4037ad9c33059d8e2ec0e804ed45e05277d2451fe77
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
   ping_discover_network_plus:
     dependency: "direct main"
     description:
@@ -1367,18 +1319,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "9622ed0d00319cadf95a62e0a64b494e51e8c0c5408cf6c5a5c0ae4bf62088e2"
+      sha256: "1fb60d824fe0bf166db7157ef88a99eb54783cead25ca71176990df255fbdbba"
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.3+1"
+    version: "24.2.4+3"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: c0693d88cbdef2af5da286c605e5e8f33216c8f6cb3bc92a88a51decfb62bace
+      sha256: e8580e201c7197feac830b501889e877796a9fabbe20dcdbe90a981603939101
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.3"
+    version: "24.2.4"
   syncfusion_flutter_sliders:
     dependency: "direct main"
     description:
@@ -1395,14 +1347,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "24.2.3"
-  synchronized:
-    dependency: transitive
-    description:
-      name: synchronized
-      sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -1419,14 +1363,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
-  thermal_printer:
-    dependency: "direct main"
-    description:
-      name: thermal_printer
-      sha256: "3e4b31a65b08388a426a4d2467980af9489678a348769bb3ebdccc6c180532e2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   timing:
     dependency: transitive
     description:
@@ -1451,14 +1387,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
-  universal_platform:
-    dependency: transitive
-    description:
-      name: universal_platform
-      sha256: d315be0f6641898b280ffa34e2ddb14f3d12b1a37882557869646e0cc363d0cc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0+1"
   url_launcher:
     dependency: "direct main"
     description:

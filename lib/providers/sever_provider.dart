@@ -58,10 +58,10 @@ class ServerProvider extends ChangeNotifier {
       fullData.clear();
       //log(rawData);
         Pack? pack = await Pack().fromJson(rawData);
-        if (pack.type == "order" &&
+        if (pack.type == PackType.order.value &&
             pack.object != null &&
             pack.object!.isNotEmpty) {
-          Order order = Order().fromJson(pack.object!.first);
+          Order order = Order().fromJson(pack.object!.single);
           notifyListeners();
           //after the user client send the order we compare the user auth data with database user
           bool isAuth = false;

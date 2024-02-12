@@ -40,7 +40,7 @@ class Pack extends HiveObject {
      return pack;
   }
   String toJson()=>jsonEncode(toMap());
-  Future<Pack> fromJson(String source)async =>fromMap(await jsonDecode(source));
+  Pack fromJson(String source)=>fromMap(jsonDecode(source));
 }
 
 //run this code for create adaptor:

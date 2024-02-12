@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
@@ -13,9 +15,10 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class AnalyticsScreen extends StatefulWidget {
-  static const String id = "/analyticsScreen";
+  static const String id = "/analytics-screen";
   const AnalyticsScreen({super.key});
 
   @override
@@ -37,10 +40,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   num income = 0;
   num atmIncome = 0;
   num cashIncome = 0;
-
+  List<_PieData> pieList = [];
+///date condition
+  bool dateCondition(date) {
+    return date.isAfter(startDate.subtract(const Duration(hours: 1))) &&
+        date.isBefore(endDate.add(const Duration(hours: 1)));}
   void getData(List<Bill> billList, List<Order> orderList) {
     saleData = [];
-    costData=[];
+    costData = [];
     paysData = [];
     atmData = [];
     cashData = [];
@@ -53,19 +60,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ChartData paysOrder =
             ChartData(value: pay.amount, date: pay.deliveryDate);
         paysData.add(paysOrder);
+
         ///get atm payments
-        if(pay.method==PayMethod.atm) {
+        if (pay.method == PayMethod.atm) {
           ChartData atmPays =
               ChartData(value: pay.amount, date: pay.deliveryDate);
           atmData.add(atmPays);
         }
+
         ///get cash payments
-        if(pay.method==PayMethod.cash) {
+        if (pay.method == PayMethod.cash) {
           ChartData cashPays =
               ChartData(value: pay.amount, date: pay.deliveryDate);
           cashData.add(cashPays);
         }
       }
+
       ///get order purchases sum
       for (Item item in order.items) {
         ChartData purchaseData =
@@ -73,184 +83,209 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         saleData.add(purchaseData);
       }
     }
+
     /// get shopping bills data calculate costs
     for (Bill bill in billList) {
-      ChartData billSum =
-          ChartData(value: bill.waresSum, date: bill.billDate);
+      ChartData billSum = ChartData(value: bill.waresSum, date: bill.billDate);
       costData.add(billSum);
-
     }
   }
 
   ///calculate sum of cheques,cashes,all pays and all sales between two date
-  void calculateSum(DateTime begin, DateTime end) {
+  void calculateSum() {
     saleSum = 0;
     costSum = 0;
     income = 0;
     atmIncome = 0;
     cashIncome = 0;
-    bool condition(date) {
-      return date.isAfter(begin.subtract(const Duration(hours: 1))) &&
-          date.isBefore(end.add(const Duration(hours: 1)));
-    }
+
 
     for (ChartData sale in saleData) {
-      condition(sale.date) ? saleSum += sale.value : null;
+      dateCondition(sale.date) ? saleSum += sale.value : null;
     }
-     for (ChartData cost in costData) {
-      condition(cost.date) ? costSum += cost.value : null;
+    for (ChartData cost in costData) {
+      dateCondition(cost.date) ? costSum += cost.value : null;
     }
     for (ChartData pays in paysData) {
-      condition(pays.date) ? income += pays.value : null;
+      dateCondition(pays.date) ? income += pays.value : null;
     }
     for (ChartData atmPay in atmData) {
-      condition(atmPay.date) ? atmIncome += atmPay.value : null;
+      dateCondition(atmPay.date) ? atmIncome += atmPay.value : null;
     }
     for (ChartData cash in cashData) {
-      condition(cash.date) ? cashIncome += cash.value : null;
+      dateCondition(cash.date) ? cashIncome += cash.value : null;
     }
   }
+  ///user sale data
+  getUserSale(List<Order> orderList) {
+    pieList = [];
+    bool exists=false;
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
+    for (Order order in orderList) {
+      exists=false;
+      if (order.user != null && dateCondition(order.orderDate)) {
+        for (_PieData pie in pieList) {
+          if(pie.text==order.user!.name) {
+            pie.yData+=order.itemsSum;
+            exists=true;
+          }
+        }
+        if(!exists && dateCondition(order.orderDate)) {
+          pieList.add(_PieData(addSeparator(order.itemsSum), order.itemsSum,order.user!.name));
+        }
+      }
+    }
   }
+  ///box decoration
+ final BoxDecoration decoration= BoxDecoration(
+    gradient: kBlackWhiteGradiant,
+    boxShadow: const [
+      BoxShadow(offset: Offset(2, 3),blurRadius: 5,color: Colors.black38),
+    ],
+   borderRadius: BorderRadius.circular(10),
+ );
+  ///************************************** widget tree *************************************
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("آنالیز"),),
-      body: ValueListenableBuilder<Box<Order>>(
-          valueListenable: HiveBoxes.getOrders().listenable(),
-          builder: (context, box, _) {
-            List<Order> orderList = box.values.toList();
-            return ValueListenableBuilder<Box<Bill>>(
-                valueListenable: HiveBoxes.getBills().listenable(),
-                builder: (context, box, _) {
-                  List<Bill> billList = box.values.toList();
+    return SafeArea(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: const Text("آنالیز"),
+          backgroundColor: Colors.transparent,
+        ),
+        body: Container(
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(gradient: kMainGradiant),
+          child: ValueListenableBuilder<Box<Order>>(
+              valueListenable: HiveBoxes.getOrders().listenable(),
+              builder: (context, box, _) {
+                List<Order> orderList = box.values.toList();
+                return ValueListenableBuilder<Box<Bill>>(
+                    valueListenable: HiveBoxes.getBills().listenable(),
+                    builder: (context, box, _) {
+                      List<Bill> billList = box.values.toList();
 
-
-                  bool chartCondition =
-                      billList.length < 2 && orderList.length < 2;
-                  getData(billList, orderList);
-                  calculateSum(startDate, endDate);
-                  return SingleChildScrollView(
-                    child: SizedBox(
-                      height: 800,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (chartCondition) const SizedBox(
-                            height: 400,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                      "برای نمایش نمودار نیاز به داده بیشتری است ! ",
-                                      textAlign: TextAlign.center,
-                                      textDirection: TextDirection.rtl,
-                                    ),
-                            ),
-                          ) else Expanded(
-                                    child: RangeSelectorLabelCustomization(
-                                    billList: billList,
-                                    orderList: orderList,
-                                    payments: payments,
-                                    sales: sales,
-                                    onChange: (val) {
-                                      startDate = val.start;
-                                      endDate = val.end;
-                                      //calculateSum(val.start, val.end,false);
-                                      setState(() {});
-                                    },
-                                ),
-                                  ),
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            alignment: Alignment.center,
-                            child: Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: Column(
-                               // mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ///chart check boxes
-                                  Row(
+                      bool chartCondition =
+                          billList.length < 2 && orderList.length < 2;
+                      getData(billList, orderList);
+                      getUserSale(orderList);
+                      calculateSum();
+                      return SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 60,),
+                            ///show when we have more than 2 data
+                            if (chartCondition)
+                              const SizedBox(
+                                height: 400,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
                                     children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          contentPadding:
-                                              const EdgeInsets.all(0),
-                                          leading: const Icon(
-                                            FontAwesomeIcons.chartLine,
-                                            color: Colors.red,
-                                          ),
-                                          title: const Text(
-                                            "نمودار درآمد",
-                                            style:
-                                                TextStyle(fontSize: 12),
-                                          ),
-                                          trailing: Checkbox(
-                                              value: payments,
-                                              onChanged: (value) {
-                                                if (value != null) {
-                                                  payments = value;
-                                                }
-                                                setState(() {});
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          contentPadding:
-                                              const EdgeInsets.all(0),
-                                          leading: const Icon(
-                                            FontAwesomeIcons.chartLine,
-                                            color: Colors.blue,
-                                          ),
-                                          title: const Text(
-                                            "نمودار فروش",
-                                            style:
-                                                TextStyle(fontSize: 12),
-                                          ),
-                                          trailing: Checkbox(
-                                              value: sales,
-                                              onChanged: (value) {
-                                                if (value != null) {
-                                                  sales = value;
-                                                }
-                                                setState(() {});
-                                              }),
-                                        ),
+                                      Icon(Icons.analytics_outlined),
+                                      Gap(5),
+                                      Text(
+                                        "برای نمایش نمودار نیاز به داده بیشتری است ! ",
+                                        style: TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                        textDirection: TextDirection.rtl,
                                       ),
                                     ],
                                   ),
-                                  BuildRowText(
-                                      title: "فروش کل:",
-                                      value: addSeparator(saleSum)),
-                                BuildRowText(
-                                      title: "هزینه ها:",
-                                      value: addSeparator(costSum)),
-                                  BuildRowText(
-                                      title: "درآمد کل:",
-                                      value: addSeparator(income)),
-                                  BuildRowText(
-                                      title: "درآمد از کارتخوان:",
-                                      value: addSeparator(atmIncome)),
-                                  BuildRowText(
-                                      title: "درآمد نقدی:",
-                                      value: addSeparator(cashIncome)),
-                                  const SizedBox(
-                                    height: 70,
-                                  )
-                                ],
+                                ),
+                              )
+                              ///line chart
+                            else
+                              Container(
+                                margin: const EdgeInsets.all(15),
+                                alignment: Alignment.center,
+                                height: MediaQuery.of(context).size.height*.6,
+                                width: 800,
+                                decoration: decoration,
+                                child: RangeSelectorLabelCustomization(
+                                  billList: billList,
+                                  orderList: orderList,
+                                  payments: payments,
+                                  sales: sales,
+                                  onChange: (val) {
+                                    startDate = val.start;
+                                    endDate = val.end;
+                                    //calculateSum(val.start, val.end,false);
+                                    setState(() {});
+                                  },
+                                ),
                               ),
+
+                            Wrap(
+                              children: [
+                                ///pie chart
+                                Container(
+                                  margin: const EdgeInsets.all(8),
+                                  alignment: Alignment.center,
+                                  height: 200,
+                                  width: 400,
+                                  decoration: decoration,
+                                  child: SfCircularChart(
+                                      title: const ChartTitle(text: 'فروش هر کاربر'),
+                                      legend: const Legend(isVisible: true),
+                                      series: <PieSeries<_PieData, String>>[
+                                        PieSeries<_PieData, String>(
+                                            explode: true,
+                                            explodeIndex: 0,
+                                            dataSource: pieList,
+                                            xValueMapper: (_PieData data, _) => data.xData,
+                                            yValueMapper: (_PieData data, _) => data.yData,
+                                            dataLabelMapper: (_PieData data, _) => data.text,
+                                            dataLabelSettings:
+                                            const DataLabelSettings(isVisible: true)),
+                                      ]),
+                                ),
+                                ///numerical data part
+                                Container(
+                                  margin: const EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(5),
+                                  width: 250,
+                                  height: 200,
+                                  decoration: decoration,
+                                  child: Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: Column(
+                                      // mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        BuildRowText(
+                                            title: "فروش کل:",
+                                            value: addSeparator(saleSum)),
+                                        BuildRowText(
+                                            title: "هزینه ها:",
+                                            value: addSeparator(costSum)),
+                                        BuildRowText(
+                                            title: "درآمد کل:",
+                                            value: addSeparator(income)),
+                                        BuildRowText(
+                                            title: "درآمد از کارتخوان:",
+                                            value: addSeparator(atmIncome)),
+                                        BuildRowText(
+                                            title: "درآمد نقدی:",
+                                            value: addSeparator(cashIncome)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          }),
+
+                            const SizedBox(
+                              height: 70,
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              }),
+        ),
+      ),
     );
   }
 }
@@ -264,7 +299,6 @@ class BuildRowText extends StatelessWidget {
     this.titleStyle,
     this.valueStyle,
     this.axisAlignment = MainAxisAlignment.spaceBetween,
-    this.unite = false,
   });
   final String title;
   final String value;
@@ -272,25 +306,46 @@ class BuildRowText extends StatelessWidget {
   final TextStyle? titleStyle;
   final TextStyle? valueStyle;
   final MainAxisAlignment axisAlignment;
-  final bool unite;
 
   @override
   Widget build(BuildContext context) {
     final currency = Provider.of<UserProvider>(context, listen: false).currency;
-    final style = titleStyle ?? const TextStyle(color: Colors.black);
-    return Card(
-      child: Container(
-          padding: const EdgeInsets.all(5),
-          width: width,
-          child: Row(
-            mainAxisAlignment: axisAlignment,
-            children: [
-              Text(title.toPersianDigit(), style: style, maxLines: 3),
-              const SizedBox(width: 5),
-              Text("${value.toPersianDigit()} $currency",
-                  style: unite ? style : valueStyle, maxLines: 3)
-            ],
-          )),
-    );
+    final style =
+        titleStyle ?? const TextStyle(color: Colors.black45, fontSize: 12);
+    final valStyle =
+        titleStyle ?? const TextStyle(color: Colors.black87, fontSize: 13);
+    return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: const BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          color: Colors.black12,
+          width: .5,
+        ))),
+        width: width,
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            Text(title.toPersianDigit(), style: style, maxLines: 3),
+            const SizedBox(width: 5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(value.toPersianDigit(),
+                    style: valueStyle ?? valStyle, maxLines: 3),
+                const Gap(3),
+                Text(currency,
+                    style: const TextStyle(color: Colors.black38, fontSize: 9)),
+              ],
+            )
+          ],
+        ));
   }
+}
+
+class _PieData {
+  _PieData(this.xData, this.yData, [this.text]);
+  final String xData;
+  num yData;
+  String? text;
 }

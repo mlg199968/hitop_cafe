@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/purchase.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
 part 'bill.g.dart';
@@ -36,6 +37,8 @@ class Bill extends HiveObject {
   bool isChecked = false;
   @HiveField(14)
   bool isDone = false;
+  @HiveField(15)
+  User? user;
 
 
 
@@ -53,6 +56,7 @@ class Bill extends HiveObject {
     this.isDone=false,
     required this.description,
     this.billNumber=0,
+    this.user,
   });
 
   Map<String, dynamic> toMap() {
@@ -69,6 +73,7 @@ class Bill extends HiveObject {
       'isDone': isDone?1:0,
       'description': description,
       'billNumber': billNumber,
+      'user': user?.toMap(),
     };
   }
 
@@ -88,6 +93,7 @@ class Bill extends HiveObject {
       isDone: map['isDone']==1?true:false,
       description: map['description'] ?? "",
       billNumber: map['billNumber'] ?? 0,
+      user: map['user']!=null?User().fromMap(map['user']):null,
     );
   }
   String toJson()=>jsonEncode(toMap());

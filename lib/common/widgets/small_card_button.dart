@@ -9,8 +9,8 @@ class SmallCardButton extends StatelessWidget {
       this.image,
         this.child,
       this.height = 100,
-      this.width = 90,
-        this.borderRadius=10,
+      this.width = 100,
+        this.borderRadius=40,
       required this.onTap,
       this.direction = true});
   final String label;
@@ -25,6 +25,7 @@ class SmallCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(40),
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
@@ -36,7 +37,7 @@ class SmallCardButton extends StatelessWidget {
               decoration: BoxDecoration(
                 //shape: BoxShape.circle,
                 color: Colors.white,
-                gradient: kMainGradiant.scale(.9),
+                gradient: kBlackWhiteGradiant.scale(.9),
                 borderRadius: BorderRadius.circular(borderRadius),
                 boxShadow:  [BoxShadow(spreadRadius: 1,blurRadius: 5,color: Colors.black.withOpacity(.3),offset: const Offset(2, 2))],
 
@@ -44,10 +45,11 @@ class SmallCardButton extends StatelessWidget {
               ),
               alignment: Alignment.bottomRight,
             ),
+            SizedBox(height: 5,),
             SizedBox(child: Text(
               label,
               style:
-              const TextStyle(color: Colors.black87, fontSize: 13),
+              const TextStyle(color: Colors.black54, fontSize: 13),
             ),),
           ],
         ),

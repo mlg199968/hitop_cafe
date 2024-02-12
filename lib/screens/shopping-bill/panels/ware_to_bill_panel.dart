@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -10,6 +11,7 @@ import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
+import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -86,7 +88,7 @@ class _WareToBillPanelState extends State<WareToBillPanel> {
                             height: 40,
                             text: "انتخاب",
                             onPressed: () {
-                              Navigator.pushNamed(context, ItemsScreen.id,
+                              Navigator.pushNamed(context, WareListScreen.id,
                                       arguments: const Key(WareToBillPanel.id))
                                   .then((value) {
                                 if (value != null) {
@@ -135,20 +137,25 @@ class _WareToBillPanelState extends State<WareToBillPanel> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomTextField(
-                          label: "مقدار",
-                          controller: quantityController,
-                          textFormat: TextFormatter.number,
+                        Flexible(
+                          flex: 3,
+                          child: CounterTextfield(
+                            label: "مقدار",
+                            controller: quantityController,
+                          ),
                         ),
-                        DropListModel(
-                            height: 40,
-                            selectedValue: unitItem,
-                            listItem: unitList,
-                            width: 110,
-                            onChanged: (value) {
-                              unitItem = value;
-                              setState(() {});
-                            })
+                        Flexible(
+                          flex: 2,
+                          child: DropListModel(
+                              height: 40,
+                              selectedValue: unitItem,
+                              listItem: unitList,
+                              width: 110,
+                              onChanged: (value) {
+                                unitItem = value;
+                                setState(() {});
+                              }),
+                        )
                       ],
                     ),
                     customDivider(context: context, color: Colors.white70),

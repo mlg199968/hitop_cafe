@@ -174,7 +174,7 @@ class _LocalServerScreenState extends State<LocalServerScreen> {
                           ..object = waresJson
                           ..message = "لیست پیش نیاز های ارسال شده از سمت سرور";
                         serverProvider.handleMessage(itemsPack);
-                        await Future.delayed(const Duration(milliseconds: 500));
+                        await Future.delayed(const Duration(milliseconds: 1000));
                         List itemsJson = HiveBoxes.getItem()
                             .values
                             .map((e) => e.toJson())

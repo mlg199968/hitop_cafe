@@ -104,6 +104,12 @@ Divider customDivider({required BuildContext context, Color? color}) {
   );
 }
 
+popFunction(context){
+  if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+}
+
 ///convert string to double
 double stringToDouble(String text) {
   String englishText = text.toEnglishDigit();

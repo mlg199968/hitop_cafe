@@ -45,6 +45,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   ///printer
   Printer? selectedPrinter;
+  Printer? selectedPrinter2;
 
   ///android printer
   BluetoothDevice? selectedBluetoothPrinter;
@@ -63,6 +64,7 @@ class _SettingScreenState extends State<SettingScreen> {
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
       ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap()
+      ..printer2 = selectedPrinter2 == null ? null : selectedPrinter2!.toMap()
     ..printerIp=printerIpController.text==""?null:printerIpController.text
     ..printerIp2=printerIp2Controller.text==""?null:printerIp2Controller.text
     ..printTemplate=printTemplate;
@@ -82,6 +84,8 @@ class _SettingScreenState extends State<SettingScreen> {
       printerIp2Controller.text=shopInfo.printerIp2 ?? "192.168.1.2";
       selectedPrinter =
           shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
+      selectedPrinter2 =
+          shopInfo.printer2 != null ? Printer.fromMap(shopInfo.printer2!) : null;
       printTemplate=shopInfo.printTemplate ?? PrintType.p80mm.value;
       setState(() {});
     }
@@ -247,6 +251,21 @@ class _SettingScreenState extends State<SettingScreen> {
                                   setState(() {});
                                 },
                                 label: "انتخاب پرینتر",
+                                buttonLabel: selectedPrinter == null
+                                    ? "انتخاب نشده"
+                                    : selectedPrinter!.name),
+                          if (Platform.isWindows)
+                            ButtonTile(
+                                onPress: () async {
+                                  // Show the native printer picker and get the selected printer
+                                  final printer = await Printing.pickPrinter(
+                                      context: context, title: "پرینتر2 را انتخاب کنید");
+                                  if (printer != null) {
+                                    selectedPrinter2 = printer;
+                                  }
+                                  setState(() {});
+                                },
+                                label: "انتخاب پرینتر2",
                                 buttonLabel: selectedPrinter == null
                                     ? "انتخاب نشده"
                                     : selectedPrinter!.name),

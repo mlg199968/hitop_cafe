@@ -50,94 +50,99 @@ class _WareListScreenState extends State<WareListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WareProvider>(builder: (context, wareProvider, child) {
-      return HideKeyboard(
-        child: Scaffold(
-          key: scaffoldKey,
+    return LayoutBuilder(
+      builder: (context,constraint) {
+        return Consumer<WareProvider>(builder: (context, wareProvider, child) {
+          return HideKeyboard(
+            child: Scaffold(
+              key: scaffoldKey,
 
-          ///float action button
-          floatingActionButton: CustomFloatActionButton(onPressed: () {
-            Navigator.pushNamed(context, AddWareScreen.id);
-          }),
+              ///float action button
+              floatingActionButton: CustomFloatActionButton(onPressed: () {
+                Navigator.pushNamed(context, AddWareScreen.id);
+              }),
 
-          ///appbar
-          appBar: CustomAppBar(
-            title: "مواد خام",
-            context2: context,
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => WareActionsPanel(
-                              wares: waresList,
-                              subGroup: selectedCategory,
-                            ));
-                  },
-                  icon: const Icon(Icons.more_vert)),
+              ///appbar
+              appBar: CustomAppBar(
+                title: "مواد خام",
+                height: constraint.maxWidth<800?130:60,
+                context2: context,
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => WareActionsPanel(
+                                  wares: waresList,
+                                  subGroup: selectedCategory,
+                                ));
+                      },
+                      icon: const Icon(Icons.more_vert)),
 
-              ///drop list model groups
-              DropListModel(
-                selectedValue: selectedCategory,
-                height: 40,
-                listItem: ["همه", ...wareProvider.rawWareCategories],
-                onChanged: (val) {
-                  selectedCategory = val;
-                  setState(() {});
-                },
+                  ///drop list model groups
+                  DropListModel(
+                    selectedValue: selectedCategory,
+                    height: 40,
+                    listItem: ["همه", ...wareProvider.rawWareCategories],
+                    onChanged: (val) {
+                      selectedCategory = val;
+                      setState(() {});
+                    },
+                  ),
+                ],
+                widgets: [
+                  ///search bar
+                  CustomSearchBar(
+                    controller: searchController,
+                    hint: "جست و جو کالا",
+                    onChange: (val) {
+                      keyWord = val;
+                      setState(() {});
+                    },
+                    selectedSort: sortItem,
+                    sortList: sortList,
+                    onSort: (val) {
+                      sortItem = val;
+                      setState(() {});
+                    },
+                  ),
+                ],
               ),
-            ],
-            widgets: [
-              ///search bar
-              CustomSearchBar(
-                controller: searchController,
-                hint: "جست و جو کالا",
-                onChange: (val) {
-                  keyWord = val;
-                  setState(() {});
-                },
-                selectedSort: sortItem,
-                sortList: sortList,
-                onSort: (val) {
-                  sortItem = val;
-                  setState(() {});
-                },
+
+              ///body
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ///get ware list
+                  ValueListenableBuilder<Box<RawWare>>(
+                      valueListenable: HiveBoxes.getRawWare().listenable(),
+                      builder: (context, box, _) {
+                        waresList = box.values.toList().cast<RawWare>();
+                        List<RawWare> filteredList =
+                            WareTools.filterList(waresList, keyWord, sortItem);
+
+                        if (filteredList.isEmpty) {
+                          return const Expanded(
+                            child: Center(
+                                child: Text(
+                              "کالایی یافت نشد!",
+                              textDirection: TextDirection.rtl,
+                            )),
+                          );
+                        }
+                        return ListPart(
+                          key: widget.key,
+                          category: selectedCategory,
+                          wareList: filteredList,
+                        );
+                      }),
+                ],
               ),
-            ],
-          ),
-
-          ///body
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              ///get ware list
-              ValueListenableBuilder<Box<RawWare>>(
-                  valueListenable: HiveBoxes.getRawWare().listenable(),
-                  builder: (context, box, _) {
-                    waresList = box.values.toList().cast<RawWare>();
-                    List<RawWare> filteredList =
-                        WareTools.filterList(waresList, keyWord, sortItem);
-
-                    if (filteredList.isEmpty) {
-                      return const Expanded(
-                        child: Center(
-                            child: Text(
-                          "کالایی یافت نشد!",
-                          textDirection: TextDirection.rtl,
-                        )),
-                      );
-                    }
-                    return ListPart(
-                      key: widget.key,
-                      category: selectedCategory,
-                      wareList: filteredList,
-                    );
-                  }),
-            ],
-          ),
-        ),
-      );
-    });
+            ),
+          );
+        });
+      }
+    );
   }
 }
 

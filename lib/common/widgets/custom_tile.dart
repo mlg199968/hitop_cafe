@@ -88,6 +88,7 @@ class CustomTile extends StatelessWidget {
           return SizedBox(
             width: 450,
             child: Card(
+             surfaceTintColor: Colors.white,
               margin: selected ?const EdgeInsets.only(right: 20):null,
               child: BackgroundShape1(
                 color: color,

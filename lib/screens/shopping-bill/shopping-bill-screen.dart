@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
@@ -49,82 +50,89 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      floatingActionButton: CustomFloatActionButton(onPressed: () {
-        Navigator.pushNamed(context, AddShoppingBillScreen.id);
-      }),
-      appBar: CustomAppBar(
-        context2: context,
-        title: "فاکتور های خرید",
-        actions: [
-          ///filter button
-          IconButton(
-            icon: const Icon(
-              Icons.filter_alt_rounded,
-              color: Colors.white,
+    return HideKeyboard(
+      child: LayoutBuilder(
+        builder: (context,constraint) {
+          return Scaffold(
+            key: scaffoldKey,
+            floatingActionButton: CustomFloatActionButton(onPressed: () {
+              Navigator.pushNamed(context, AddShoppingBillScreen.id);
+            }),
+            appBar: CustomAppBar(
+              height: constraint.maxWidth<800?130:60,
+              context2: context,
+              title: "فاکتور های خرید",
+              actions: [
+                ///filter button
+                IconButton(
+                  icon: const Icon(
+                    Icons.filter_alt_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    focusNode.unfocus();
+                    searchCustomerController.clear();
+                    keyWord = null;
+                    showDialog(
+                        context: context,
+                        builder: (context) => const FilterPanel())
+                        .then((value) {
+                      setState(() {});
+                    });
+                  },
+                ),
+              ],
+              widgets: [
+                ///Search bar
+                CustomSearchBar(
+                    focusNode: focusNode,
+                    controller: searchCustomerController,
+                    hint: "جست و جو فاکتور",
+                    onChange: (val) {
+                      keyWord = val;
+                      setState(() {});
+                    },
+                    selectedSort: sortItem,
+                    sortList: sortList,
+                    onSort: (val) {
+                      sortItem = val;
+                      setState(() {});
+                    }),
+              ],
             ),
-            onPressed: () async {
-              focusNode.unfocus();
-              searchCustomerController.clear();
-              keyWord = null;
-              showDialog(
-                  context: context,
-                  builder: (context) => const FilterPanel())
-                  .then((value) {
-                setState(() {});
-              });
-            },
-          ),
-        ],
-        widgets: [
-          ///Search bar
-          CustomSearchBar(
-              focusNode: focusNode,
-              controller: searchCustomerController,
-              hint: "جست و جو فاکتور",
-              onChange: (val) {
-                keyWord = val;
-                setState(() {});
-              },
-              selectedSort: sortItem,
-              sortList: sortList,
-              onSort: (val) {
-                sortItem = val;
-                setState(() {});
-              }),
-        ],
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
 
 
-          ValueListenableBuilder<Box<Bill>>(
-              valueListenable: HiveBoxes.getBills().listenable(),
-              builder: (context, box, _) {
-                List<Bill> billList = box.values.toList().cast<Bill>();
-                //filter the list in order to the search results
-                List<Bill> filteredList =
-                    BillTools.filterList(billList, keyWord, sortItem);
-                if (filteredList.isNotEmpty) {
-                  return CreditListPart(
-                    billList: filteredList,
-                    key: widget.key,
-                  );
-                } else {
-                  return const Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "فاکتوری یافت نشد!",
-                        textDirection: TextDirection.rtl,
-                      ),
-                    ),
-                  );
-                }
-              }),
-        ],
+                ValueListenableBuilder<Box<Bill>>(
+                    valueListenable: HiveBoxes.getBills().listenable(),
+                    builder: (context, box, _) {
+                      List<Bill> billList = box.values.toList().cast<Bill>();
+                      //filter the list in order to the search results
+                      List<Bill> filteredList =
+                          BillTools.filterList(billList, keyWord, sortItem);
+                      if (filteredList.isNotEmpty) {
+                        return CreditListPart(
+                          billList: filteredList,
+                          key: widget.key,
+                        );
+                      } else {
+                        return const Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "فاکتوری یافت نشد!",
+                              textDirection: TextDirection.rtl,
+                            ),
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),
+          );
+        }
       ),
     );
   }

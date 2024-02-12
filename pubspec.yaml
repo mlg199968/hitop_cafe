@@ -59,7 +59,7 @@ dependencies:
   syncfusion_flutter_sliders: ^24.2.3
   expandable: ^5.0.1
   flutter_slidable: ^3.0.1
-  syncfusion_flutter_charts: ^24.2.3+1
+  syncfusion_flutter_charts: ^24.2.4+3
   syncfusion_localizations: ^24.2.3
   localization: ^2.1.0
   double_back_to_close_app: ^2.1.0
@@ -90,8 +90,8 @@ dependencies:
   gap: ^3.0.1
   ping_discover_network_plus: ^0.0.2
   network_info_plus: ^4.1.0
-  thermal_printer: ^1.0.5
-  pdfx: ^2.4.0
+#  thermal_printer: ^1.0.5
+#  pdfx: ^2.4.0
   flutter_animate: ^4.4.0
   lottie: ^2.6.0
 

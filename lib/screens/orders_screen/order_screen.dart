@@ -46,83 +46,88 @@ class _CustomerListScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return HideKeyboard(
-      child: Scaffold(
-        key: scaffoldKey,
-        floatingActionButton: CustomFloatActionButton(
-            onPressed: () {
-          Navigator.pushNamed(context, AddOrderScreen.id);
-        }),
-        appBar: CustomAppBar(
-          title:"لیست سفارشات",
-          context2: context,
-          actions: [
-            ///filter button
-            IconButton(
-              icon: const Icon(
-                Icons.filter_alt_rounded,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                focusNode.unfocus();
-                searchCustomerController.clear();
-                keyWord = null;
-                showDialog(
-                    context: context,
-                    builder: (context) => const FilterPanel())
-                    .then((value) {
-                  setState(() {});
-                });
-              },
-            ),
-          ],
-          widgets: [
+      child: LayoutBuilder(
+        builder: (context,constraint) {
+          return Scaffold(
+            key: scaffoldKey,
+            floatingActionButton: CustomFloatActionButton(
+                onPressed: () {
+              Navigator.pushNamed(context, AddOrderScreen.id);
+            }),
+            appBar: CustomAppBar(
+              height: constraint.maxWidth<700?130:60,
+              title:"لیست سفارشات",
+              context2: context,
+              actions: [
+                ///filter button
+                IconButton(
+                  icon: const Icon(
+                    Icons.filter_alt_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    focusNode.unfocus();
+                    searchCustomerController.clear();
+                    keyWord = null;
+                    showDialog(
+                        context: context,
+                        builder: (context) => const FilterPanel())
+                        .then((value) {
+                      setState(() {});
+                    });
+                  },
+                ),
+              ],
+              widgets: [
     ///Search bar customer list
-            CustomSearchBar(
-                focusNode: focusNode,
-                controller: searchCustomerController,
-                hint: "جست و جو سفارش",
-                onChange: (val) {
-                  keyWord = val;
-                  setState(() {});
-                },
-                selectedSort: sortItem,
-                sortList: sortList,
-                onSort: (val){
-                  sortItem = val;
-                  setState(() {});
-                }),
-          ],
-        ),
-        body:Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ValueListenableBuilder<Box<Order>>(
-                valueListenable: HiveBoxes.getOrders().listenable(),
-                builder: (context, box, _) {
-                  List<Order> orderList =
-                  box.values.toList().cast<Order>();
-                  //filter the list in order to the search results
-                  List<Order> filteredList =
-                  OrderTools.filterList(orderList, keyWord, sortItem);
-                  if (filteredList.isNotEmpty) {
-                    return CreditListPart(
-                      orderList: filteredList,
-                      key: widget.key,
-                    );
-                  } else {
-                    return const Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "سفارشی یافت نشد!",
-                          textDirection: TextDirection.rtl,
-                        ),
-                      ),
-                    );
-                  }
-                }),
-          ],
-        ),),
+                CustomSearchBar(
+                    focusNode: focusNode,
+                    controller: searchCustomerController,
+                    hint: "جست و جو سفارش",
+                    onChange: (val) {
+                      keyWord = val;
+                      setState(() {});
+                    },
+                    selectedSort: sortItem,
+                    sortList: sortList,
+                    onSort: (val){
+                      sortItem = val;
+                      setState(() {});
+                    }),
+              ],
+            ),
+            body:Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ValueListenableBuilder<Box<Order>>(
+                    valueListenable: HiveBoxes.getOrders().listenable(),
+                    builder: (context, box, _) {
+                      List<Order> orderList =
+                      box.values.toList().cast<Order>();
+                      //filter the list in order to the search results
+                      List<Order> filteredList =
+                      OrderTools.filterList(orderList, keyWord, sortItem);
+                      if (filteredList.isNotEmpty) {
+                        return CreditListPart(
+                          orderList: filteredList,
+                          key: widget.key,
+                        );
+                      } else {
+                        return const Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "سفارشی یافت نشد!",
+                              textDirection: TextDirection.rtl,
+                            ),
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),);
+        }
+      ),
     );
   }
 }

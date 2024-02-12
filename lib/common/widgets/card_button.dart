@@ -57,7 +57,7 @@ class CardButton extends StatelessWidget {
               child: Text(
                 label,
                 style:
-                const TextStyle(color: Colors.white, fontSize: 21),
+                const TextStyle(color: Colors.white, fontSize: 18),
               ),
 
             ),]

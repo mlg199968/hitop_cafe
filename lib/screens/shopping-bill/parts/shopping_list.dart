@@ -21,47 +21,62 @@ class ShoppingRawList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * .4,
-      width: double.maxFinite,
-      decoration: kBoxDecoration,
-      child: wares.isEmpty
-          ? const Center(child: Text("کالایی افزوده نشده است"))
-          : SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
-              child: ListView.builder(
-                  itemCount: wares.length,
-                  itemBuilder: (context, index) {
-                    bool isNegative = false;
-                    if (wares[index].sum < 0) {
-                      isNegative = true;
-                    }
-                    return CustomTile(
-                      // onInfo: () {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (context) =>
-                      //         WareToBillPanel(oldPurchase: wares[index]),
-                      //   ).then((value) => onChange());
-                      // },
-                      onDelete: () {
-                        wares.removeAt(index);
-                        onChange();
-                      },
-                      height: 55,
-                      color: isNegative ? Colors.red : Colors.blue,
-                      leadingIcon: FontAwesomeIcons.cartShopping,
-                      type: (index+1).toString(),
-                      title: wares[index].wareName,
-                      subTitle:
-                          "${wares[index].quantity} ${wares[index].unit} * ${addSeparator(wares[index].price)} "
-                              .toPersianDigit(),
-                      topTrailing:"",
-                      topTrailingLabel: "تخفیف: ",
-                      trailing: addSeparator(wares[index].sum),
-                    );
-                  }),
-            ),
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "لیست خرید",
+            style: TextStyle(
+                fontSize: 17, color: Colors.white),
+          ),
+        ),
+        Container(
+          height: MediaQuery.of(context).size.height * .4,
+          width: double.maxFinite,
+          decoration:BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white70)
+          ),
+          child: wares.isEmpty
+              ? const Center(child: Text("کالایی افزوده نشده است",style: TextStyle(color: Colors.white70),))
+              : SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                      itemCount: wares.length,
+                      itemBuilder: (context, index) {
+                        bool isNegative = false;
+                        if (wares[index].sum < 0) {
+                          isNegative = true;
+                        }
+                        return CustomTile(
+                          // onInfo: () {
+                          //   showDialog(
+                          //     context: context,
+                          //     builder: (context) =>
+                          //         WareToBillPanel(oldPurchase: wares[index]),
+                          //   ).then((value) => onChange());
+                          // },
+                          onDelete: () {
+                            wares.removeAt(index);
+                            onChange();
+                          },
+                          height: 55,
+                          color: isNegative ? Colors.red : Colors.blue,
+                          leadingIcon: FontAwesomeIcons.cartShopping,
+                          type: (index+1).toString(),
+                          title: wares[index].wareName,
+                          subTitle:
+                              "${wares[index].quantity} ${wares[index].unit} * ${addSeparator(wares[index].price)} "
+                                  .toPersianDigit(),
+                          topTrailing:"",
+                          topTrailingLabel: "تخفیف: ",
+                          trailing: addSeparator(wares[index].sum),
+                        );
+                      }),
+                ),
+        ),
+      ],
     );
   }
 }

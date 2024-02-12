@@ -86,10 +86,10 @@ class ClientProvider extends ChangeNotifier {
   List<int> fullData=[];
   onData(Uint8List data) async{
     fullData.addAll(data);
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 500));
     String rawData=utf8.decode(Uint8List.fromList(fullData));
     fullData.clear();
-      Pack pack = await Pack().fromJson(rawData);
+      Pack pack = Pack().fromJson(rawData);
       ///get sent item list from server
       if (pack.type == PackType.itemList.value && pack.object != null) {
         for (var itemJson in pack.object!) {

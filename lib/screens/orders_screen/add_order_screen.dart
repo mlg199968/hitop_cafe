@@ -506,7 +506,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                     child: SingleChildScrollView(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 50),
+                            horizontal: 10, vertical: 90),
                         child: Wrap(
                           direction: Axis.horizontal,
                           children: [

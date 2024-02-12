@@ -9,7 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       required this.title,
       this.widgets,
       this.leadingWidth = 120,
-      this.height = 50,
+      this.height = 60,
       this.actions,
       required this.context2});
   final String title;
@@ -21,7 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        screenType(context2) == ScreenType.desktop ? 60 : 100,
+        screenType(context2) == ScreenType.desktop ? height : 130,
       );
   @override
   Widget build(BuildContext context) {
@@ -36,14 +36,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         flexibleSpace: Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            height: 100,
+            height: 130,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
-                .copyWith(left: constraint.maxHeight > 70 ? 10 : leadingWidth),
+                .copyWith(left: constraint.maxHeight > 60 ? 10 : leadingWidth),
             decoration: const BoxDecoration(
               gradient: kMainGradiant,
             ),
             child: Wrap(
               spacing: 10,
+              runSpacing: 20,
               direction: Axis.horizontal,
               crossAxisAlignment: WrapCrossAlignment.center,
               runAlignment: WrapAlignment.end,

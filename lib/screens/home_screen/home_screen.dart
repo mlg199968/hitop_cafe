@@ -11,6 +11,7 @@ import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
+import 'package:hitop_cafe/screens/analytics/analytics_screen2.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
@@ -45,7 +46,6 @@ bool showAlertNotice=true;
     const WareListScreen(),
     const ShoppingBillScreen(),
     const AnalyticsScreen(),
-    const UserListScreen(),
   ];
   int screenIndex = 0;
 
@@ -142,7 +142,7 @@ bool showAlertNotice=true;
                       margin: const EdgeInsets.only(right: 20,left: 20),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.red),
+                          color: Colors.white),
                       child: screens[screenIndex],
                     ),
                   ),

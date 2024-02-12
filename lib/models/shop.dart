@@ -29,22 +29,28 @@ class Shop extends HiveObject {
   double preTax=0;
   @HiveField(11)
   int preBillNumber=0;
+  ///printers
   @HiveField(12)
   Map? printer;
   @HiveField(13)
-  String? fontFamily;
+  Map? printer2;
   @HiveField(14)
   String? printerIp="192.168.1.1";
   @HiveField(15)
-  User? activeUser;
-  @HiveField(16)
-  String? appType;
-  @HiveField(17)
-  int? userLevel=0;
-  @HiveField(18)
   String? printerIp2;
-  @HiveField(19)
+  @HiveField(16)
   String? printTemplate;
+  @HiveField(17)
+  String? printTemplate2;
+  ///
+  @HiveField(18)
+  String? fontFamily;
+  @HiveField(19)
+  User? activeUser;
+  @HiveField(20)
+  String? appType;
+  @HiveField(21)
+  int? userLevel=0;
 
 }
 

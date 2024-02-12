@@ -152,7 +152,7 @@ class PdfInvoiceApi {
 
 
   ///order list for kitchen
-  Future<Uint8List> generateOrderPdf({double scale=.7,bool reOrder=false}) async {
+  Future<Uint8List> generateOrderPdf({double scale=.9,bool reOrder=false}) async {
     UserProvider shopData = Provider.of<UserProvider>(context, listen: false);
 
     final pdf = Document(theme: await _customTheme());

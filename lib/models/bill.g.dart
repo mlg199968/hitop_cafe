@@ -29,13 +29,14 @@ class BillAdapter extends TypeAdapter<Bill> {
       isDone: fields[14] as bool,
       description: fields[3] as String,
       billNumber: fields[1] as int,
+      user: fields[15] as User?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Bill obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.purchases)
       ..writeByte(1)
@@ -60,6 +61,8 @@ class BillAdapter extends TypeAdapter<Bill> {
       ..write(obj.isChecked)
       ..writeByte(14)
       ..write(obj.isDone)
+      ..writeByte(15)
+      ..write(obj.user)
       ..writeByte(5)
       ..write(obj.waresSum)
       ..writeByte(6)

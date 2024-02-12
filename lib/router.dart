@@ -5,6 +5,7 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
+import 'package:hitop_cafe/screens/analytics/analytics_screen2.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
@@ -91,6 +92,8 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case AnalyticsScreen.id:
       return MaterialPageRoute(builder: (_) => const AnalyticsScreen());
+    case AnalyticsScreen2.id:
+      return MaterialPageRoute(builder: (_) => const AnalyticsScreen2());
 
     case NoticeScreen.id:
       return MaterialPageRoute(builder: (_) => const NoticeScreen());

@@ -186,9 +186,9 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   void printPdf() async {
     try {
       Order orderBill = createBillObject();
-      final file = await PdfInvoiceApi(context,bill: orderBill).generatePdf80();
+      final file = await PdfInvoiceApi(context,bill: orderBill).generateOrderPdf();
       if(context.mounted) {
-        await PrintServices().printPriority(context, unit8File: file);
+        await PrintServices(context,unit8File: file,printerNumber: 2).printPriority();
       }
     } catch (e) {
       if(context.mounted) {

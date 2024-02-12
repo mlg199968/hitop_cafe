@@ -46,75 +46,80 @@ class _WareListScreenState extends State<ItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WareProvider>(builder: (context, wareProvider, child) {
-      return HideKeyboard(
-        child: Scaffold(
-          key: scaffoldKey,
-          floatingActionButton: CustomFloatActionButton(onPressed: () {
-            Navigator.pushNamed(context, AddItemScreen.id);
-          }),
-          appBar: CustomAppBar(
-            title: "آیتم ها",
-            context2: context,
-            widgets: [
-              ///dropDown list for Group Select
-              DropListModel(
-                selectedValue: selectedCategory,
-                height: 40,
-                listItem: ["همه", ...wareProvider.itemCategories],
-                onChanged: (val) {
-                  selectedCategory = val;
-                  setState(() {});
-                },
+    return LayoutBuilder(
+      builder: (context,constraint) {
+        return Consumer<WareProvider>(builder: (context, wareProvider, child) {
+          return HideKeyboard(
+            child: Scaffold(
+              key: scaffoldKey,
+              floatingActionButton: CustomFloatActionButton(onPressed: () {
+                Navigator.pushNamed(context, AddItemScreen.id);
+              }),
+              appBar: CustomAppBar(
+                height: constraint.maxWidth<800?130:60,
+                title: "آیتم ها",
+                context2: context,
+                widgets: [
+                  ///dropDown list for Group Select
+                  DropListModel(
+                    selectedValue: selectedCategory,
+                    height: 40,
+                    listItem: ["همه", ...wareProvider.itemCategories],
+                    onChanged: (val) {
+                      selectedCategory = val;
+                      setState(() {});
+                    },
+                  ),
+                  ///search bar
+                  CustomSearchBar(
+                    controller: searchController,
+                    hint: "جست و جو کالا",
+                    onChange: (val) {
+                      keyWord = val;
+                      setState(() {});
+                    },
+                    selectedSort: sortItem,
+                    sortList: sortList,
+                    onSort: (val) {
+                      sortItem = val;
+                      setState(() {});
+                    },
+                  ),
+                ],
               ),
-              ///search bar
-              CustomSearchBar(
-                controller: searchController,
-                hint: "جست و جو کالا",
-                onChange: (val) {
-                  keyWord = val;
-                  setState(() {});
-                },
-                selectedSort: sortItem,
-                sortList: sortList,
-                onSort: (val) {
-                  sortItem = val;
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              ///get ware list
-              ValueListenableBuilder<Box<Item>>(
-                  valueListenable: HiveBoxes.getItem().listenable(),
-                  builder: (context, box, _) {
-                    waresList = box.values.toList().cast<Item>();
-                    List<Item> filteredList =
-                        ItemTools.filterList(waresList, keyWord, sortItem);
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ///get ware list
+                  ValueListenableBuilder<Box<Item>>(
+                      valueListenable: HiveBoxes.getItem().listenable(),
+                      builder: (context, box, _) {
+                        waresList = box.values.toList().cast<Item>();
+                        List<Item> filteredList =
+                            ItemTools.filterList(waresList, keyWord, sortItem);
 
-                    if (filteredList.isEmpty) {
-                      return const Expanded(
-                        child: Center(
-                            child: Text(
-                          "کالایی یافت نشد!",
-                          textDirection: TextDirection.rtl,
-                        )),
-                      );
-                    }
-                    return ListPart(
-                      key: widget.key,
-                      category: selectedCategory,
-                      wareList: filteredList,
-                    );
-                  }),
-            ],
-          ),
-        ),
-      );
-    });
+                        if (filteredList.isEmpty) {
+                          return const Expanded(
+                            child: Center(
+                                child: Text(
+                              "کالایی یافت نشد!",
+                              textDirection: TextDirection.rtl,
+                            )),
+                          );
+                        }
+                        return ListPart(
+                          key: widget.key,
+                          category: selectedCategory,
+                          wareList: filteredList,
+                        );
+                      }),
+                ],
+              ),
+            ),
+          );
+        });
+      }
+    );
   }
 }
 
@@ -156,11 +161,10 @@ class _ListPartState extends State<ListPart> {
                         width: 400,
                         child: selectedWare == null
                             ? null
-                            : ItemInfoPanel(context, item: selectedWare!)
-                                .staticPanel(onReload: () {
-                                selectedWare = null;
-                                setState(() {});
-                              }),
+                            : ItemInfoPanelDesktop(item: selectedWare!,onDelete:() {
+                          selectedWare = null;
+                          setState(() {});
+                        })
                       ),
                     ),
 
@@ -196,9 +200,7 @@ class _ListPartState extends State<ListPart> {
                                           : showDialog(
                                               context: context,
                                               builder: (context) =>
-                                                  ItemInfoPanel(context,
-                                                          item: ware)
-                                                      .dialogPanel());
+                                                  ItemInfoPanel(item: ware));
                                     }
                                   } else {
                                     if (selectedItems.contains(index)) {
@@ -257,10 +259,10 @@ class _ListPartState extends State<ListPart> {
                                             " ${selectedItems.length} کالا حذف شد!  ",
                                             type: SnackType.success);
                                         selectedItems.clear();
-                                        Navigator.pop(context);
+                                        popFunction(context);
                                       },
                                       onNo: () {
-                                        Navigator.pop(context);
+                                        popFunction(context);
                                       });
                                 },
                                 icon: const Icon(

@@ -29,14 +29,20 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
 userProvider=Provider.of<UserProvider>(context,listen: false);
+
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    Provider.of<WareProvider>(context, listen: false).loadCategories();
+    super.didChangeDependencies();
   }
   @override
   Widget build(context) {
     ///conditions for next screen and time to  part
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       Timer(const Duration(milliseconds:1000 ), () async{
-        Provider.of<WareProvider>(context, listen: false).loadCategories();
       if(context.mounted) {
         ///get start up data
          GlobalTask.getInitData(context);
