@@ -51,6 +51,13 @@ class Shop extends HiveObject {
   String? appType;
   @HiveField(21)
   int? userLevel=0;
+  @HiveField(22)
+  int? port;
+  @HiveField(23)
+  String? ipAddress;
+  @HiveField(24)
+  String? subnet;
+
 
 }
 

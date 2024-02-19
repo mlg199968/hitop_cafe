@@ -10,7 +10,8 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class PaymentToBill extends StatefulWidget {
-  const PaymentToBill({super.key});
+  const PaymentToBill(this.payable,{super.key});
+  final num payable;
 
   @override
   State<PaymentToBill> createState() => _CashToBillState();
@@ -23,7 +24,7 @@ class _CashToBillState extends State<PaymentToBill> {
 
   final DateTime originDate = DateTime.now();
 
-  final TextEditingController cashController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
 
   final List<String> payMethods = [
     PayMethod.atmPersian,
@@ -32,6 +33,12 @@ class _CashToBillState extends State<PaymentToBill> {
   ];
 
   String pMethod =PayMethod.atmPersian ;
+
+  @override
+  void initState() {
+    amountController.text=addSeparator(widget.payable);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +65,7 @@ class _CashToBillState extends State<PaymentToBill> {
               const SizedBox(height: 20,),
               CustomTextField(
                 label: "میزان پرداخت",
-                controller: cashController,
+                controller: amountController,
                 width: MediaQuery.of(context).size.width,
                 textFormat: TextFormatter.price,
                 maxLength: 15,
@@ -74,7 +81,7 @@ class _CashToBillState extends State<PaymentToBill> {
                     if (_formKey.currentState!.validate()) {
                       Payment payment = Payment()
                       ..   method= PayMethod().persianToEnglish(pMethod)
-                      ..   amount= stringToDouble(cashController.text)
+                      ..   amount= stringToDouble(amountController.text)
                       ..   deliveryDate= DateTime.now()
                       .. paymentId= const Uuid().v1()
                       ;

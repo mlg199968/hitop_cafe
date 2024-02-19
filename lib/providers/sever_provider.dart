@@ -39,7 +39,8 @@ class ServerProvider extends ChangeNotifier {
         await server!.close(samplePack);
         serverLogs.clear();
       } else {
-        await server!.start(samplePack, ip: _ip, port: _port);
+        await server!.start(samplePack, ip: _ip, port: _port).onError((error, stackTrace) {
+        } );
       }
       notifyListeners();
     }
@@ -53,11 +54,11 @@ class ServerProvider extends ChangeNotifier {
   void onData(Uint8List? data) async{
     if (data != null) {
       fullData.addAll(data);
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 500));
       String rawData=utf8.decode(Uint8List.fromList(fullData));
       fullData.clear();
       //log(rawData);
-        Pack? pack = await Pack().fromJson(rawData);
+        Pack? pack = Pack().fromJson(rawData);
         if (pack.type == PackType.order.value &&
             pack.object != null &&
             pack.object!.isNotEmpty) {
@@ -112,9 +113,11 @@ class ServerProvider extends ChangeNotifier {
   }
 
   closeServer() {
-    server!.close(samplePack);
-    server = null;
-    notifyListeners();
+    if(server!=null) {
+      server!.close(samplePack);
+      server = null;
+      notifyListeners();
+    }
   }
 
   clearLogs() {

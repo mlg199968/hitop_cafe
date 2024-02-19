@@ -1,8 +1,6 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
@@ -11,25 +9,28 @@ import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
-import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
-import 'package:hitop_cafe/models/pack.dart';
+import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/providers/client_provider.dart';
 import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
+import 'package:hitop_cafe/screens/orders_screen/panels/print_panel.dart';
+import 'package:hitop_cafe/screens/orders_screen/parts/item_selection_part.dart';
+import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
+import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -38,23 +39,25 @@ import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 
-class WaiterAddOrderScreen extends StatefulWidget {
-  static const String id = "/WaiterAddOrderScreen";
-  const WaiterAddOrderScreen({super.key, this.oldOrder});
+class AddOrderScreenDesktop extends StatefulWidget {
+  static const String id = "/AddOrderScreenDesktop";
+  const AddOrderScreenDesktop({super.key, this.oldOrder});
   final Order? oldOrder;
 
   @override
-  State<WaiterAddOrderScreen> createState() => _WaiterAddOrderScreenState();
+  State<AddOrderScreenDesktop> createState() => _AddOrderScreenDesktopState();
 }
 
-class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
+class _AddOrderScreenDesktopState extends State<AddOrderScreenDesktop>
     with SingleTickerProviderStateMixin {
   late UserProvider userProvider;
   late PrinterProvider printerProvider;
   final tableNumberController = TextEditingController();
   Function eq = const ListEquality().equals;
   TextEditingController descriptionController = TextEditingController();
+  late final AddOrderScreenDesktop oldState;
   List<Item> items = [];
+  List<Payment> payments = [];
   int billNumber = 1;
   bool didStateUpdate = false;
   Jalali date = Jalali.now();
@@ -81,10 +84,13 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   }
 
   ///calculate payable amount
-  double get payable {
-    double payable = 0;
+  num get payable {
+    num payable = 0;
     payable +=
         items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
+    payable -= payments.isEmpty
+        ? 0
+        : payments.map((e) => e.amount).reduce((a, b) => a + b);
     payable -= discount;
     return payable;
   }
@@ -93,21 +99,39 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   num get itemsSum =>
       items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
 
+  ///calculate atm amount
+  num get atmSum => payments.isEmpty
+      ? 0
+      : payments
+          .map((e) => e.method == PayMethod.atm ? e.amount : 0)
+          .reduce((a, b) => a + b);
+
+  ///calculate cash amount
+  num get cashSum => payments.isEmpty
+      ? 0
+      : payments
+          .map((e) => e.method == PayMethod.cash ? e.amount : 0)
+          .reduce((a, b) => a + b);
 
   ///calculate discount amount
   num get discount => items.isEmpty
       ? 0
       : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
 
-
+  ///calculate Payment discount amount in payment
+  num get paymentDiscount => payments.isEmpty
+      ? 0
+      : payments
+          .map((e) => e.method == PayMethod.discount ? e.amount : 0)
+          .reduce((a, b) => a + b);
 
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
     Order orderBill = Order()
       ..user = user
       ..items = items
-      ..payments = []
-      ..discount = 0
+      ..payments = payments
+      ..discount = discount + paymentDiscount
       ..payable = payable
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
       ..tableNumber = int.parse(tableNumberController.text)
@@ -120,45 +144,33 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   }
 
   ///Hive Database Save function
-  Future<void> saveBillOnLocalStorage({String? id}) async {
-
+  void saveBillOnLocalStorage({String? id}) async {
+    //condition for limitation of free version
+    if (UserTools.userPermission(context,
+        count: HiveBoxes.getOrders().values.length)) {
       if (items.isNotEmpty) {
         Order orderBill = createBillObject(id: id);
-        String deviceName=await getDeviceInfo(info:"name");
-        Pack pack = Pack()
-          ..object = [orderBill.toJson()]
-          ..device=deviceName
-          ..type = "order"
-          ..message = "سفارش ارسال شد"
-          ..packId = orderBill.orderId;
-        HiveBoxes.getPack().put(pack.packId, pack);
-        if(context.mounted){
-          bool res =Provider.of<ClientProvider>(context, listen: false)
-              .sendPack(pack);
-          if (res) {
-            showSnackBar(context, "سفارش ارسال شد !");
-          }else{
-            showSnackBar(context, "ارتباط با سرور برقرار نیست!",
-                type: SnackType.error);
-          }
-          Navigator.pop(context, false);
-        }
+        OrderTools.subtractFromWareStorage(items, oldOrder: widget.oldOrder);
+        HiveBoxes.getOrders().put(orderBill.orderId, orderBill);
+        Navigator.pop(context, false);
       } else {
         showSnackBar(context, "لیست آیتم ها خالی است!", type: SnackType.error);
       }
-
+    }
   }
 
   ///replace old  orderBill data for edit
   void oldOrderReplace(Order oldOrder) {
     items.clear();
+    payments.clear();
     items.addAll(oldOrder.items);
+    payments.addAll(oldOrder.payments);
     billNumber = oldOrder.billNumber ?? 0;
     date = Jalali.fromDateTime(oldOrder.orderDate);
     modifiedDate = oldOrder.modifiedDate;
     dueDate = oldOrder.dueDate!;
     tableNumberController.text = oldOrder.tableNumber!.toString();
-    user = oldOrder.user ?? userProvider.activeUser;
+    user = oldOrder.user;
     descriptionController.text = oldOrder.description;
     if (oldOrder.description != "") {
       showDescription = true;
@@ -181,33 +193,19 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     super.initState();
   }
 
-  ///export pdf function
-  void printPdf() async {
-    try {
-      Order orderBill = createBillObject();
-      final file = await PdfInvoiceApi(context,bill: orderBill).generateOrderPdf();
-      if(context.mounted) {
-        await PrintServices(context,unit8File: file,printerNumber: 2).printPriority();
-      }
-    } catch (e) {
-      if(context.mounted) {
-        ErrorHandler.errorManger(context, e,title: "addOrderScreen-print pdf error",showSnackbar: true);
-      }
-    }
-  }
-
   ///Define conditions for show or not show the onWillPop
   bool didUpdateData() {
     if (widget.oldOrder != null) {
       Order oldOrder = widget.oldOrder!;
       if (!eq(items, oldOrder.items) ||
+          !eq(payments, oldOrder.payments) ||
           discount != oldOrder.discount ||
           date != Jalali.fromDateTime(oldOrder.orderDate) ||
           tableNumberController.text != oldOrder.tableNumber!.toString()) {
         return true;
       }
     } else {
-      if (items.isNotEmpty) {
+      if (items.isNotEmpty || payments.isNotEmpty) {
         return true;
       }
     }
@@ -239,6 +237,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     tableNumberController.dispose();
     super.dispose();
   }
+
   ///********************************** widget *********************************************
   @override
   Widget build(BuildContext context) {
@@ -251,40 +250,50 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
           ///save float action button
           floatingActionButton: CustomFloatActionButton(
               label: "ذخیره",
-              icon: Icons.check_rounded,
-              onPressed: () async{
-                await saveBillOnLocalStorage(
+              icon: Icons.save_outlined,
+              onPressed: () {
+                saveBillOnLocalStorage(
                   id: widget.oldOrder == null ? null : widget.oldOrder!.orderId,
                 );
               }),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             title: CText(
-              widget.oldOrder==null ?"سفارش جدید":"ویرایش سفارش",
-              color: Colors.white, fontSize: 20,
+              widget.oldOrder == null ? "سفارش جدید" : "ویرایش سفارش",
+              color: Colors.white,
+              fontSize: 20,
             ),
             actions: [
+              ///print button action
               ActionButton(
-                margin: const EdgeInsets.symmetric(horizontal: 7),
-                label: "چاپ",
-                onPress: () {
-                  printPdf();
-                },
+                label: "چاپ و نمایش",
                 bgColor: Colors.red,
+                height: 30,
                 icon: Icons.local_printshop_outlined,
+                margin: const EdgeInsets.only(right: 10),
+                onPress: () {
+                  Order order = createBillObject(id: widget.oldOrder?.orderId);
+                  showDialog(
+                      context: context,
+                      builder: (context) => PrintPanel(
+                            order: order,
+                            reOrder: widget.oldOrder != null,
+                          ));
+                  // printPdf();
+                },
               ),
             ],
           ),
           body: Directionality(
             textDirection: TextDirection.rtl,
             child: Container(
-              alignment: Alignment.center,
               decoration: const BoxDecoration(gradient: kMainGradiant),
               child: Row(
                 children: [
                   ///*****side bar panel in tablet snd desktop mode************
-                  if(screenType(context) != ScreenType.mobile)
-                  Container(
+                  screenType(context) == ScreenType.mobile
+                      ? const SizedBox()
+                      : Container(
                           height: double.maxFinite,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
@@ -435,6 +444,23 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                   });
                                 },
                               ),
+                              ActionButton(
+                                width: 200,
+                                label: "پرداخت جدید",
+                                icon: Icons.add_card_rounded,
+                                bgColor: Colors.teal,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          PaymentToBill(payable)).then((value) {
+                                    if (value != null) {
+                                      payments.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -474,14 +500,14 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                             ],
                           ),
                         ),
-
+                  ///item selection part in desktop
+                 // ItemSelectionPart(),
                   ///main part like items list
                   Flexible(
                     child: SingleChildScrollView(
                       child: Container(
-                        margin: const EdgeInsets.only(top: 50),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 50),
+                        padding:  EdgeInsets.symmetric(
+                            horizontal: 10, vertical:screenType(context) == ScreenType.mobile ?90: 10),
                         child: Wrap(
                           direction: Axis.horizontal,
                           children: [
@@ -505,7 +531,6 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                           children: [
                                             const CText(
                                               "کاربر:",
-                                              textDirection: TextDirection.rtl,
                                             ),
                                             CText(
                                               user?.name ?? "نامشخص",
@@ -619,6 +644,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
+                                    /// add item button mobile screen
                                     Flexible(
                                       child: ActionButton(
                                         label: "افزودن آیتم",
@@ -638,6 +664,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                         },
                                       ),
                                     ),
+                                    ///quick add item button mobile screen
                                     Flexible(
                                       child: ActionButton(
                                         label: "افزودن سریع",
@@ -652,6 +679,26 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                               addToItemList(value);
                                               setState(() {});
                                             }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    ///payment button mobile screen
+                                    Flexible(
+                                      child: ActionButton(
+                                        label: "پرداخت جدید",
+                                        icon: Icons.add_card_rounded,
+                                        bgColor: Colors.teal,
+                                        onPress: () {
+                                          showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                       PaymentToBill(payable))
+                                              .then((value) {
+                                            if (value != null) {
+                                              payments.add(value);
+                                            }
+                                            setState(() {});
                                           });
                                         },
                                       ),
@@ -671,29 +718,34 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                   TextDataField(
                                       title: "جمع خرید", value: itemsSum),
                                   TextDataField(
+                                      title: "پرداخت نقد", value: cashSum),
+                                  TextDataField(
+                                      title: "پرداخت با کارت", value: atmSum),
+                                  TextDataField(
                                       title: "تخفیف", value: discount),
+                                  ///total payment
+                                  Container(
+                                      width: 450,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
+                                      decoration: kBoxDecoration.copyWith(
+                                        color: payable == 0
+                                            ? Colors.green
+                                            : (payable < 0
+                                            ? Colors.blue
+                                            : Colors.red),
+                                      ),
+                                      child: TextDataField(
+                                        title: "قابل پرداخت",
+                                        showCurrency: true,
+                                        value: payable,
+                                        color: Colors.white,
+                                      )),
                                 ],
                               ),
                             ),
 
-                            ///total payment
-                            Container(
-                                width: 450,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                decoration: kBoxDecoration.copyWith(
-                                  color: payable == 0
-                                      ? Colors.green
-                                      : (payable < 0
-                                          ? Colors.blue
-                                          : Colors.red),
-                                ),
-                                child: TextDataField(
-                                  title: "قابل پرداخت",
-                                  showCurrency: true,
-                                  value: payable,
-                                  color: Colors.white,
-                                )),
+
 
                             ///sale item List Part
                             ShoppingList(
@@ -703,6 +755,13 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                               },
                             ),
 
+                            ///Payment List Part
+                            PaymentList(
+                              payments: payments,
+                              onChange: () {
+                                setState(() {});
+                              },
+                            ),
                             const SizedBox(height: 90),
                           ],
                         ),

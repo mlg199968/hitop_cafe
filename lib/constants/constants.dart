@@ -69,6 +69,6 @@ final List<String> kPrintTemplateList = [
 const String kCustomFont = "persian";
 
 final kBoxDecoration = BoxDecoration(
-    color: Colors.white,
+    gradient: kBlackWhiteGradiant,
     borderRadius: BorderRadius.circular(5),
-    border: Border.all(color: kMainColor));
+    boxShadow: const [BoxShadow(offset: Offset(1, 3),blurRadius: 5,color: Colors.black54)]);

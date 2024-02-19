@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/shape/background_shape1.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import '../../../constants/constants.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -19,7 +20,7 @@ class CustomTile extends StatelessWidget {
       this.topTrailingLabel,
       this.onInfo,
       this.type,
-      this.enable = true, this.selected=false});
+      this.enable = true, this.selected=false, this.middleWidget});
   final VoidCallback onDelete;
   final double height;
   final Color color;
@@ -33,6 +34,7 @@ class CustomTile extends StatelessWidget {
   final VoidCallback? onInfo;
   final bool enable;
   final bool selected;
+  final Widget? middleWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +98,7 @@ class CustomTile extends StatelessWidget {
                 child: MyListTile(
                     enable: enable,
                     selected: selected,
+                    middleWidget: middleWidget,
                     title: title,
                     leadingIcon: leadingIcon,
                     type: type,
@@ -122,7 +125,7 @@ class MyListTile extends StatelessWidget {
     this.subTitle,
     this.topTrailingLabel,
     required this.topTrailing,
-    required this.trailing, this.selected=false,
+    required this.trailing, this.selected=false, this.middleWidget,
   });
 
   final bool enable;
@@ -135,6 +138,7 @@ class MyListTile extends StatelessWidget {
   final String topTrailing;
   final String trailing;
   final tileGlobalKey=GlobalKey();
+   final Widget? middleWidget;
   @override
   Widget build(BuildContext context) {
     //TODO: order tile responsive added
@@ -186,7 +190,13 @@ class MyListTile extends StatelessWidget {
                 ),
               )
             ,
-        subtitle: Text(subTitle ?? "",style: const TextStyle(fontSize: 11,color: Colors.black45),),
+        subtitle: Row(
+          children: [
+            CText(subTitle ?? "",fontSize: 11,color: Colors.black45),
+            if(middleWidget!=null)
+              middleWidget!
+          ],
+        ),
         trailing: constraint.maxWidth < 300
             ? null
             : Column(

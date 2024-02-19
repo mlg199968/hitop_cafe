@@ -36,21 +36,24 @@ class CardTile extends StatelessWidget {
         child: SizedBox(
           width: 170,
           height: 200,
-          child: BackgroundShape3(
-            height: 500,
-            color: color,
-            child: MyListTile(
-              enable: false,
-              title:
-                  "کاربر: ${orderDetail.user?.name}",
-              leadingIcon: FontAwesomeIcons.table,
-              type: TimeTools.showHour(orderDetail.orderDate),
-              subTitle: TimeTools.showHour(orderDetail.orderDate),
-              topTrailingLabel: "سفارش: ",
-              topTrailing: orderDetail.billNumber.toString().toPersianDigit(),
-              trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
-              bottomLeading:orderDetail.tableNumber.toString().toPersianDigit(),
-              button:button,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(0),
+            child: BackgroundShape3(
+              height: 500,
+              color: color,
+              child: MyListTile(
+                enable: false,
+                title:
+                    "کاربر: ${orderDetail.user?.name}",
+                leadingIcon: FontAwesomeIcons.table,
+                type: TimeTools.showHour(orderDetail.orderDate),
+                subTitle: TimeTools.showHour(orderDetail.orderDate),
+                topTrailingLabel: "سفارش: ",
+                topTrailing: orderDetail.billNumber.toString().toPersianDigit(),
+                trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
+                bottomLeading:orderDetail.tableNumber.toString().toPersianDigit(),
+                button:button,
+              ),
             ),
           ),
         ),
@@ -96,27 +99,31 @@ class MyListTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ///top part
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(type ?? ""),
-              RichText(
-                text: TextSpan(
-                  text: topTrailingLabel ?? "",
-                  style: TextStyle(
-                      color: selected ? Colors.blue : Colors.black54,
-                      fontSize: 11),
-                  children: [
-                    TextSpan(
-                        text: topTrailing,
-                        style: TextStyle(
-                            color: selected ? Colors.blue : Colors.black54,
-                            fontSize: 14,
-                            fontFamily: kCustomFont)),
-                  ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(gradient: kMainGradiant,borderRadius: BorderRadius.circular(20)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(type ?? "",style:const TextStyle(color: Colors.white) ,),
+                RichText(
+                  text: TextSpan(
+                    text: topTrailingLabel ?? "",
+                    style: TextStyle(
+                        color: selected ? Colors.blue : Colors.white60,
+                        fontSize: 11),
+                    children: [
+                      TextSpan(
+                          text: topTrailing,
+                          style: TextStyle(
+                              color: selected ? Colors.blue : Colors.white,
+                              fontSize: 14,
+                              fontFamily: kCustomFont)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           ///middle section

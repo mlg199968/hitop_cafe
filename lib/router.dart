@@ -33,7 +33,7 @@ import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_app_setting_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_home_screen.dart';
-import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_network_screen.dart';
 
 Route generateRoute(RouteSettings routeSetting) {
   switch (routeSetting.name) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -25,51 +26,62 @@ class ClientProvider extends ChangeNotifier {
   bool get isConnected => _isConnected;
   //(_client !=null?(client!.isConnected?true:false):false);
   List<Pack> logs = [];
-  int _port = 4000;
-  int get port => _port;
-  String _subnet = "192.168.1";
-  String get subnet => _subnet;
-  Stream<NetworkAddress>? stream;
+  StreamSubscription<NetworkAddress>? streamListener;
   NetworkAddress? _address;
   NetworkAddress? get address => _address;
   bool _searching = false;
   bool get searching => _searching;
+  bool _connecting = false;
+  bool get connecting => _connecting;
 
-  getIpAddress() async {
-    _searching = true;
-    notifyListeners();
-    stream = NetworkAnalyzer.i.discover(_subnet, port);
-    stream!.listen((NetworkAddress netAddress) {
-      if (netAddress.exists) {
-        _address = netAddress;
-        Client clientModel = Client(
-            hostName: netAddress.ip,
-            port: _port,
-            onData: onData,
-            onError: onError);
-        _client = clientModel;
-        notifyListeners();
+  getIpAddress({String subnet="192.168.1.3",int port=4000,bool cancel = false}) async {
+    if(cancel) {
+      streamListener?.cancel();
+      _searching=false;
+      notifyListeners();
+    }else {
+      streamListener?.cancel();
+      _searching = true;
+      notifyListeners();
+      final stream = NetworkAnalyzer.i.discover(subnet, port);
+
+      streamListener = stream.listen((NetworkAddress netAddress) {
+        if (netAddress.exists) {
+          _address = netAddress;
+          _searching = false;
+          notifyListeners();
+        }
+      });
+      streamListener?.onDone(() {
         _searching = false;
         notifyListeners();
-      }
-      // else {
-      //   _address = null;
-      // }
-    });
+      });
+    }
   }
 
-  connectOrDisconnectClient() async {
-    if (client != null) {
+  connectOrDisconnectClient(String ip,int port1) async {
+    if (client == null || !client!.isConnected) {
+      Client clientModel = Client(
+          hostName: ip,
+          port: port1,
+          onData: onData,
+          onError: onError);
+      _client = clientModel;
+    }
       if (client!.isConnected) {
         client!.disconnect(samplePack);
+        _client=null;
         _isConnected = false;
         notifyListeners();
       } else {
+        _connecting=true;
+        notifyListeners();
         await client!.connect(samplePack);
+        _connecting=false;
         _isConnected = client!.isConnected ? true : false;
         notifyListeners();
       }
-    }
+
   }
 
   bool sendPack(Pack pack) {
@@ -129,11 +141,7 @@ class ClientProvider extends ChangeNotifier {
         title: "**** onError in the ClientProvider ****");
   }
 
-  setSubnetAndPort(String sub, int setPort) {
-    _port = setPort;
-    _subnet = sub;
-    notifyListeners();
-  }
+
 
   clearLogs() {
     logs = [];

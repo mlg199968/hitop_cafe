@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
+import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
@@ -85,6 +86,37 @@ class _AddWareScreenState extends State<AddWareScreen> {
   Widget build(BuildContext context) {
     return HideKeyboard(
       child: Scaffold(
+        floatingActionButton: CustomFloatActionButton(
+          label:  widget.oldRawWare == null
+              ? "افزودن به لیست"
+              : "ذخیره تغییرات",
+            icon: Icons.check_rounded,
+            onPressed: (){
+              if (_formKey.currentState!.validate()) {
+                if (widget.oldRawWare != null) {
+                  saveWare(id: widget.oldRawWare!.wareId);
+                  Navigator.pop(context, false);
+                } else {
+                  ///condition for demo mode
+                  if (UserTools.userPermission(context,count: HiveBoxes.getRawWare().values.length,)) {
+                    saveWare();
+                    showSnackBar(context, "کالا به لیست افزوده شد!",
+                        type: SnackType.success);
+                    wareNameController.clear();
+                    costPriceController.clear();
+                    descriptionController.clear();
+                    quantityController.clear();
+                    FocusScope.of(context)
+                        .requestFocus(wareNameFocus);
+                    setState(() {});
+                    // Navigator.pop(context,false);
+                  }
+                }
+              }
+
+              setState(() {});
+            }
+        ),
         appBar: AppBar(
           flexibleSpace: Container(
             decoration: const BoxDecoration(gradient: kMainGradiant),
@@ -102,131 +134,94 @@ class _AddWareScreenState extends State<AddWareScreen> {
               margin: const EdgeInsets.all(20),
               child: Form(
                 key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: ListView(
                   children: [
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          ///select group dropdown list and add group
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Flexible(
-                                child: ActionButton(
-                                    label: "افزودن گروه",
-                                    icon: Icons.add,
-                                    onPress: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => CreateGroupPanel());
-                                    }),
-                              ),
-                              Flexible(
-                                child: DropListModel(
-                                    listItem: wareProvider.rawWareCategories,
-                                    selectedValue:
-                                        wareProvider.selectedRawWareCategory,
-                                    onChanged: (val) {
-                                      wareProvider.updateSelectedRawCategory(val);
-                                    }),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          CustomTextField(
-                            label: "نام کالا",
-                            controller: wareNameController,
-                            focus: wareNameFocus,
-                            validate: true,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-
-                          ///unit dropdown list selection
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Flexible(
-                                child: DropListModel(
-                                  height: 35,
-                                  width: 100,
-                                  selectedValue: unitItem,
-                                  listItem: unitList,
-                                  onChanged: (val) {
-                                    unitItem = val;
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Flexible(
-                                child: CustomTextField(
-                                  label: "مقدار",
-                                  controller: quantityController,
-                                  textFormat: TextFormatter.number,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          CustomTextField(
-                            label: "قیمت خرید",
-                            controller: costPriceController,
-                            textFormat: TextFormatter.price,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-
-                          CustomTextField(
-                            label: "توضیحات",
-                            controller: descriptionController,
-                            maxLine: 4,
-                          ),
-                        ],
-                      ),
+                    const SizedBox(
+                      height: 20,
                     ),
-                    CustomButton(
-                        text: widget.oldRawWare == null
-                            ? "افزودن به لیست"
-                            : "ذخیره تغییرات",
-                        width: MediaQuery.of(context).size.width,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (widget.oldRawWare != null) {
-                              saveWare(id: widget.oldRawWare!.wareId);
-                              Navigator.pop(context, false);
-                            } else {
-                              ///condition for demo mode
-                              if (UserTools.userPermission(context,count: HiveBoxes.getRawWare().values.length,)) {
-                                saveWare();
-                                showSnackBar(context, "کالا به لیست افزوده شد!",
-                                    type: SnackType.success);
-                                wareNameController.clear();
-                                costPriceController.clear();
-                                descriptionController.clear();
-                                quantityController.clear();
-                                FocusScope.of(context)
-                                    .requestFocus(wareNameFocus);
-                                setState(() {});
-                                // Navigator.pop(context,false);
-                              }
-                            }
-                          }
+                    ///select group dropdown list and add group
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          child: ActionButton(
+                              label: "افزودن گروه",
+                              icon: Icons.add,
+                              onPress: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => CreateGroupPanel());
+                              }),
+                        ),
+                        Flexible(
+                          child: DropListModel(
+                              listItem: wareProvider.rawWareCategories,
+                              selectedValue:
+                                  wareProvider.selectedRawWareCategory,
+                              onChanged: (val) {
+                                wareProvider.updateSelectedRawCategory(val);
+                              }),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomTextField(
+                      label: "نام کالا",
+                      controller: wareNameController,
+                      focus: wareNameFocus,
+                      validate: true,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
 
-                          setState(() {});
-                        }),
+                    ///unit dropdown list selection
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: DropListModel(
+                            height: 35,
+                            width: 100,
+                            selectedValue: unitItem,
+                            listItem: unitList,
+                            onChanged: (val) {
+                              unitItem = val;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Flexible(
+                          child: CustomTextField(
+                            label: "مقدار",
+                            controller: quantityController,
+                            textFormat: TextFormatter.number,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomTextField(
+                      label: "قیمت خرید",
+                      controller: costPriceController,
+                      textFormat: TextFormatter.price,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    CustomTextField(
+                      label: "توضیحات",
+                      controller: descriptionController,
+                      maxLine: 4,
+                    ),
                   ],
                 ),
               ),

@@ -10,6 +10,7 @@ import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
@@ -68,15 +69,15 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
 
   ///calculate payable amount
-  num payable() {
-    num payable = 0;
+  double get payable {
+    double payable = 0;
     payable +=
     wares.isEmpty ? 0 : wares.map((e) => e.sum).reduce((a, b) => a + b);
     payable -= payments.isEmpty
         ? 0
         : payments.map((e) => e.amount).reduce((a, b) => a + b);
     payable -= discount;
-    setState(() {});
+
     return payable;
   }
 
@@ -95,8 +96,14 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
   num get cashSum => payments.isEmpty
       ? 0
       : payments
-      .map((e) => e.method == "cash" ? e.amount : 0)
+      .map((e) => e.method == PayMethod.cash ? e.amount : 0)
       .reduce((a, b) => a + b);
+  ///calculate discount amount
+  num get discountSum => payments.isEmpty
+      ? 0
+      : payments
+      .map((e) => e.method == PayMethod.discount ? e.amount : 0)
+      .reduce((a, b) => a + b) + discount;
 
   ///create orderBill object with given data
   Bill createBillObject({String? id}) {
@@ -104,7 +111,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
         purchases: wares,
         payments: payments,
         discount: discount,
-        payable: payable(),
+        payable: payable,
         billDate: id != null ? widget.oldBill!.billDate : DateTime.now(),
         user: user,
         billNumber: billNumber,
@@ -200,10 +207,6 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
         }));
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 ///******************************************* widget ***************************************************
   @override
   Widget build(BuildContext context) {
@@ -212,9 +215,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
       child: Scaffold(
         extendBodyBehindAppBar: true,
         ///save float action button
-        floatingActionButton: screenType(context) != ScreenType.mobile
-            ? null
-            : CustomFloatActionButton(
+        floatingActionButton:CustomFloatActionButton(
           label: "ذخیره",
             icon: Icons.save_outlined,
             onPressed: () {
@@ -371,28 +372,10 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                         icon: Icons.monetization_on_outlined,
                         bgColor: Colors.teal,
                         onPress: () {
-                          showDialog(context: context, builder: (context) => const PaymentToBill())
+                          showDialog(context: context, builder: (context) =>  PaymentToBill(payable))
                               .then((value) {
                             if (value != null) {
                               payments.add(value);
-                            }
-                            setState(() {});
-                          });
-                        },
-                      ),
-                      ///discount Button desktop
-                      ActionButton(
-                        width: 200,
-                        label: "تخفیف",
-                        icon: Icons.discount_outlined,
-                        bgColor: Colors.orangeAccent,
-                        onPress: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) =>
-                              const DiscountToBill()).then((value) {
-                            if (value != null) {
-                              discount = value;
                             }
                             setState(() {});
                           });
@@ -440,215 +423,224 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
                 ///main part like wares list
                 Flexible(
-                  child: Container(
-                    width: 450,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 20),
-                    child: ListView(
-                      children: [
-                        ///top customer data part on mobile screen
-                        screenType(context) != ScreenType.mobile
-                            ? const SizedBox()
-                            : Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white.withOpacity(.8)),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              ///top right
-                              Column(
-                                children: [
-                                  Wrap(
+                  child: SafeArea(
+                    child: Container(
+                      alignment: Alignment.topCenter,
+                      padding:  EdgeInsets.symmetric(
+                          horizontal: 10, vertical:screenType(context) == ScreenType.mobile ?90: 10),
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        children: [
+                          ///top customer data part on mobile screen
+                          screenType(context) != ScreenType.mobile
+                              ? const SizedBox()
+                              : Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white.withOpacity(.8)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                ///top right
+                                Column(
+                                  children: [
+                                    Wrap(
+                                      children: [
+                                        const CText(
+                                          "کاربر:",
+                                        ),
+                                        CText(
+                                          user?.name ?? "نامشخص",
+                                          fontSize: 15,
+                                        ),
+                                      ],
+                                    ),
+                                    const Gap(5),
+                                  ],
+                                ),
+                                const SizedBox(width: 10),
+                                ///top left
+                                SizedBox(
+                                  width: 150,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      const CText(
-                                        "کاربر:",
+                                      ///invoice number
+                                      TitleButton(
+                                        title: "شماره فاکتور:",
+                                        value: billNumber.toString(),
+                                        onPress: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                              const BillNumber()).then((value) {
+                                            if (value != null) {
+                                              billNumber = value.round();
+                                            }
+                                            setState(() {});
+                                          });
+                                        },
                                       ),
-                                      CText(
-                                        user?.name ?? "نامشخص",
-                                        fontSize: 15,
+                                      const Divider(
+                                        thickness: 1,
+                                        height: 5,
+                                      ),
+                                      ///choose orderBill date
+                                      TitleButton(
+                                        title: "تاریخ فاکتور:",
+                                        value: date.formatCompactDate(),
+                                        onPress: () async {
+                                          Jalali? picked =
+                                          await TimeTools.chooseDate(
+                                              context);
+                                          if (picked != null) {
+                                            setState(() {
+                                              date = picked;
+                                            });
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
-                                  const Gap(5),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ///description textField
+                          if (screenType(context) == ScreenType.mobile)
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: TextButton.icon(
+                                  onPressed: () {
+                                    showDescription = !showDescription;
+                                    setState(() {});
+                                  },
+                                  icon: Icon(
+                                    showDescription
+                                        ? CupertinoIcons.minus_square
+                                        : CupertinoIcons.plus_square,
+                                    color: Colors.teal,
+                                    size: 20,
+                                  ),
+                                  label: const CText(
+                                    "توضیحات",
+                                    color: Colors.teal,
+                                  )),
+                            ),
+                          if (showDescription &&
+                              screenType(context) == ScreenType.mobile)
+                            CustomTextField(
+                              controller: descriptionController,
+                              label: "توضیحات فاکتور",
+                              width: double.maxFinite,
+                              maxLine: 3,
+                              maxLength: 300,
+                            ),
+                          ///quick action button like add items and add payments
+                          if(screenType(context) == ScreenType.mobile)
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ActionButton(
+                                  label: "افزودن آیتم",
+                                  icon: CupertinoIcons.cart_badge_plus,
+                                  bgColor: Colors.blueGrey,
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                        const WareToBillPanel())
+                                        .then((value) {
+                                      if (value != null) {
+                                        wares.add(value);
+                                      }
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+                                ActionButton(
+                                  label: "پرداخت جدید",
+                                  icon: Icons.add_card_rounded,
+                                  bgColor: Colors.teal,
+                                  onPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                        PaymentToBill(payable)).then((value) {
+                                      if (value != null) {
+                                        payments.add(value);
+                                      }
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+
+                              ],
+                            ),
+                          ),
+
+                          ///final data of orderBill like sale total
+                          Flexible(
+                            child: Container(
+                              width: 450,
+                              margin: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: kBoxDecoration,
+                              child: Column(
+                                children: [
+                                  TextDataField(title: "جمع خرید", value: itemsSum),
+                                  TextDataField(
+                                      title: "پرداخت نقد", value: cashSum),
+                                  TextDataField(
+                                      title: "پرداخت با کارت", value: atmSum),
+                                  TextDataField(title: "تخفیف", value: discountSum),
+                                  ///total payment
+                                  Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        color: payable == 0
+                                            ? Colors.teal
+                                            : (payable < 0 ? Colors.indigoAccent : Colors.redAccent),
+                                      ),
+                                      child: TextDataField(
+                                        title: "قابل پرداخت",
+                                        value: payable,
+                                        color: Colors.white,
+                                      )),
                                 ],
                               ),
-                              const SizedBox(width: 10),
-                              ///top left
-                              SizedBox(
-                                width: 150,
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ///invoice number
-                                    TitleButton(
-                                      title: "شماره فاکتور:",
-                                      value: billNumber.toString(),
-                                      onPress: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                            const BillNumber()).then((value) {
-                                          if (value != null) {
-                                            billNumber = value.round();
-                                          }
-                                          setState(() {});
-                                        });
-                                      },
-                                    ),
-                                    const Divider(
-                                      thickness: 1,
-                                      height: 5,
-                                    ),
-                                    ///choose orderBill date
-                                    TitleButton(
-                                      title: "تاریخ فاکتور:",
-                                      value: date.formatCompactDate(),
-                                      onPress: () async {
-                                        Jalali? picked =
-                                        await TimeTools.chooseDate(
-                                            context);
-                                        if (picked != null) {
-                                          setState(() {
-                                            date = picked;
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                        ///description textField
-                        if (screenType(context) == ScreenType.mobile)
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: TextButton.icon(
-                                onPressed: () {
-                                  showDescription = !showDescription;
-                                  setState(() {});
-                                },
-                                icon: Icon(
-                                  showDescription
-                                      ? CupertinoIcons.minus_square
-                                      : CupertinoIcons.plus_square,
-                                  color: Colors.teal,
-                                  size: 20,
-                                ),
-                                label: const CText(
-                                  "توضیحات",
-                                  color: Colors.teal,
-                                )),
+                          ///Product List Part
+                          ShoppingRawList(
+                            wares: wares,
+                            onChange: () {
+                              setState(() {});
+                            },
                           ),
-                        if (showDescription &&
-                            screenType(context) == ScreenType.mobile)
-                          CustomTextField(
-                            controller: descriptionController,
-                            label: "توضیحات فاکتور",
-                            width: double.maxFinite,
-                            maxLine: 3,
-                            maxLength: 300,
-                          ),
-                        ///quick action button like add items and add payments
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ActionButton(
-                                label: "افزودن آیتم",
-                                icon: CupertinoIcons.cart_badge_plus,
-                                bgColor: Colors.blueGrey,
-                                onPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                      const WareToBillPanel())
-                                      .then((value) {
-                                    if (value != null) {
-                                      wares.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                              ActionButton(
-                                label: "پرداخت جدید",
-                                icon: Icons.add_card_rounded,
-                                bgColor: Colors.teal,
-                                onPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                      const PaymentToBill()).then((value) {
-                                    if (value != null) {
-                                      payments.add(value);
-                                    }
-                                    setState(() {});
-                                  });
-                                },
-                              ),
 
-                            ],
+                          ///Payment List Part
+                          PaymentList(
+                            payments: payments,
+                            onChange: () {
+                              setState(() {});
+                            },
                           ),
-                        ),
-
-                        ///final data of orderBill like sale total
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: kBoxDecoration,
-                          child: Column(
-                            children: [
-                              TextDataField(title: "جمع خرید", value: itemsSum),
-                              TextDataField(
-                                  title: "پرداخت نقد", value: cashSum),
-                              TextDataField(
-                                  title: "پرداخت با کارت", value: atmSum),
-                              TextDataField(title: "تخفیف", value: discount),
-                              ///total payment
-                              Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: kBoxDecoration.copyWith(
-                                    color: payable() == 0
-                                        ? Colors.green
-                                        : (payable() < 0 ? Colors.blue : Colors.red),
-                                  ),
-                                  child: TextDataField(
-                                    title: "قابل پرداخت",
-                                    value: payable(),
-                                    color: Colors.white,
-                                  )),
-                            ],
-                          ),
-                        ),
-                        ///Product List Part
-                        ShoppingRawList(
-                          wares: wares,
-                          onChange: () {
-                            setState(() {});
-                          },
-                        ),
-
-                        ///Payment List Part
-                        PaymentList(
-                          payments: payments,
-                          onChange: () {
-                            setState(() {});
-                          },
-                        ),
-                        const SizedBox(height: 90),
-                      ],
+                          const SizedBox(height: 90),
+                        ],
+                      ),
                     ),
                   ),
                 ),

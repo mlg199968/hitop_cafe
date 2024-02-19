@@ -16,6 +16,8 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/widgets/custom_text.dart';
+
 class PresentOrderScreen extends StatefulWidget {
   static const String id = "/present-order-screen";
   const PresentOrderScreen({super.key});
@@ -44,7 +46,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    searchCustomerController.dispose();
     super.dispose();
   }
 
@@ -54,7 +56,6 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
       child: Consumer<ServerProvider>(
         builder: (context,serverProvider,child) {
           return Scaffold(
-            extendBodyBehindAppBar: true,
             key: scaffoldKey,
             floatingActionButton: CustomFloatActionButton(onPressed: () {
               Navigator.pushNamed(context, AddOrderScreen.id);
@@ -62,6 +63,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               actions: [
+                ///local network button
                 ActionButton(
                   label: "شبکه",
                   icon: Icons.circle,
@@ -71,20 +73,14 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                     Navigator.pushNamed(context, LocalServerScreen.id);
                   },
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.more_vert,
-                    size: 30,
-                  ),
-                ),
               ],
+              leading: const BackButton(color: Colors.black54,),
               title: Container(
                 padding: const EdgeInsets.only(right: 5),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("سفارشات حاضر"),
+                    CText("سفارشات حاضر",fontSize: 16,),
                   ],
                 ),
               ),
@@ -100,15 +96,12 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                   children: <Widget>[
                     ///Search bar customer list
                     Container(
-                      height: 200,
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                          const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                       decoration: const BoxDecoration(
-                          gradient: kMainGradiant,
-                          borderRadius: BorderRadius.vertical(
-                              bottom: Radius.elliptical(100, 20))),
+                          gradient: kMainGradiant,),
                       child: Align(
-                        alignment: Alignment.bottomCenter,
+                        alignment: Alignment.centerRight,
                         child: CustomSearchBar(
                             focusNode: focusNode,
                             controller: searchCustomerController,

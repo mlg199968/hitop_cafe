@@ -16,7 +16,7 @@ import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/panels/waiter_order_info_panel.dart';
 import 'package:hitop_cafe/waiter_app/services/pack_tools.dart';
 import 'package:hitop_cafe/waiter_app/waiter_add_order_screen.dart';
-import 'package:hitop_cafe/waiter_app/waiter_setting_screen.dart';
+import 'package:hitop_cafe/waiter_app/waiter_network_screen.dart';
 import 'package:hitop_cafe/waiter_app/waiter_side_bar_panel.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';

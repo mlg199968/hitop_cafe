@@ -59,8 +59,11 @@ class ServerServices{
   Future<void> close(Pack pack)async{
     pack.message="server closed";
     await broadcast(pack.toJson());
-    await serverSocket!.close();
-    serverSocket=null;
+    if(serverSocket!=null) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      await serverSocket!.close();
+    }
+   // serverSocket=null;
     running=false;
   }
 }

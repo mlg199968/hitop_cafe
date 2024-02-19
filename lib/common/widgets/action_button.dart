@@ -8,9 +8,13 @@ class ActionButton extends StatelessWidget {
       required this.icon,
       this.bgColor = kMainColor,
       this.label,
-      this.height = 35,
+      this.height = 30,
       this.width,
-      this.direction = TextDirection.rtl, this.onLongPress, this.iconColor, this.margin, this.padding});
+      this.direction = TextDirection.rtl,
+      this.onLongPress,
+      this.iconColor,
+      this.margin,
+      this.padding, this.borderRadius=20});
 
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
@@ -20,6 +24,7 @@ class ActionButton extends StatelessWidget {
   final Color? iconColor;
   final double height;
   final double? width;
+  final double borderRadius;
   final TextDirection direction;
   final EdgeInsets? margin;
   final EdgeInsets? padding;
@@ -30,13 +35,15 @@ class ActionButton extends StatelessWidget {
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Container(
-          margin:margin ?? const EdgeInsets.all(3),
+          margin: margin ?? const EdgeInsets.all(3),
           width: width,
           height: height,
           child: ElevatedButton(
             style: ButtonStyle(
-                padding:  MaterialStatePropertyAll(
-                    padding ?? const EdgeInsets.symmetric(horizontal: 5, vertical: 0)),
+              shape:MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius))),
+                padding: MaterialStatePropertyAll(padding ??
+                    EdgeInsets.symmetric(
+                        horizontal: label == null ? 0 : 5, vertical: 0)),
                 backgroundColor: MaterialStateProperty.all(bgColor)),
             onPressed: onPress,
             onLongPress: onLongPress,
@@ -47,19 +54,22 @@ class ActionButton extends StatelessWidget {
                 constraint.maxWidth < 100
                     ? const SizedBox()
                     : Flexible(
-                      child: Text(
+                        child: Text(
                           label ?? "",
                           overflow: TextOverflow.fade,
                           maxLines: 1,
                           style: const TextStyle(color: Colors.white),
                         ),
-                    ),
+                      ),
                 constraint.maxWidth < 100
                     ? const SizedBox()
-                    : const SizedBox(width: 3,),
+                    : const SizedBox(
+                        width: 3,
+                      ),
                 Icon(
                   icon,
-                  color:iconColor ?? Colors.white,
+                  color: iconColor ?? Colors.white,
+                  size: 18,
                 ),
               ],
             ),

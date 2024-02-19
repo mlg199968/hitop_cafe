@@ -239,17 +239,12 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                                   (item) => QuickItemTile(
                                     label: item.itemName,
                                     count: item.quantity,
-                                    onAddPress: () {
-                                      item.quantity++;
-                                      setState(() {});
-                                    },
-                                    onRemovePress: () {
-                                      if (item.quantity > 1) {
-                                        item.quantity--;
-                                      } else {
+                                    onChange: (val){
+                                      item.quantity=val;
+                                      if(item.quantity<1){
                                         selectedItems.remove(item);
                                       }
-                                      setState(() {});
+                                        setState(() {});
                                     },
                                   ),
                                 )
@@ -294,38 +289,41 @@ class LabelTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        decoration: BoxDecoration(
-            color: disable ? disableColor : activeColor,
-            borderRadius: BorderRadius.circular(30)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5.0),
-              child: Text(
-                label,
-                style: const TextStyle(color: Colors.white),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
+              color: disable ? disableColor : activeColor,
+              borderRadius: BorderRadius.circular(disable?5:10)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Text(
+                  label,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-            const VerticalDivider(
-              width: 5,
-            ),
-            if (count != 0)
-              Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                      color: Colors.white70, shape: BoxShape.circle),
-                  child: Text(count.toString().toPersianDigit())),
-          ],
+              const VerticalDivider(
+                width: 5,
+              ),
+              if (count != 0)
+                Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: Colors.white70, shape: BoxShape.circle),
+                    child: Text(count.toString().toPersianDigit())),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
+///quick item list tile
 class QuickItemTile extends StatelessWidget {
   const QuickItemTile({
     super.key,
@@ -334,15 +332,13 @@ class QuickItemTile extends StatelessWidget {
     this.onTap,
     this.disable = true,
     this.disableColor = Colors.white,
-    this.activeColor = kMainActiveColor,
-    this.onAddPress,
-    this.onRemovePress,
+    this.activeColor = kMainActiveColor, required this.onChange,
+
   });
   final String label;
   final num count;
   final VoidCallback? onTap;
-  final VoidCallback? onAddPress;
-  final VoidCallback? onRemovePress;
+  final Function(num count) onChange;
   final bool disable;
   final Color activeColor;
   final Color disableColor;
@@ -384,38 +380,57 @@ class QuickItemTile extends StatelessWidget {
             const Expanded(child: SizedBox()),
 
             ///add and remove button
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              height: 30,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                      onTap: onRemovePress,
-                      child: const CircleAvatar(
-                          minRadius: 3,
-                          backgroundColor: Colors.red,
-                          child: Icon(
-                            Icons.close,
-                            color: Colors.white,
-                          ))),
-                  const SizedBox(
-                    width: 3,
-                  ),
-                  InkWell(
-                      onTap: onAddPress,
-                      child: const CircleAvatar(
-                          minRadius: 3,
-                          backgroundColor: Colors.teal,
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ))),
-                ],
-              ),
-            )
+            AddOrSubtract(value:count,onChange:onChange ,)
           ],
         ),
+      ),
+    );
+  }
+}
+/// add and subtract button
+class AddOrSubtract extends StatelessWidget {
+  const AddOrSubtract({
+    super.key,
+     required this.value, required this.onChange,
+  });
+
+  final num value;
+  final Function(num count) onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      height: 30,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+              onTap: (){
+                    onChange(value-1);
+              },
+              child: const CircleAvatar(
+                  minRadius: 3,
+                  backgroundColor: Colors.red,
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                  ))),
+          const SizedBox(
+            width: 3,
+          ),
+          InkWell(
+              onTap: (){
+                onChange(value+1);
+              },
+              child: const CircleAvatar(
+                  minRadius: 3,
+                  backgroundColor: Colors.teal,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ))),
+        ],
       ),
     );
   }

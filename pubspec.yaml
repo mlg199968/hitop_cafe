@@ -94,6 +94,7 @@ dependencies:
 #  pdfx: ^2.4.0
   flutter_animate: ^4.4.0
   lottie: ^2.6.0
+  flex_list: ^1.0.0
 
 
 

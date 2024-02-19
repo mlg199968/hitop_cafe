@@ -22,10 +22,13 @@ class Client {
     this.onError,
   });
   bool isConnected = false;
+  bool searching = false;
   late Socket socket;
   Future<void> connect(Pack pack) async {
     try {
-      socket = await Socket.connect(hostName, port);
+      searching=true;
+      socket = await Socket.connect(hostName, port).timeout(const Duration(milliseconds: 5000));
+      searching=false;
       socket.listen(onData, onError: onError, onDone: () async {
 
         disconnect(pack);

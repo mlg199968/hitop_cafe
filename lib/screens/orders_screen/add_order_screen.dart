@@ -22,6 +22,7 @@ import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart'
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/print_panel.dart';
+import 'package:hitop_cafe/screens/orders_screen/parts/item_selection_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
@@ -83,7 +84,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 
   ///calculate payable amount
-  num payable() {
+  num get payable {
     num payable = 0;
     payable +=
         items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
@@ -91,7 +92,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
         ? 0
         : payments.map((e) => e.amount).reduce((a, b) => a + b);
     payable -= discount;
-    setState(() {});
     return payable;
   }
 
@@ -132,7 +132,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
       ..items = items
       ..payments = payments
       ..discount = discount + paymentDiscount
-      ..payable = payable()
+      ..payable = payable
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
       ..tableNumber = int.parse(tableNumberController.text)
       ..billNumber = billNumber
@@ -294,7 +294,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                   screenType(context) == ScreenType.mobile
                       ? const SizedBox()
                       : Container(
-                          height: double.maxFinite,
+                          alignment: Alignment.center,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
                           width: 200,
@@ -453,7 +453,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          const PaymentToBill()).then((value) {
+                                          PaymentToBill(payable)).then((value) {
                                     if (value != null) {
                                       payments.add(value);
                                     }
@@ -500,13 +500,13 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                             ],
                           ),
                         ),
-
                   ///main part like items list
                   Flexible(
                     child: SingleChildScrollView(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 90),
+                        alignment: Alignment.topCenter,
+                        padding:  EdgeInsets.symmetric(
+                            horizontal: 10, vertical:screenType(context) == ScreenType.mobile ?90: 10),
                         child: Wrap(
                           direction: Axis.horizontal,
                           children: [
@@ -643,6 +643,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
+                                    /// add item button mobile screen
                                     Flexible(
                                       child: ActionButton(
                                         label: "افزودن آیتم",
@@ -662,6 +663,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                         },
                                       ),
                                     ),
+                                    ///quick add item button mobile screen
                                     Flexible(
                                       child: ActionButton(
                                         label: "افزودن سریع",
@@ -680,6 +682,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                         },
                                       ),
                                     ),
+                                    ///payment button mobile screen
                                     Flexible(
                                       child: ActionButton(
                                         label: "پرداخت جدید",
@@ -689,7 +692,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                           showDialog(
                                                   context: context,
                                                   builder: (context) =>
-                                                      const PaymentToBill())
+                                                       PaymentToBill(payable))
                                               .then((value) {
                                             if (value != null) {
                                               payments.add(value);
@@ -708,6 +711,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               width: 450,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
+                              margin: EdgeInsets.all(10),
                               decoration: kBoxDecoration,
                               child: Column(
                                 children: [
@@ -719,28 +723,34 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                       title: "پرداخت با کارت", value: atmSum),
                                   TextDataField(
                                       title: "تخفیف", value: discount),
+                                  ///total payment
+                                  Container(
+                                      width: 450,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: payable == 0
+                                            ? Colors.teal
+                                            : (payable < 0
+                                            ? Colors.indigoAccent
+                                            : Colors.redAccent),
+                                      ),
+                                      child: TextDataField(
+                                        title: "قابل پرداخت",
+                                        showCurrency: true,
+                                        value: payable,
+                                        color: Colors.white,
+                                      )),
                                 ],
                               ),
                             ),
 
-                            ///total payment
-                            Container(
-                                width: 450,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                decoration: kBoxDecoration.copyWith(
-                                  color: payable() == 0
-                                      ? Colors.green
-                                      : (payable() < 0
-                                          ? Colors.blue
-                                          : Colors.red),
-                                ),
-                                child: TextDataField(
-                                  title: "قابل پرداخت",
-                                  showCurrency: true,
-                                  value: payable(),
-                                  color: Colors.white,
-                                )),
+                            ///item selection part in desktop
+                            if(screenType(context) == ScreenType.desktop)
+                              ItemSelectionPart(selectedItems:items,onChange: (){
+                                setState(() {});
+                              },),
 
                             ///sale item List Part
                             ShoppingList(
@@ -757,7 +767,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                 setState(() {});
                               },
                             ),
-                            const SizedBox(height: 90),
+                            const SizedBox(height: 40),
                           ],
                         ),
                       ),
