@@ -2,31 +2,36 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 
-class CardButton extends StatelessWidget {
+class CardButton extends InkWell {
   const CardButton(
       {super.key,
       required this.label,
       this.image,
-        this.child,
+        super.child,
       this.height = 200,
       this.width = 150,
-        this.borderRadius=2,
-      required this.onTap,
+        this.cornerRadius=8,
+      required super.onTap,
       this.verticalDirection = true});
   final String label;
   final String? image;
-  final Widget? child;
+
   final double width;
   final double height;
   final bool verticalDirection;
-  final double borderRadius;
-  final VoidCallback onTap;
+  final double cornerRadius;
+  //final VoidCallback onTap;
+@override
+  BorderRadius? get borderRadius => BorderRadius.circular(cornerRadius);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: borderRadius,
       onTap: onTap,
+      onHover: (val){
+
+      },
       child: Container(
         margin: const EdgeInsets.all(5),
         width: width,
@@ -35,7 +40,7 @@ class CardButton extends StatelessWidget {
           border: Border.all(width: 0,color:kSecondaryColor),
           color: Colors.white,
           image:image==null?null:DecorationImage(image: AssetImage("assets/images/$image.jpg"),fit: BoxFit.cover) ,
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: borderRadius,
         boxShadow: const [
           BoxShadow(offset: Offset(2, 4),blurRadius: 5,color: Colors.black54),
         ]),
@@ -53,7 +58,7 @@ class CardButton extends StatelessWidget {
               stops: const [.1,0.6],
               colors: const [kMainColor, Colors.transparent],
             ),
-                borderRadius: BorderRadius.circular(borderRadius)),
+                borderRadius: borderRadius),
             child: Text(
               label,
               style:

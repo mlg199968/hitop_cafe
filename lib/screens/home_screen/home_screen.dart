@@ -8,6 +8,7 @@ import 'package:hitop_cafe/common/widgets/small_card_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/user_permissions.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
@@ -50,12 +51,14 @@ bool showAlertNotice=true;
   int screenIndex = 0;
 
   ///when screen width it's getting large onTap button function change to change screen with index
-  onTapFunction(int index, VoidCallback onTap) {
-    screenIndex = index;
-    if (screenType(context) == ScreenType.desktop) {
-      setState(() {});
-    } else {
-      onTap();
+  onTapFunction(int index, VoidCallback onTap,{bool permission=true}) {
+    if(permission) {
+      screenIndex = index;
+      if (screenType(context) == ScreenType.desktop) {
+        setState(() {});
+      } else {
+        onTap();
+      }
     }
   }
 
@@ -150,15 +153,16 @@ bool showAlertNotice=true;
               Flexible(
                 flex: 2,
                 child: SingleChildScrollView(
-                  child: Stack(
+                  child: Column(
                     children: [
                       ///home screen header
                       Container(
                         alignment: Alignment.center,
                         padding: const EdgeInsets.all(10),
-                        height: 200,
-                        decoration: const BoxDecoration(
+                        height: 70,
+                        decoration:  BoxDecoration(
                           gradient: kMainGradiant,
+                          borderRadius:screenType(context) != ScreenType.desktop?null:const BorderRadius.horizontal(left: Radius.circular(20)),
                         ),
                         child: Center(
                           child: Column(
@@ -226,8 +230,6 @@ bool showAlertNotice=true;
                         ),
                       ),
                       Container(
-                        margin:
-                            const EdgeInsets.only(top:120),
                         padding: const EdgeInsets.all(20),
                         child: Center(
 
@@ -243,7 +245,7 @@ bool showAlertNotice=true;
                                   flex: 3,
                                   child: CardButton(
                                       label: "سفارشات حاضر",
-                                      width: 300,
+                                      width: 250,
                                       image: "active-orders",
                                       onTap: () {
                                         onTapFunction(1, () {
@@ -256,7 +258,7 @@ bool showAlertNotice=true;
                                   flex: 2,
                                   child: CardButton(
                                       label: "تاریخچه سفارشات",
-                                      width: 200,
+                                      width: 150,
                                       image: "orders-history",
                                       onTap: () {
                                         onTapFunction(0, () {
@@ -306,22 +308,18 @@ bool showAlertNotice=true;
                                         image: "bills.jpg",
                                         onTap: () {
                                           onTapFunction(4, () {
-                                            if(UserTools.userPermission(context,userTypes: [UserType.accountant,UserType.manager,])) {
                                               Navigator.pushNamed(
                                                 context, ShoppingBillScreen.id);
-                                            }
-                                          });
+                                          },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
                                         }),
                                     SmallCardButton(
                                         label: "آنالیز",
                                         image: "analytics3.png",
                                         onTap: () {
                                           onTapFunction(5, () {
-                                            if(UserTools.userPermission(context,userTypes: [UserType.accountant])) {
                                               Navigator.pushNamed(
                                                   context, AnalyticsScreen.id);
-                                            }
-                                          });
+                                          },permission: UserTools.userPermission(context,userTypes: kupAnalyticsScreen));
                                         }),
                                   ],
                                 ),

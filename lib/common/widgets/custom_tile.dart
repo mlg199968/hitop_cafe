@@ -20,10 +20,11 @@ class CustomTile extends StatelessWidget {
       this.topTrailingLabel,
       this.onInfo,
       this.type,
-      this.enable = true, this.selected=false, this.middleWidget});
+      this.enable = true, this.selected=false, this.middleWidget, this.surfaceColor});
   final VoidCallback onDelete;
   final double height;
   final Color color;
+  final Color? surfaceColor;
   final String? subTitle;
   final String title;
   final String topTrailing;
@@ -90,7 +91,7 @@ class CustomTile extends StatelessWidget {
           return SizedBox(
             width: 450,
             child: Card(
-             surfaceTintColor: Colors.white,
+             surfaceTintColor: surfaceColor ?? Colors.white,
               margin: selected ?const EdgeInsets.only(right: 20):null,
               child: BackgroundShape1(
                 color: color,

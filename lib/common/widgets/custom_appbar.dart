@@ -27,7 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       return AppBar(
-        elevation: 20,
+        elevation: 0,
         backgroundColor: Colors.transparent,
         title: Text(
           title,
@@ -39,8 +39,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             height: 130,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
                 .copyWith(left: constraint.maxHeight > 60 ? 10 : leadingWidth),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
+              borderRadius: screenType(context) != ScreenType.desktop?null: BorderRadius.circular(20),
               gradient: kMainGradiant,
+              boxShadow: [const BoxShadow(blurRadius: 5,offset: Offset(2, 3),color: Colors.black54)]
             ),
             child: Wrap(
               spacing: 10,

@@ -229,7 +229,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
             onNo: () {
               Navigator.pop(context, false);
               Navigator.pop(context);
-            }));
+            })) ;
   }
 
   @override
@@ -291,9 +291,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
               child: Row(
                 children: [
                   ///*****side bar panel in tablet snd desktop mode************
-                  screenType(context) == ScreenType.mobile
-                      ? const SizedBox()
-                      : Container(
+                  if(screenType(context) != ScreenType.mobile)
+                      Container(
                           alignment: Alignment.center,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
@@ -502,273 +501,275 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                         ),
                   ///main part like items list
                   Flexible(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.topCenter,
-                        padding:  EdgeInsets.symmetric(
-                            horizontal: 10, vertical:screenType(context) == ScreenType.mobile ?90: 10),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          children: [
-                            ///top Order data part on mobile screen
-                            if (screenType(context) == ScreenType.mobile)
-                              Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white.withOpacity(.8)),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ///top right
-                                    Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            const CText(
-                                              "کاربر:",
-                                            ),
-                                            CText(
-                                              user?.name ?? "نامشخص",
-                                              fontSize: 15,
-                                            ),
-                                          ],
-                                        ),
-                                        const Gap(5),
-                                        SizedBox(
-                                          width: 100,
-                                          child: CounterTextfield(
-                                            label: "میز:",
-                                            decimal: false,
-                                            controller: tableNumberController,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 10),
-
-                                    ///top left
-                                    SizedBox(
-                                      width: 150,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                    child: SafeArea(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          alignment: Alignment.topCenter,
+                          padding:  EdgeInsets.symmetric(
+                              horizontal: 10, vertical:screenType(context) == ScreenType.mobile ?90: 10),
+                          child: Wrap(
+                            direction: Axis.horizontal,
+                            children: [
+                              ///top Order data part on mobile screen
+                              if (screenType(context) == ScreenType.mobile)
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white.withOpacity(.8)),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      ///top right
+                                      Column(
                                         children: [
-                                          ///invoice number
-                                          TitleButton(
-                                            title: "شماره فاکتور:",
-                                            value: billNumber.toString(),
-                                            onPress: () {
-                                              showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          const BillNumber())
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  billNumber = value.round();
-                                                }
-                                                setState(() {});
-                                              });
-                                            },
+                                          Wrap(
+                                            children: [
+                                              const CText(
+                                                "کاربر:",
+                                              ),
+                                              CText(
+                                                user?.name ?? "نامشخص",
+                                                fontSize: 15,
+                                              ),
+                                            ],
                                           ),
-                                          const Divider(
-                                            thickness: 1,
-                                            height: 5,
-                                          ),
-
-                                          ///choose orderBill date
-                                          TitleButton(
-                                            title: "تاریخ فاکتور:",
-                                            value: date.formatCompactDate(),
-                                            onPress: () async {
-                                              Jalali? picked =
-                                                  await TimeTools.chooseDate(
-                                                      context);
-                                              if (picked != null) {
-                                                setState(() {
-                                                  date = picked;
-                                                });
-                                              }
-                                            },
+                                          const Gap(5),
+                                          SizedBox(
+                                            width: 100,
+                                            child: CounterTextfield(
+                                              label: "میز:",
+                                              decimal: false,
+                                              controller: tableNumberController,
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 10),
+
+                                      ///top left
+                                      SizedBox(
+                                        width: 150,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ///invoice number
+                                            TitleButton(
+                                              title: "شماره فاکتور:",
+                                              value: billNumber.toString(),
+                                              onPress: () {
+                                                showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            const BillNumber())
+                                                    .then((value) {
+                                                  if (value != null) {
+                                                    billNumber = value.round();
+                                                  }
+                                                  setState(() {});
+                                                });
+                                              },
+                                            ),
+                                            const Divider(
+                                              thickness: 1,
+                                              height: 5,
+                                            ),
+
+                                            ///choose orderBill date
+                                            TitleButton(
+                                              title: "تاریخ فاکتور:",
+                                              value: date.formatCompactDate(),
+                                              onPress: () async {
+                                                Jalali? picked =
+                                                    await TimeTools.chooseDate(
+                                                        context);
+                                                if (picked != null) {
+                                                  setState(() {
+                                                    date = picked;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                            ///description textField
-                            if (screenType(context) == ScreenType.mobile)
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: TextButton.icon(
-                                    onPressed: () {
-                                      showDescription = !showDescription;
-                                      setState(() {});
-                                    },
-                                    icon: Icon(
-                                      showDescription
-                                          ? CupertinoIcons.minus_square
-                                          : CupertinoIcons.plus_square,
-                                      color: Colors.teal,
-                                      size: 20,
-                                    ),
-                                    label: const CText(
-                                      "توضیحات",
-                                      color: Colors.teal,
-                                    )),
-                              ),
-                            if (showDescription &&
-                                screenType(context) == ScreenType.mobile)
-                              CustomTextField(
-                                controller: descriptionController,
-                                label: "توضیحات سفارش",
-                                width: double.maxFinite,
-                                maxLine: 3,
-                                maxLength: 300,
-                              ),
-
-                            ///quick action button like add items and add payments
-                            if (screenType(context) == ScreenType.mobile)
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    /// add item button mobile screen
-                                    Flexible(
-                                      child: ActionButton(
-                                        label: "افزودن آیتم",
-                                        icon: CupertinoIcons.cart_badge_plus,
-                                        bgColor: Colors.blueGrey,
-                                        onPress: () {
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      const ItemToBillPanel())
-                                              .then((value) {
-                                            if (value != null) {
-                                              items.add(value);
-                                            }
-                                            setState(() {});
-                                          });
-                                        },
+                              ///description textField
+                              if (screenType(context) == ScreenType.mobile)
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: TextButton.icon(
+                                      onPressed: () {
+                                        showDescription = !showDescription;
+                                        setState(() {});
+                                      },
+                                      icon: Icon(
+                                        showDescription
+                                            ? CupertinoIcons.minus_square
+                                            : CupertinoIcons.plus_square,
+                                        color: Colors.teal,
+                                        size: 20,
                                       ),
-                                    ),
-                                    ///quick add item button mobile screen
-                                    Flexible(
-                                      child: ActionButton(
-                                        label: "افزودن سریع",
-                                        icon: CupertinoIcons.cart_badge_plus,
-                                        bgColor: Colors.deepOrangeAccent,
-                                        onPress: () {
-                                          Navigator.pushNamed(
-                                                  context, QuickAddScreen.id)
-                                              .then((value) {
-                                            if (value != null) {
-                                              value as List<Item>;
-                                              addToItemList(value);
-                                              setState(() {});
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    ///payment button mobile screen
-                                    Flexible(
-                                      child: ActionButton(
-                                        label: "پرداخت جدید",
-                                        icon: Icons.add_card_rounded,
-                                        bgColor: Colors.teal,
-                                        onPress: () {
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                       PaymentToBill(payable))
-                                              .then((value) {
-                                            if (value != null) {
-                                              payments.add(value);
-                                            }
-                                            setState(() {});
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                            ///final data of orderBill like sale total
-                            Container(
-                              width: 450,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              margin: EdgeInsets.all(10),
-                              decoration: kBoxDecoration,
-                              child: Column(
-                                children: [
-                                  TextDataField(
-                                      title: "جمع خرید", value: itemsSum),
-                                  TextDataField(
-                                      title: "پرداخت نقد", value: cashSum),
-                                  TextDataField(
-                                      title: "پرداخت با کارت", value: atmSum),
-                                  TextDataField(
-                                      title: "تخفیف", value: discount),
-                                  ///total payment
-                                  Container(
-                                      width: 450,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: payable == 0
-                                            ? Colors.teal
-                                            : (payable < 0
-                                            ? Colors.indigoAccent
-                                            : Colors.redAccent),
-                                      ),
-                                      child: TextDataField(
-                                        title: "قابل پرداخت",
-                                        showCurrency: true,
-                                        value: payable,
-                                        color: Colors.white,
+                                      label: const CText(
+                                        "توضیحات",
+                                        color: Colors.teal,
                                       )),
-                                ],
+                                ),
+                              if (showDescription &&
+                                  screenType(context) == ScreenType.mobile)
+                                CustomTextField(
+                                  controller: descriptionController,
+                                  label: "توضیحات سفارش",
+                                  width: double.maxFinite,
+                                  maxLine: 3,
+                                  maxLength: 300,
+                                ),
+
+                              ///quick action button like add items and add payments
+                              if (screenType(context) == ScreenType.mobile)
+                                Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      /// add item button mobile screen
+                                      Flexible(
+                                        child: ActionButton(
+                                          label: "افزودن آیتم",
+                                          icon: CupertinoIcons.cart_badge_plus,
+                                          bgColor: Colors.blueGrey,
+                                          onPress: () {
+                                            showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        const ItemToBillPanel())
+                                                .then((value) {
+                                              if (value != null) {
+                                                items.add(value);
+                                              }
+                                              setState(() {});
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      ///quick add item button mobile screen
+                                      Flexible(
+                                        child: ActionButton(
+                                          label: "افزودن سریع",
+                                          icon: CupertinoIcons.cart_badge_plus,
+                                          bgColor: Colors.deepOrangeAccent,
+                                          onPress: () {
+                                            Navigator.pushNamed(
+                                                    context, QuickAddScreen.id)
+                                                .then((value) {
+                                              if (value != null) {
+                                                value as List<Item>;
+                                                addToItemList(value);
+                                                setState(() {});
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      ///payment button mobile screen
+                                      Flexible(
+                                        child: ActionButton(
+                                          label: "پرداخت جدید",
+                                          icon: Icons.add_card_rounded,
+                                          bgColor: Colors.teal,
+                                          onPress: () {
+                                            showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                         PaymentToBill(payable))
+                                                .then((value) {
+                                              if (value != null) {
+                                                payments.add(value);
+                                              }
+                                              setState(() {});
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              ///final data of orderBill like sale total
+                              Container(
+                                width: 450,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                margin: const EdgeInsets.all(10),
+                                decoration: kBoxDecoration,
+                                child: Column(
+                                  children: [
+                                    TextDataField(
+                                        title: "جمع خرید", value: itemsSum),
+                                    TextDataField(
+                                        title: "پرداخت نقد", value: cashSum),
+                                    TextDataField(
+                                        title: "پرداخت با کارت", value: atmSum),
+                                    TextDataField(
+                                        title: "تخفیف", value: discount),
+                                    ///total payment
+                                    Container(
+                                        width: 450,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: payable == 0
+                                              ? Colors.teal
+                                              : (payable < 0
+                                              ? Colors.indigoAccent
+                                              : Colors.redAccent),
+                                        ),
+                                        child: TextDataField(
+                                          title: "قابل پرداخت",
+                                          showCurrency: true,
+                                          value: payable,
+                                          color: Colors.white,
+                                        )),
+                                  ],
+                                ),
                               ),
-                            ),
 
-                            ///item selection part in desktop
-                            if(screenType(context) == ScreenType.desktop)
-                              ItemSelectionPart(selectedItems:items,onChange: (){
-                                setState(() {});
-                              },),
+                              ///**** item selection part in desktop ****
+                              if(screenType(context) == ScreenType.desktop)
+                                ItemSelectionPart(selectedItems:items,onChange: (){
+                                  setState(() {});
+                                },),
 
-                            ///sale item List Part
-                            ShoppingList(
-                              items: items,
-                              onChange: () {
-                                setState(() {});
-                              },
-                            ),
+                              ///sale item List Part
+                              ShoppingList(
+                                items: items,
+                                onChange: () {
+                                  setState(() {});
+                                },
+                              ),
 
-                            ///Payment List Part
-                            PaymentList(
-                              payments: payments,
-                              onChange: () {
-                                setState(() {});
-                              },
-                            ),
-                            const SizedBox(height: 40),
-                          ],
+                              ///Payment List Part
+                              PaymentList(
+                                payments: payments,
+                                onChange: () {
+                                  setState(() {});
+                                },
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+                          ),
                         ),
                       ),
                     ),

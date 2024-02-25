@@ -3,6 +3,7 @@ import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
@@ -146,13 +147,13 @@ class _CreditListPartState extends State<CreditListPart> {
   Widget build(BuildContext context) {
     return Expanded(
       child: LayoutBuilder(builder: (context, constraint) {
-        bool isTablet = constraint.maxWidth > 500;
+        bool isMobile = constraint.maxWidth < 500;
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            !isTablet
-                ? const SizedBox()
-                : Flexible(
+            ///side bar info panel in desktop
+            if(!isMobile)
+            Flexible(
               child: SizedBox(
                 width: 400,
                 child: selectedOrder == null
@@ -165,6 +166,7 @@ class _CreditListPartState extends State<CreditListPart> {
                     }),
               ),
             ),
+            ///main list view
             Expanded(
               child: ListView.builder(
                   itemCount: widget.orderList.length,
@@ -172,9 +174,9 @@ class _CreditListPartState extends State<CreditListPart> {
                     //color condition for tile color
                     final colorCondition = widget.orderList[index].payable <= 0
                         ? (widget.orderList[index].payable == 0
-                        ? Colors.green
-                        : Colors.blue)
-                        : Colors.red;
+                        ? Colors.teal
+                        : Colors.indigoAccent)
+                        : Colors.redAccent;
                     if (Provider.of<FilterProvider>(context, listen: false)
                         .compareData(
                         widget.orderList[index].dueDate,
@@ -186,13 +188,17 @@ class _CreditListPartState extends State<CreditListPart> {
                           setState(() {});
                         },
                         child: OrderTile(
-                          enabled: !isTablet,
+                          enabled: isMobile,
                           orderDetail: widget.orderList[index],
                           color: colorCondition,
+                          surfaceColor: selectedOrder == widget.orderList[index]?kMainColor:null ,
                           onSee: () {
+                            //if we come from the select order list to add order to some where this line get running
                             if (widget.key != null) {
                               Navigator.pop(context, widget.orderList[index]);
                             } else {
+                              selectedOrder=widget.orderList[index];
+                              setState(() {});
                               Navigator.pushNamed(context, AddOrderScreen.id,
                                   arguments: widget.orderList[index]);
                             }

@@ -41,11 +41,12 @@ class _SettingScreenState extends State<SettingScreen> {
   late String selectedCurrency;
   String selectedFont = kFonts[0];
   late UserProvider provider;
-  String printTemplate = PrintType.p80mm.value;
+  String? backupDirectory;
 
   ///printer
   Printer? selectedPrinter;
   Printer? selectedPrinter2;
+  String printTemplate = PrintType.p80mm.value;
 
   ///android printer
   BluetoothDevice? selectedBluetoothPrinter;
@@ -67,7 +68,8 @@ class _SettingScreenState extends State<SettingScreen> {
       ..printer2 = selectedPrinter2 == null ? null : selectedPrinter2!.toMap()
     ..printerIp=printerIpController.text==""?null:printerIpController.text
     ..printerIp2=printerIp2Controller.text==""?null:printerIp2Controller.text
-    ..printTemplate=printTemplate;
+    ..printTemplate=printTemplate
+    ..backupDirectory=backupDirectory;
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
@@ -87,6 +89,7 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedPrinter2 =
           shopInfo.printer2 != null ? Printer.fromMap(shopInfo.printer2!) : null;
       printTemplate=shopInfo.printTemplate ?? PrintType.p80mm.value;
+      backupDirectory=shopInfo.backupDirectory;
       setState(() {});
     }
   }
@@ -157,7 +160,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                       // ignore: use_build_context_synchronously
                                       await storagePermission(context, Allow.storage);
                                       if (context.mounted) {
-                                        await BackupTools.createBackup(context);
+                                        await BackupTools.createBackup(context,directory: backupDirectory);
                                       }
                                     },
                                   ),
@@ -183,7 +186,39 @@ class _SettingScreenState extends State<SettingScreen> {
                               ],
                             ),
                           ),
-
+                          Container(
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.all(10),
+                              child: CText("انتخاب مسیر ذخیره سازی فایل پشتیبان :",color: Colors.white,textDirection: TextDirection.rtl,)),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                margin: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(5),
+                                alignment: Alignment.centerRight,
+                                height: 40,
+                                decoration: BoxDecoration(gradient: kBlackWhiteGradiant,borderRadius: BorderRadius.circular(20)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(child: CText(backupDirectory ?? "مسیری انتخاب نشده است")),
+                                    SizedBox(width: 8,),
+                                    ActionButton(
+                                      label: "انتخاب",
+                                      icon: Icons.folder_open_rounded,
+                                      onPress: ()async{
+                                        await storagePermission(context, Allow.externalStorage);
+                                        await storagePermission(context, Allow.storage);
+                                        String? newDir=await BackupTools.chooseDirectory();
+                                        if(newDir!=null) {
+                                          backupDirectory = newDir;
+                                        }
+                                        setState(() {});
+                                      },),
+                                  ],
+                                )),
+                          ),
+                          SizedBox(height: 30,),
                           ///currency unit
                           DropListItem(
                               title: "واحد پول",

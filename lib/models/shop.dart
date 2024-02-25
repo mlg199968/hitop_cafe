@@ -57,6 +57,8 @@ class Shop extends HiveObject {
   String? ipAddress;
   @HiveField(24)
   String? subnet;
+  @HiveField(25)
+  String? backupDirectory;
 
 
 }

@@ -55,194 +55,197 @@ class _LocalServerScreenState extends State<LocalServerScreen> {
 
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CustomTextField(
-                          label: "port",
-                          textFormat: TextFormatter.number,
-                          validate: true,
-                          width: 100,
-                          controller: portController),
-                      const Gap(8),
-                      Expanded(
-                        child: CustomTextField(
-                            validate: true,
-                            label: "ip address",
-                            controller: ipController,
-                        suffixIcon:CustomIconButton(
-                          label: "default ip",
-                          icon: Icons.system_update_tv,
-                          onPress: () async {
-                            String? ip = await networkInfo.getWifiIP();
-                            if (ip != null) {
-                              ipController.text = ip;
-                              serverProvider.setIpAndPort(ip, 4000);
-                              setState(() {});
-                            }
-                          },
-                        ),),
-                      ),
-
-                    ],
-                  ),
-                  const Gap(20),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Wrap(
-                      spacing: 8,
+            child: SizedBox(
+              width: 500,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        ///create server button
-                        ActionButton(
-                          icon: Icons.circle,
-                          bgColor: Colors.black,
-                          label: "احراز سرور",
-                          iconColor: serverProvider.server!=null?(serverProvider.server!.running
-                              ? Colors.green
-                              : Colors.redAccent):null,
-                          onPress: () {
-                            try{
-                            if (_formKey.currentState!.validate()) {
-                              serverProvider.setIpAndPort(ipController.text,
-                                  int.parse(portController.text));
-                              serverProvider.initServer();
-                              serverProvider.startOrCloseServer().onError((error, stackTrace) => ErrorHandler.errorManger(context, error,title: "خطا در احراز ای پی سرور",showSnackbar: true));
-
-                             // showSnackBar(context, "سرور احراز شد",type: SnackType.success);
-                              setState(() {});
-                            }}catch(e){
-                              ErrorHandler.errorManger(context, e,title: "خطا در احراز ای پی سرور",showSnackbar: true);
-                            }
-                          },
+                        CustomTextField(
+                            label: "port",
+                            textFormat: TextFormatter.number,
+                            validate: true,
+                            width: 100,
+                            controller: portController),
+                        const Gap(8),
+                        Expanded(
+                          child: CustomTextField(
+                              validate: true,
+                              label: "ip address",
+                              controller: ipController,
+                          suffixIcon:CustomIconButton(
+                            label: "default ip",
+                            icon: Icons.system_update_tv,
+                            onPress: () async {
+                              String? ip = await networkInfo.getWifiIP();
+                              if (ip != null) {
+                                ipController.text = ip;
+                                serverProvider.setIpAndPort(ip, 4000);
+                                setState(() {});
+                              }
+                            },
+                          ),),
                         ),
 
-                        ///cancel server button
+                      ],
+                    ),
+                    const Gap(20),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Wrap(
+                        spacing: 8,
+                        children: [
+                          ///create server button
+                          ActionButton(
+                            icon: Icons.circle,
+                            bgColor: Colors.black,
+                            label: "احراز سرور",
+                            iconColor: serverProvider.server!=null?(serverProvider.server!.running
+                                ? Colors.green
+                                : Colors.redAccent):null,
+                            onPress: () {
+                              try{
+                              if (_formKey.currentState!.validate()) {
+                                serverProvider.setIpAndPort(ipController.text,
+                                    int.parse(portController.text));
+                                serverProvider.initServer();
+                                serverProvider.startOrCloseServer().onError((error, stackTrace) => ErrorHandler.errorManger(context, error,title: "خطا در احراز ای پی سرور",showSnackbar: true));
+
+                               // showSnackBar(context, "سرور احراز شد",type: SnackType.success);
+                                setState(() {});
+                              }}catch(e){
+                                ErrorHandler.errorManger(context, e,title: "خطا در احراز ای پی سرور",showSnackbar: true);
+                              }
+                            },
+                          ),
+
+                          ///cancel server button
+                          ActionButton(
+                            label: "طرد",
+                            icon: Icons.cancel_outlined,
+                            bgColor: Colors.black,
+                            iconColor: Colors.red,
+                            onPress: () {
+                              serverProvider.closeServer();
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(20),
+                    if(serverProvider.server != null && serverProvider.server!.running)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ///send items and wares button
                         ActionButton(
-                          label: "طرد",
-                          icon: Icons.cancel_outlined,
-                          bgColor: Colors.black,
-                          iconColor: Colors.red,
-                          onPress: () {
-                            serverProvider.closeServer();
+                          label: "ارسال آیتم ها به کاربران",
+                          icon: Icons.warehouse,
+                          onPress: () async{
+                            List waresJson = HiveBoxes.getRawWare()
+                                .values
+                                .map((e) => e.toJson())
+                                .toList();
+                            Pack itemsPack = serverProvider.samplePack;
+                            itemsPack
+                              ..type = PackType.wareList.value
+                              ..object = waresJson
+                              ..message = "لیست پیش نیاز های ارسال شده از سمت سرور";
+                            serverProvider.handleMessage(itemsPack);
+                            await Future.delayed(const Duration(milliseconds: 1000));
+                            List itemsJson = HiveBoxes.getItem()
+                                .values
+                                .map((e) => e.toJson())
+                                .toList();
+                            Pack waresPack = serverProvider.samplePack;
+                            waresPack
+                              ..type = PackType.itemList.value
+                              ..object = itemsJson
+                              ..message = "لیست آیتم های ارسال شده از سمت سرور";
+                            serverProvider.handleMessage(waresPack);
                             setState(() {});
                           },
                         ),
-                      ],
-                    ),
-                  ),
-                  const Gap(20),
-                  if(serverProvider.server != null && serverProvider.server!.running)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      ///send items and wares button
-                      ActionButton(
-                        label: "ارسال آیتم ها به کاربران",
-                        icon: Icons.warehouse,
-                        onPress: () async{
-                          List waresJson = HiveBoxes.getRawWare()
-                              .values
-                              .map((e) => e.toJson())
-                              .toList();
-                          Pack itemsPack = serverProvider.samplePack;
-                          itemsPack
-                            ..type = PackType.wareList.value
-                            ..object = waresJson
-                            ..message = "لیست پیش نیاز های ارسال شده از سمت سرور";
-                          serverProvider.handleMessage(itemsPack);
-                          await Future.delayed(const Duration(milliseconds: 1000));
-                          List itemsJson = HiveBoxes.getItem()
-                              .values
-                              .map((e) => e.toJson())
-                              .toList();
-                          Pack waresPack = serverProvider.samplePack;
-                          waresPack
-                            ..type = PackType.itemList.value
-                            ..object = itemsJson
-                            ..message = "لیست آیتم های ارسال شده از سمت سرور";
-                          serverProvider.handleMessage(waresPack);
-                          setState(() {});
-                        },
-                      ),
-                      const Gap(20),
-                      ///send message textfield
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              label: "ارسال پیام به کاربران",
-                              controller: messageController,
-                            ),
-                          ),
-
-                          ///send button
-                          IconButton(
-                              onPressed: () {
-                                Pack newPack = serverProvider.samplePack;
-                                newPack.message = messageController.text;
-                                serverProvider.handleMessage(newPack);
-                                messageController.clear();
-                                setState(() {});
-                              },
-                              icon: const Icon(Icons.send)),
-
-                          ///clear button
-                          IconButton(
-                              onPressed: () {
-                                serverProvider.clearLogs();
-                              },
-                              icon: const Icon(Icons.clear)),
-                        ],
-                      ),
-                      const Gap(20),
-                      ///result part
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Colors.black26,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Column(
-                          children: serverProvider.serverLogs.reversed
-                              .map(
-                                (e) => Card(
-                                  surfaceTintColor: Colors.white,
-                              child: ListTile(
-                                title: CText(
-                                  e.device,
-                                  color:e.device == "Server"
-                                      ? Colors.blueGrey
-                                      : null,
-                                  fontSize: 12,
-                                ),
-                                subtitle: CText(
-                                  e.message,
-                                  color: Colors.black54,
-                                  fontSize: 11,
-                                ),
-                                trailing: CText(
-                                  e.date.toPersianDate(
-                                      showTimeSecond: true, showTime: true),
-                                  fontSize: 9,
-                                  color: Colors.black38,
-                                ),
+                        const Gap(20),
+                        ///send message textfield
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomTextField(
+                                label: "ارسال پیام به کاربران",
+                                controller: messageController,
                               ),
                             ),
-                          )
-                              .toList(),
-                        ),
-                      ),
-                    ],
-                  ),
 
-                ],
+                            ///send button
+                            IconButton(
+                                onPressed: () {
+                                  Pack newPack = serverProvider.samplePack;
+                                  newPack.message = messageController.text;
+                                  serverProvider.handleMessage(newPack);
+                                  messageController.clear();
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.send)),
+
+                            ///clear button
+                            IconButton(
+                                onPressed: () {
+                                  serverProvider.clearLogs();
+                                },
+                                icon: const Icon(Icons.clear)),
+                          ],
+                        ),
+                        const Gap(20),
+                        ///result part
+                        Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.black26,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Column(
+                            children: serverProvider.serverLogs.reversed
+                                .map(
+                                  (e) => Card(
+                                    surfaceTintColor: Colors.white,
+                                child: ListTile(
+                                  title: CText(
+                                    e.device,
+                                    color:e.device == "Server"
+                                        ? Colors.blueGrey
+                                        : null,
+                                    fontSize: 12,
+                                  ),
+                                  subtitle: CText(
+                                    e.message,
+                                    color: Colors.black54,
+                                    fontSize: 11,
+                                  ),
+                                  trailing: CText(
+                                    e.date.toPersianDate(
+                                        showTimeSecond: true, showTime: true),
+                                    fontSize: 9,
+                                    color: Colors.black38,
+                                  ),
+                                ),
+                              ),
+                            )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
+                ),
               ),
             ),
           ),

@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/background_shape2.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/models/AndroidDeviceinfo.dart';
+import 'package:hitop_cafe/models/WindowsDeviceinfo.dart';
+import 'package:hitop_cafe/models/iosdevice.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:intl/intl.dart'as intl;
@@ -38,21 +41,21 @@ void showSnackBar(BuildContext context, String title,
     case SnackType.normal:
       color=Colors.blue;
       break;
-  case SnackType.success:
+    case SnackType.success:
       color=Colors.green;
       break;
-     case SnackType.error:
+    case SnackType.error:
       color=Colors.red;
       break;
-      case SnackType.warning:
+    case SnackType.warning:
       color=Colors.orange;
       break;
 
   }
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      showCloseIcon: true,
-      width: 350,
+        showCloseIcon: true,
+        width: 350,
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         dismissDirection: DismissDirection.horizontal,
@@ -60,8 +63,8 @@ void showSnackBar(BuildContext context, String title,
         content: BlurryContainer(
           padding: const EdgeInsets.all(0),
           height:height ?? 50,
-            color: Colors.black.withOpacity(.8),
-            borderRadius: BorderRadius.circular(20),
+          color: Colors.black.withOpacity(.8),
+          borderRadius: BorderRadius.circular(20),
           child: BackgroundShape2(
             color: color ,
             height: height ?? 50,
@@ -106,8 +109,8 @@ Divider customDivider({required BuildContext context, Color? color}) {
 
 popFunction(context){
   if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }
+    Navigator.pop(context);
+  }
 }
 
 ///convert string to double
@@ -148,7 +151,7 @@ Future<String?> chooseDirectory() async {
   return null;
 }
 ///save image from cache to new path
- saveImage(String? path,String idName,String newPath)async{
+saveImage(String? path,String idName,String newPath)async{
   if(path!=null){
     //get image directory from consts_class file in constants folder
     File newFile= await File(path).copy("$newPath/$idName.jpg");
@@ -169,7 +172,7 @@ Future<File?> pickImage(String imageName) async {
   File? copyFile;
   try {
     XFile? pickedFile =
-        await imagePicker.pickImage(source: ImageSource.gallery);
+    await imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       //here we create new path for cache images and condition check if directory not exist,create directory
 
@@ -180,7 +183,7 @@ Future<File?> pickImage(String imageName) async {
       //print(newDirectory.path);
 
       copyFile =
-          await File(pickedFile.path).copy("${newDirectory.path}/$imageName");
+      await File(pickedFile.path).copy("${newDirectory.path}/$imageName");
       Directory(pickedFile.path).delete(recursive: true);
       return copyFile;
     }
@@ -219,7 +222,7 @@ Future<File?> pickFile(String imageName,{String? root}) async {
       } else {
         imageIndex++;
         while (!await File("${newDirectory.path}/$imageIndex $imageName")
-                .exists() &&
+            .exists() &&
             imageIndex < 1000) {
           imageIndex++;
         }
@@ -291,7 +294,7 @@ DateTime findMinDate(List<DateTime> dateList) {
   return minDate;
 }
 /// get device id for copy right
-Future<String> getDeviceInfo({String? info})async{
+Future<String> getDeviceInfo2({String? info})async{
   late final String deviceName;
   late final String deviceId;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -315,6 +318,47 @@ Future<String> getDeviceInfo({String? info})async{
   }else{
     return deviceId;
   }
+}
+Future<Map<String, dynamic>?> getDeviceInfo() async {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+  if (Platform.isAndroid) {
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    AndroidDevice androidDevice =
+    AndroidDevice('Android', androidInfo.brand, androidInfo.id);
+    // To obtain JSON representation
+    Map<String, dynamic> jsonRepresentation = androidDevice.toJson();
+    debugPrint("${jsonRepresentation.toString()}device id ");
+    return jsonRepresentation;
+  }
+
+  if (Platform.isWindows) {
+    WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
+    WindowsDevice windowsDevice = WindowsDevice('Windows',
+        windowsInfo.computerName, windowsInfo.buildNumber.toString());
+    // To obtain JSON representation
+
+    Map<String, dynamic> jsonRepresentation = windowsDevice.toJson();
+    debugPrint("HHHHHHHHHHHHHHHHHHHHHHHH$jsonRepresentation");
+    debugPrint("${jsonRepresentation.toString()}device id ");
+    return jsonRepresentation;
+  }
+
+  if (Platform.isIOS) {
+    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    IosDevice iosDevice =
+    IosDevice('ios', iosInfo.identifierForVendor, iosInfo.name);
+    // To obtain JSON representation
+    Map<String, dynamic> jsonRepresentation = iosDevice.toJson();
+    return jsonRepresentation;
+  }
+  //
+  // // Default case for other platforms or if device info is not available
+  return {
+    'platform': 'Public Info',
+    'id': null, // You might want to handle this case based on your requirements
+    'brand': null,
+  };
 }
 
 ///custom target focus for coach mark tutorial

@@ -15,7 +15,9 @@ class CustomDialog extends StatelessWidget {
     this.textDirection = TextDirection.rtl,
     this.opacity = .8,
     this.image,
-    this.borderRadius=20, this.contentPadding, this.topTrail,
+    this.borderRadius = 20,
+    this.contentPadding,
+    this.topTrail,
   });
   final String? title;
   final Widget child;
@@ -30,10 +32,12 @@ class CustomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius)),
       iconPadding: EdgeInsets.zero,
       contentPadding: EdgeInsets.zero,
       backgroundColor: Colors.white.withOpacity(opacity),
+      surfaceTintColor: Colors.white,
       scrollable: true,
       content: HideKeyboard(
         child: BlurryContainer(
@@ -44,12 +48,12 @@ class CustomDialog extends StatelessWidget {
             children: [
               ///image holder part with faded button,
               Opacity(
-                opacity: .7,
+                opacity: .9,
                 child: Container(
                   width: width,
                   height: 250,
                   decoration: BoxDecoration(
-                    image: image == null
+                    image: (image == null || image == "")
                         ? null
                         : DecorationImage(
                             image: FileImage(File(image!)),
@@ -61,13 +65,13 @@ class CustomDialog extends StatelessWidget {
               Container(
                 width: width,
                 height: 250,
-                decoration: const BoxDecoration(
+                decoration:  const BoxDecoration(
                     backgroundBlendMode: BlendMode.dstIn,
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [Colors.white, Colors.transparent],
-                        stops: [.5, .9])),
+                        stops: [.4, .9])),
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -91,45 +95,49 @@ class CustomDialog extends StatelessWidget {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                   Container(
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(gradient: kMainGradiant),
-                      child:CText(
-                              title,
-                        color: Colors.white,
-                        fontSize: 18,
+                      alignment:Alignment.center,
+                      decoration:  BoxDecoration(
+                        gradient: (image == null || image=="")?kMainGradiant:null,
+                      ),
+                      child: title == null
+                          ? null
+                          : Text(
+                              title!,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 18),
                             )),
                   Directionality(
                     textDirection: textDirection,
                     child: Flexible(
                       child: Container(
-                          margin: image == null
+                          margin: (image == null || image == "")
                               ? null
-                              : const EdgeInsets.all(20).copyWith(top: 50),
+                              : const EdgeInsets.all(20).copyWith(top: 80),
                           //decoration for image if image is not null
-                          decoration: image == null
+                          decoration: (image == null || image == "")
                               ? null
                               : BoxDecoration(
-                                  gradient: const LinearGradient(
-                                      colors: [
-                                        Colors.white,
-                                        Colors.transparent
-                                      ],
-                                      stops: [
-                                        0,
-                                        .8
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter),
+                                  // gradient: const LinearGradient(
+                                  //     colors: [
+                                  //       Colors.white,
+                                  //       Colors.transparent
+                                  //     ],
+                                  //     stops: [
+                                  //       0,
+                                  //       .8
+                                  //     ],
+                                  //     begin: Alignment.topCenter,
+                                  //     end: Alignment.bottomCenter),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                           height:
                               height, // ?? MediaQuery.of(context).size.height,
                           width: width, // ?? MediaQuery.of(context).size.width,
-                          padding:contentPadding ?? const EdgeInsets.all(20).copyWith(top: 10),
+                          padding: contentPadding ??
+                              const EdgeInsets.all(20).copyWith(top: 10),
                           child: child),
                     ),
                   ),

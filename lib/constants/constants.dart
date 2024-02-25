@@ -3,6 +3,7 @@ import 'package:hitop_cafe/constants/enums.dart';
 
 const String kAppName = "hitop-cafe";
 const String hostUrl = "https://mlggrand.ir/db";
+const String SERVER_API_URL = 'https://mlggrand.ir/';
 
 const kMainGradiant2 = LinearGradient(
   colors: [Colors.brown, Colors.deepOrangeAccent],
@@ -13,8 +14,8 @@ const kMainGradiant = LinearGradient(colors: [
   Color(0XFFC95E00),
   Color(0XFFBF9200),
 ], begin: Alignment.topRight, end: Alignment.bottomLeft
-    // transform: GradientRotation(30),
-    );
+  // transform: GradientRotation(30),
+);
 const kBlackWhiteGradiant = LinearGradient(colors: [
   Color(0XFFffffff),
   Color(0XFFffffff),

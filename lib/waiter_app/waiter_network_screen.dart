@@ -234,7 +234,7 @@ class _WaiterNetworkScreenState extends State<WaiterNetworkScreen> {
                                 IconButton(
                                     onPressed: () async {
                                       String deviceName =
-                                          await getDeviceInfo(info: "name");
+                                          await getDeviceInfo2(info: "name");
                                       Pack newPack = clientProvider.samplePack;
                                       newPack.message = messageController.text;
                                       newPack.device = deviceName;

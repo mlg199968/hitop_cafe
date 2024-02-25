@@ -124,7 +124,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
 
       if (items.isNotEmpty) {
         Order orderBill = createBillObject(id: id);
-        String deviceName=await getDeviceInfo(info:"name");
+        String deviceName=await getDeviceInfo2(info:"name");
         Pack pack = Pack()
           ..object = [orderBill.toJson()]
           ..device=deviceName

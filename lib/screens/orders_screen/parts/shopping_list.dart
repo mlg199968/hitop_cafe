@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hitop_cafe/common/widgets/custom_icon_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
@@ -13,7 +12,7 @@ import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class ShoppingList extends StatefulWidget {
-  ShoppingList({
+  const ShoppingList({
     super.key,
     required this.items,
     required this.onChange,

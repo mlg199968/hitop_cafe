@@ -17,22 +17,19 @@ class OrderTile extends StatelessWidget {
       {super.key,
       required this.orderDetail,
       this.enabled = true,
-      this.height = 70,
+      this.height = 60,
       required this.color,
-      required this.onSee});
+      required this.onSee, this.surfaceColor});
 
   final Order orderDetail;
   final bool enabled;
   final VoidCallback onSee;
   final double height;
   final Color color;
+  final Color? surfaceColor;
   @override
   Widget build(BuildContext context) {
     final String payable = addSeparator(orderDetail.payable);
-    // String dueDate = "تعیین نشده";
-    // if (orderDetail.dueDate != null || orderDetail.dueDate==DateTime(1999)) {
-    //   dueDate = orderDetail.dueDate!.toPersianDate();
-    // }
     return Consumer<SettingProvider>(
       builder: (context,settingProvider,child) {
         return Directionality(
@@ -43,6 +40,7 @@ class OrderTile extends StatelessWidget {
               scrollOnExpand: false,
               child: Card(
                 elevation: 5,
+                surfaceTintColor: surfaceColor ?? Colors.white,
                 child: BackgroundShape1(
                   height: height,
                   color: color,
@@ -93,23 +91,26 @@ class OrderTile extends StatelessWidget {
                         ],
                       ),
                       theme: ExpandableThemeData(
-                          iconPadding: const EdgeInsets.all(0),
+                          iconPadding: EdgeInsets.zero,
                           iconPlacement: ExpandablePanelIconPlacement.left,
                           tapHeaderToExpand: enabled,
                           tapBodyToExpand: enabled,
                           animationDuration: const Duration(milliseconds: 500)),
 
                       ///main header
-                      header: MyListTile(
-                        enable: false,
-                        title:
-                            "سفارش شماره ${(orderDetail.billNumber ?? 0).toString().toPersianDigit()}",
-                        leadingIcon: FontAwesomeIcons.table,
-                        type: orderDetail.tableNumber.toString().toPersianDigit(),
-                        subTitle: TimeTools.showHour(orderDetail.orderDate),
-                        topTrailingLabel: "تاریخ سفارش: ",
-                        topTrailing: orderDetail.orderDate.toPersianDateStr(),
-                        trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
+                      header: SizedBox(
+                        height: height,
+                        child: MyListTile(
+                          enable: false,
+                          title:
+                              "سفارش شماره ${(orderDetail.billNumber ?? 0).toString().toPersianDigit()}",
+                          leadingIcon: FontAwesomeIcons.table,
+                          type: orderDetail.tableNumber.toString().toPersianDigit(),
+                          subTitle: TimeTools.showHour(orderDetail.orderDate),
+                          topTrailingLabel: "تاریخ سفارش: ",
+                          topTrailing: orderDetail.orderDate.toPersianDateStr(),
+                          trailing: orderDetail.payable == 0 ? "تسویه شده" : payable,
+                        ),
                       ),
                     ),
                   ),

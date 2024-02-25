@@ -56,49 +56,52 @@ class _NoticeScreenState extends State<NoticeScreen> {
           padding: const EdgeInsets.only(top: 120),
           decoration: const BoxDecoration(gradient: kMainGradiant),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                ///show loading when refreshing the screen
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOutExpo,
-                  child:refreshing? Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 20),
-                    width: 35,
-                    height: 35,
-                    child: const CircularProgressIndicator(color: Colors.white60,strokeWidth: 2,),
-                  ):const SizedBox() ,),
-                ValueListenableBuilder(
-                    valueListenable: HiveBoxes.getNotice().listenable(),
-                    builder: (context, box, child) {
-                      if(box.isNotEmpty) {
-                        return Column(
-                            children: box.values
-                                .map(
-                                  (notice) => NoticeTile(
-                                notice: notice,
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          NoticeDetailPanel(notice: notice))
-                                      .then((value) {
-                                    Notice copyNotice = notice.copyWith(seen: true);
-                                    HiveBoxes.getNotice()
-                                        .put(copyNotice.noticeId, copyNotice);
-                                  });
-                                },
-                              ),
-                            )
-                                .toList()
-                                .reversed
-                                .toList());
-                      }
-                      else{
-                        return const Text("اطلاع رسانی یافت نشد!");
-                      }
-                    }),
-              ],
+            child: SizedBox(
+              width: 500,
+              child: Column(
+                children: [
+                  ///show loading when refreshing the screen
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOutExpo,
+                    child:refreshing? Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 20),
+                      width: 35,
+                      height: 35,
+                      child: const CircularProgressIndicator(color: Colors.white60,strokeWidth: 2,),
+                    ):const SizedBox() ,),
+                  ValueListenableBuilder(
+                      valueListenable: HiveBoxes.getNotice().listenable(),
+                      builder: (context, box, child) {
+                        if(box.isNotEmpty) {
+                          return Column(
+                              children: box.values
+                                  .map(
+                                    (notice) => NoticeTile(
+                                  notice: notice,
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            NoticeDetailPanel(notice: notice))
+                                        .then((value) {
+                                      Notice copyNotice = notice.copyWith(seen: true);
+                                      HiveBoxes.getNotice()
+                                          .put(copyNotice.noticeId, copyNotice);
+                                    });
+                                  },
+                                ),
+                              )
+                                  .toList()
+                                  .reversed
+                                  .toList());
+                        }
+                        else{
+                          return const Text("اطلاع رسانی یافت نشد!");
+                        }
+                      }),
+                ],
+              ),
             ),
           ),
         ),

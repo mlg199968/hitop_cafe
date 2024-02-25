@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/common/widgets/custom_toggle_button.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -31,6 +33,11 @@ class _CashToBillState extends State<PaymentToBill> {
     PayMethod.cashPersian,
     PayMethod.discountPersian,
   ];
+   List<bool> payBool = [
+    true,
+    false,
+    false,
+  ];
 
   String pMethod =PayMethod.atmPersian ;
 
@@ -49,18 +56,16 @@ class _CashToBillState extends State<PaymentToBill> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("روش پرداخت"),
-                  DropListModel(
-                      listItem: payMethods,
-                      selectedValue: pMethod,
-                      onChanged: (val) {
-                        pMethod=val;
-                        setState(() {});
-                      }),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: CustomToggleButton(labelList: payMethods,
+                  selected: pMethod,
+                  onPress: (index){
+                    setState(() {
+                      pMethod=payMethods[index];
+                    });
+                  },
+                ),
               ),
               const SizedBox(height: 20,),
               CustomTextField(

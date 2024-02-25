@@ -23,6 +23,7 @@ class EmptyHolder extends StatelessWidget {
                 text,
                 fontSize: 10,
                 color:color ?? Colors.black38,
+                textDirection: TextDirection.rtl,
               ),
             ],
           )),

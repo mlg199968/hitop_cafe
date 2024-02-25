@@ -31,7 +31,7 @@ class SideBarPanel extends StatelessWidget {
       child: Consumer<UserProvider>(builder: (context, userProvider, child) {
         return Container(
           margin:
-              EdgeInsets.only(bottom: MediaQuery.of(context).size.height*.3),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height*.3),
           child: BlurryContainer(
             color: Colors.white70.withOpacity(.4),
             blur: 5,
@@ -56,7 +56,7 @@ class SideBarPanel extends StatelessWidget {
                             opacity: .6)),
                   ),
 
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,7 +81,7 @@ class SideBarPanel extends StatelessWidget {
                       child: Text(
                         userProvider.shopName,
                         style:
-                            const TextStyle(color: Colors.white, fontSize: 20),
+                        const TextStyle(color: Colors.white, fontSize: 20),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -95,7 +95,7 @@ class SideBarPanel extends StatelessWidget {
                       icon: Icons.storefront_outlined,
                       onPress: () {
                         if(UserTools.userPermission(context,userTypes: [])) {
-                        Navigator.pushNamed(context, ShopInfoScreen.id);}
+                          Navigator.pushNamed(context, ShopInfoScreen.id);}
                       },
                     ),
                     menu_button(
@@ -112,14 +112,14 @@ class SideBarPanel extends StatelessWidget {
                       icon: Icons.settings_outlined,
                       onPress: () {
                         if(UserTools.userPermission(context,userTypes: [UserType.waiter])) {
-                        Navigator.pushNamed(context, SettingScreen.id);}
+                          Navigator.pushNamed(context, SettingScreen.id);}
                       },
                     ),
                     menu_button(
                       text: "ارتباط با ما",
                       icon: Icons.support_agent_outlined,
                       onPress: () {
-                          urlLauncher(
+                        urlLauncher(
                             context: context, urlTarget: "http://mlggrand.ir");
                       },
 
@@ -128,7 +128,7 @@ class SideBarPanel extends StatelessWidget {
                       height: 20,
                     ),
 
-                    userProvider.userLevel == 0
+                    userProvider.level == 0
                         ? const PurchaseButton()
                         : const SizedBox(),
 
@@ -158,7 +158,7 @@ class SideBarPanel extends StatelessWidget {
                             urlLauncher(
                                 context: context,
                                 urlTarget:
-                                    'https://instagram.com/mlg_grand?igshid=YmMyMTA2M2Y=');
+                                'https://instagram.com/mlg_grand?igshid=YmMyMTA2M2Y=');
                           },
                           icon: const Icon(
                             FontAwesomeIcons.instagram,
@@ -208,16 +208,16 @@ class AvatarHolder extends StatelessWidget {
             backgroundColor: kMainColor,
             foregroundImage: logo != null
                 ? FileImage(
-                    File(logo),
-                  )
+              File(logo),
+            )
                 : null,
             radius: 48,
             child: logo != null
                 ? null
                 : Image.asset(
-                    'assets/icons/hitop-white.png',
-                    height: 60,
-                  ),
+              'assets/icons/hitop-white.png',
+              height: 60,
+            ),
           ),
         ),
       ),
@@ -314,7 +314,7 @@ class menu_button extends StatelessWidget {
                   ),
                   SizedBox(
                       child:
-                          icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
+                      icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
                 ],
               )),
         ));

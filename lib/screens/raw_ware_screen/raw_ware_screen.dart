@@ -9,7 +9,9 @@ import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
@@ -123,11 +125,7 @@ class _WareListScreenState extends State<WareListScreen> {
 
                         if (filteredList.isEmpty) {
                           return const Expanded(
-                            child: Center(
-                                child: Text(
-                              "کالایی یافت نشد!",
-                              textDirection: TextDirection.rtl,
-                            )),
+                            child: EmptyHolder(text: "کالایی یافت نشد!", icon: FontAwesomeIcons.boxOpen)
                           );
                         }
                         return ListPart(
@@ -243,6 +241,7 @@ class _ListPartState extends State<ListPart> {
                                   color: selectedItems.contains(index)
                                       ? Theme.of(context).primaryColorLight
                                       : Theme.of(context).primaryColor,
+                                  surfaceColor: selectedWare==widget.wareList[index]?kMainColor:null,
                                   leadingIcon: CupertinoIcons.cube_box_fill,
                                   subTitle: ware.category,
                                   type: (index + 1).toString().toPersianDigit(),
@@ -273,10 +272,9 @@ class _ListPartState extends State<ListPart> {
                             ///delete icon
                             IconButton(
                                 onPressed: () {
-                                  customAlert(
-                                      context: context,
+                                  showDialog(context: context, builder: (context)=>CustomAlert(
                                       title:
-                                          "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
+                                      "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
                                       onYes: () {
                                         for (int item in selectedItems) {
                                           widget.wareList[item].delete();
@@ -289,7 +287,8 @@ class _ListPartState extends State<ListPart> {
                                       },
                                       onNo: () {
                                         Navigator.pop(context);
-                                      });
+                                      }));
+                                  ;
                                 },
                                 icon: const Icon(
                                   Icons.delete_forever,

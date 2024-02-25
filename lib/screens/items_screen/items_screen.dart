@@ -7,6 +7,7 @@ import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -100,11 +101,7 @@ class _WareListScreenState extends State<ItemsScreen> {
 
                         if (filteredList.isEmpty) {
                           return const Expanded(
-                            child: Center(
-                                child: Text(
-                              "کالایی یافت نشد!",
-                              textDirection: TextDirection.rtl,
-                            )),
+                            child: EmptyHolder(text: "آیتمی یافت نشد!", icon: Icons.fastfood_rounded)
                           );
                         }
                         return ListPart(
@@ -219,6 +216,7 @@ class _ListPartState extends State<ListPart> {
                                   color: selectedItems.contains(index)
                                       ? Colors.blue
                                       : kMainColor,
+                                  surfaceColor: selectedWare == widget.wareList[index]?kMainColor:null,
                                   leadingIcon:
                                       Icons.emoji_food_beverage_rounded,
                                   subTitle: ware.category,
@@ -247,10 +245,9 @@ class _ListPartState extends State<ListPart> {
                             ///delete icon
                             IconButton(
                                 onPressed: () {
-                                  customAlert(
-                                      context: context,
+                                  showDialog(context: context, builder: (context)=>CustomAlert(
                                       title:
-                                          "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
+                                      "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
                                       onYes: () {
                                         for (int item in selectedItems) {
                                           widget.wareList[item].delete();
@@ -263,7 +260,8 @@ class _ListPartState extends State<ListPart> {
                                       },
                                       onNo: () {
                                         popFunction(context);
-                                      });
+                                      }));
+
                                 },
                                 icon: const Icon(
                                   Icons.delete_forever,

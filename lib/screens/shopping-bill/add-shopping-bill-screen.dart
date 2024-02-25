@@ -69,21 +69,18 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
 
   ///calculate payable amount
-  double get payable {
-    double payable = 0;
-    payable +=
-    wares.isEmpty ? 0 : wares.map((e) => e.sum).reduce((a, b) => a + b);
-    payable -= payments.isEmpty
-        ? 0
-        : payments.map((e) => e.amount).reduce((a, b) => a + b);
-    payable -= discount;
-
-    return payable;
-  }
+  num get payable => wares.isEmpty ? 0 :itemsSum-paymentsSum-wares.map((e) => e.price*e.discount).reduce((a, b) => a+b);
 
   ///calculate wares amount
   num get itemsSum =>
       wares.isEmpty ? 0 : wares.map((e) => e.sum).reduce((a, b) => a + b);
+
+  ///calculate  all payments amount
+  num get paymentsSum => payments.isEmpty
+      ? 0
+      : payments
+      .map((e) =>e.amount)
+      .reduce((a, b) => a + b);
 
   ///calculate atm amount
   num get atmSum => payments.isEmpty
@@ -248,11 +245,11 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
           child: Container(
             decoration: const BoxDecoration(gradient: kMainGradiant),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                ///side bar panel in tablet snd desktop mode
-                screenType(context) == ScreenType.mobile
-                    ? const SizedBox()
-                    : Container(
+                ///******* side bar panel in tablet snd desktop mode ****
+                if(screenType(context) != ScreenType.mobile)
+                Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 20),
@@ -423,7 +420,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 
                 ///main part like wares list
                 Flexible(
-                  child: SafeArea(
+                  child: SingleChildScrollView(
                     child: Container(
                       alignment: Alignment.topCenter,
                       padding:  EdgeInsets.symmetric(
@@ -432,9 +429,8 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                         direction: Axis.horizontal,
                         children: [
                           ///top customer data part on mobile screen
-                          screenType(context) != ScreenType.mobile
-                              ? const SizedBox()
-                              : Container(
+                          if(screenType(context) == ScreenType.mobile)
+                          Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.white.withOpacity(.8)),
@@ -447,6 +443,7 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                               children: [
                                 ///top right
                                 Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Wrap(
                                       children: [
@@ -589,38 +586,36 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
                           ),
 
                           ///final data of orderBill like sale total
-                          Flexible(
-                            child: Container(
-                              width: 450,
-                              margin: const EdgeInsets.all(10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: kBoxDecoration,
-                              child: Column(
-                                children: [
-                                  TextDataField(title: "جمع خرید", value: itemsSum),
-                                  TextDataField(
-                                      title: "پرداخت نقد", value: cashSum),
-                                  TextDataField(
-                                      title: "پرداخت با کارت", value: atmSum),
-                                  TextDataField(title: "تخفیف", value: discountSum),
-                                  ///total payment
-                                  Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(6),
-                                        color: payable == 0
-                                            ? Colors.teal
-                                            : (payable < 0 ? Colors.indigoAccent : Colors.redAccent),
-                                      ),
-                                      child: TextDataField(
-                                        title: "قابل پرداخت",
-                                        value: payable,
-                                        color: Colors.white,
-                                      )),
-                                ],
-                              ),
+                          Container(
+                            width: 450,
+                            margin: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: kBoxDecoration,
+                            child: Column(
+                              children: [
+                                TextDataField(title: "جمع خرید", value: itemsSum),
+                                TextDataField(
+                                    title: "پرداخت نقد", value: cashSum),
+                                TextDataField(
+                                    title: "پرداخت با کارت", value: atmSum),
+                                TextDataField(title: "تخفیف", value: discountSum),
+                                ///total payment
+                                Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: payable == 0
+                                          ? Colors.teal
+                                          : (payable < 0 ? Colors.indigoAccent : Colors.redAccent),
+                                    ),
+                                    child: TextDataField(
+                                      title: "قابل پرداخت",
+                                      value: payable,
+                                      color: Colors.white,
+                                    )),
+                              ],
                             ),
                           ),
                           ///Product List Part

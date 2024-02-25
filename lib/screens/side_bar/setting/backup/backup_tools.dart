@@ -19,6 +19,15 @@ import 'package:path_provider/path_provider.dart';
 class BackupTools {
   static const String _outPutName = "data-file.mlg";
 
+  static Future<String?> chooseDirectory() async {
+    String? result = await FilePicker.platform
+        .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
+    if(result!=null){
+      return result;
+    }else{
+      return null;
+    }
+  }
   static Future<void> _restoreJsonData(File json, context) async {
     try {
       String jsonFile = await json.readAsString();
@@ -49,6 +58,32 @@ class BackupTools {
     }
   }
 
+  static Future<void> createBackup(context,{String? directory}) async {
+    try {
+      List<Bill> bills = HiveBoxes.getBills().values.toList();
+      List<Item> items = HiveBoxes.getItem().values.toList();
+      List<RawWare> wares = HiveBoxes.getRawWare().values.toList();
+      List<Order> orders = HiveBoxes.getOrders().values.toList();
+
+      DB database = DB()
+        ..wares = wares
+        ..items = items
+        ..orders = orders
+        ..bills = bills;
+
+      // await _saveJson(database.toJson(),context);
+      if(directory!=null && directory!="") {
+        await createZipFile(
+            await Address.itemsImage(), database.toJson(), context,
+            directory: directory);
+      }else{
+        showSnackBar(context, "مسیر ذخیره سازی انتخاب نشده است!",type: SnackType.warning);
+      }
+    } catch (e) {
+      ErrorHandler.errorManger(context, e,
+          title: "BackupTools - createBackup error", showSnackbar: true);
+    }
+  }
   static readZipFile(context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -82,30 +117,28 @@ class BackupTools {
           title: "BackupTools - readZipFile error", showSnackbar: true);
     }
   }
-
-  static createZipFile(String imagesDir, String json, context) async {
+///create zip file
+  static createZipFile(String imagesDir, String json, context,{required String directory}) async {
     try {
       String formattedDate =
           intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
-      //select a directory to save zip file
-      String? result = await FilePicker.platform
-          .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
-      if (result != null) {
+
+
         // Zip a directory to out.zip using the zipDirectory convenience method
         var encoder = ZipFileEncoder();
         // encoder.zipDirectory(Directory(result),
         //     filename: 'hitop-cafe$formattedDate.zip');
 
         // Manually create a zip of a directory and individual files.
-        encoder.create('$result/hitop-cafe$formattedDate.zip');
+        encoder.create('$directory/hitop-cafe$formattedDate.zip');
         encoder.addDirectory(Directory(imagesDir));
-        File jsonFile = await _createJsonFile(json, result);
+        File jsonFile = await _createJsonFile(json, directory);
         encoder.addFile(jsonFile);
         encoder.close();
         await jsonFile.delete(recursive: true);
         showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
             type: SnackType.success);
-      }
+
     } catch (e) {
       ErrorHandler.errorManger(context, e,
           title: "BackupTools - createZipFile error", showSnackbar: true);
@@ -119,27 +152,7 @@ class BackupTools {
     return createdFile;
   }
 
-  static Future<void> createBackup(context) async {
-    try {
-      List<Bill> bills = HiveBoxes.getBills().values.toList();
-      List<Item> items = HiveBoxes.getItem().values.toList();
-      List<RawWare> wares = HiveBoxes.getRawWare().values.toList();
-      List<Order> orders = HiveBoxes.getOrders().values.toList();
 
-      DB database = DB()
-        ..wares = wares
-        ..items = items
-        ..orders = orders
-        ..bills = bills;
-
-      // await _saveJson(database.toJson(),context);
-      await createZipFile(
-          await Address.itemsImage(), database.toJson(), context);
-    } catch (e) {
-      ErrorHandler.errorManger(context, e,
-          title: "BackupTools - createBackup error", showSnackbar: true);
-    }
-  }
 
   static Future<void> restoreBackup(context) async {
     try {

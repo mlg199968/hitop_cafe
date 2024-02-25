@@ -4,6 +4,7 @@ import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/providers/filter_provider.dart';
 import 'package:hitop_cafe/providers/sever_provider.dart';
@@ -67,7 +68,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                 ActionButton(
                   label: "شبکه",
                   icon: Icons.circle,
-                  bgColor: kSecondaryColor,
+                  bgColor: kMainColor,
                   iconColor: serverProvider.isRunning?Colors.lightGreenAccent:Colors.red,
                   onPress: () {
                     Navigator.pushNamed(context, LocalServerScreen.id);
@@ -80,7 +81,7 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CText("سفارشات حاضر",fontSize: 16,),
+                    CText("سفارشات حاضر",fontSize: 18,color: Colors.black87,),
                   ],
                 ),
               ),
@@ -98,7 +99,8 @@ class _CustomerListScreenState extends State<PresentOrderScreen> {
                     Container(
                       padding:
                           const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
+                        borderRadius: screenType(context) != ScreenType.desktop?null: BorderRadius.circular(20),
                           gradient: kMainGradiant,),
                       child: Align(
                         alignment: Alignment.centerRight,
