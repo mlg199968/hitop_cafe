@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/background_shape2.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
-import 'package:hitop_cafe/models/AndroidDeviceinfo.dart';
-import 'package:hitop_cafe/models/WindowsDeviceinfo.dart';
-import 'package:hitop_cafe/models/iosdevice.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:intl/intl.dart'as intl;
@@ -155,7 +153,7 @@ saveImage(String? path,String idName,String newPath)async{
   if(path!=null){
     //get image directory from consts_class file in constants folder
     File newFile= await File(path).copy("$newPath/$idName.jpg");
-    //delete file picker cache file in android and ios because windows show original path file so when you delete it's delete orginal file
+    //delete file picker cache file in android and ios because windows show original path file so when you delete it's delete original file
     if(Platform.isAndroid || Platform.isIOS) {
       await File(path).delete();
     }
@@ -319,46 +317,35 @@ Future<String> getDeviceInfo2({String? info})async{
     return deviceId;
   }
 }
-Future<Map<String, dynamic>?> getDeviceInfo() async {
+///
+Future<Device> getDeviceInfo() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   if (Platform.isAndroid) {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    AndroidDevice androidDevice =
-    AndroidDevice('Android', androidInfo.brand, androidInfo.id);
-    // To obtain JSON representation
-    Map<String, dynamic> jsonRepresentation = androidDevice.toJson();
-    debugPrint("${jsonRepresentation.toString()}device id ");
-    return jsonRepresentation;
+    Device device =
+    Device(platform: 'Android',brand: androidInfo.brand,id: androidInfo.id,name: androidInfo.device);
+    return device;
   }
 
-  if (Platform.isWindows) {
+  else if (Platform.isWindows) {
     WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
-    WindowsDevice windowsDevice = WindowsDevice('Windows',
-        windowsInfo.computerName, windowsInfo.buildNumber.toString());
-    // To obtain JSON representation
-
-    Map<String, dynamic> jsonRepresentation = windowsDevice.toJson();
-    debugPrint("HHHHHHHHHHHHHHHHHHHHHHHH$jsonRepresentation");
-    debugPrint("${jsonRepresentation.toString()}device id ");
-    return jsonRepresentation;
+    Device windowsDevice = Device(platform: 'Windows',
+        name:windowsInfo.computerName, brand:windowsInfo.productName,id: windowsInfo.deviceId);
+    return windowsDevice;
   }
 
-  if (Platform.isIOS) {
+  else if (Platform.isIOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    IosDevice iosDevice =
-    IosDevice('ios', iosInfo.identifierForVendor, iosInfo.name);
-    // To obtain JSON representation
-    Map<String, dynamic> jsonRepresentation = iosDevice.toJson();
-    return jsonRepresentation;
+    Device iosDevice =
+    Device(platform: 'ios', brand:iosInfo.model,name: iosInfo.name,id: iosInfo.localizedModel);
+    return iosDevice;
   }
-  //
-  // // Default case for other platforms or if device info is not available
-  return {
-    'platform': 'Public Info',
-    'id': null, // You might want to handle this case based on your requirements
-    'brand': null,
-  };
+  else {
+    Device elseDevice =
+    Device(platform: Platform.operatingSystem, brand:Platform.version,name: Platform.localeName,id: Platform.operatingSystemVersion);
+    return elseDevice;
+  }
 }
 
 ///custom target focus for coach mark tutorial

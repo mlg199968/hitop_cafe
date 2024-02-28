@@ -2,14 +2,16 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
 
+import 'server_models/device.dart';
+
 part 'subscription.g.dart';
 @HiveType(typeId: 8)
 class Subscription extends HiveObject{
 
   @HiveField(0)
-  late String name;
+  String? name;
   @HiveField(1)
-  late String phoneNumber;
+  late String phone;
   @HiveField(2)
   String? email;
   @HiveField(3)
@@ -19,7 +21,7 @@ class Subscription extends HiveObject{
   @HiveField(5)
   DateTime? endDate;
   @HiveField(6)
-  double? payAmount;
+  int? amount;
   @HiveField(7)
   String? authority;
   @HiveField(8)
@@ -27,11 +29,13 @@ class Subscription extends HiveObject{
   @HiveField(9)
   String? refId;
   @HiveField(10)
-  String? deviceId;
+  Device? device;
   @HiveField(11)
-  String description="";
+  String? description;
   @HiveField(12)
   int? id;
+  @HiveField(13)
+  String? platform;
 
 
 
@@ -39,36 +43,39 @@ class Subscription extends HiveObject{
   Map<String, dynamic> toMap() {
     return {
       'name': name ,
-      'phone': phoneNumber,
-      'email': email ?? "",
-      'level': level.toString(),
-      'startDate': startDate?.toIso8601String() ?? "",
-      'endDate': endDate?.toIso8601String() ?? "",
-      'payAmount': payAmount.toString(),
-      'Authority': authority ?? "",
-      'Status': status ?? "",
-      'refId': refId  ?? "",
-      'deviceId': deviceId ?? "",
+      'phone': phone,
+      'email': email,
+      'level': level,
+      'startDate': startDate?.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
+      'amount': amount,
+      'Authority': authority,
+      'Status': status,
+      'refId': refId,
+      'deviceId': device?.toMap(),
       'description': description ,
-     'user_id': id?.toString() ?? "",
+     'user_id': id,
+     'platform': platform,
     };
   }
 
   Subscription fromMap(Map<String, dynamic> map) {
+
      Subscription subscription=Subscription()
       ..name= map['name'] ?? ""
-      ..phoneNumber= map['phone'] ?? ""
+      ..phone= map['phone'] ?? ""
       ..email= map['email'] ?? ""
-      ..level= int.parse(map['level'] ?? 0)
-      ..startDate= map['startDate']==null?DateTime.now():DateTime.parse(map['startDate'])
-      ..endDate= map['endDate']==null?null:DateTime.parse(map['endDate'])
-      ..payAmount= map['payAmount'] ?? 0
+      ..level= map['level'] ?? 0
+      ..startDate= DateTime.tryParse(map['startDate'])
+      ..endDate= DateTime.tryParse(map['endDate'])
+      ..amount= map['amount'] ?? 0
       ..authority= map['Authority']
       ..status= map['Status']
       ..refId= map['refId']
-      ..deviceId= map['deviceId']
+      ..device=map['deviceId']!=null? Device.fromMap(map['device']):null
       ..description= map['description']
-      ..id= int.parse(map['user_id']);
+      ..id= int.tryParse(map['user_id']);
+    print("from map***************");
      return subscription;
   }
 

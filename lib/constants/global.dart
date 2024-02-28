@@ -16,7 +16,6 @@ class GlobalTask {
   }
 
   static getInitData(context)async{
-    Provider.of<UserProvider>(context, listen: false).loadLevel();
 
     Provider.of<WareProvider>(context, listen: false).loadCategories();
     Shop shop=Shop();
@@ -28,7 +27,7 @@ class GlobalTask {
     }
     ///get notifications
     runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
-    if(Provider.of<UserProvider>(context, listen: false).level==0) {
+    if(Provider.of<UserProvider>(context, listen: false).userLevel==0) {
       await BackendServices().fetchData(context);
     }
   }

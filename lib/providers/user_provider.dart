@@ -87,7 +87,7 @@ class UserProvider extends ChangeNotifier {
 
     ///this for just use complete for debug app
     if (kDebugMode) {
-      _userLevel = 1;
+      _userLevel = 0;
     }
   }
 
@@ -170,33 +170,35 @@ class UserProvider extends ChangeNotifier {
   //     await NoticeTools.readNotifications(context,timeout: 5);
   //   }
   // }
-    late dynamic _level = 0;
 
-  dynamic get level => _level;
 
-  Future<void> setLevel(dynamic newLevel) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    _level = newLevel;
-    prefs.setInt('level', newLevel!);
-
-    notifyListeners();
-  }
-
-  Future<void> loadLevel() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final dynamic storedLevel = prefs.get('level');
-    // Check if storedLevel is not null before assigning it to _level
-    if (storedLevel != null) {
-      _level = storedLevel;
-    } else {
-      // Handle the case where 'level' is not found or not an integer
-      // You might want to provide a default value or handle it in a way that fits your application logic
-      // For example, you could set a default level or log an error.
-      _level =
-          0; // Replace defaultValue with an appropriate default value or set it to null.
-    }
-
-    notifyListeners();
-  }
+  //   late dynamic _level = 0;
+  //
+  // dynamic get level => _level;
+  //
+  // Future<void> setLevel(dynamic newLevel) async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   _level = newLevel;
+  //   prefs.setInt('level', newLevel!);
+  //
+  //   notifyListeners();
+  // }
+  //
+  // Future<void> loadLevel() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final dynamic storedLevel = prefs.get('level');
+  //   // Check if storedLevel is not null before assigning it to _level
+  //   if (storedLevel != null) {
+  //     _level = storedLevel;
+  //   } else {
+  //     // Handle the case where 'level' is not found or not an integer
+  //     // You might want to provide a default value or handle it in a way that fits your application logic
+  //     // For example, you could set a default level or log an error.
+  //     _level =
+  //         0; // Replace defaultValue with an appropriate default value or set it to null.
+  //   }
+  //
+  //   notifyListeners();
+  // }
 
 }

@@ -8,6 +8,7 @@ import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/zarinpal_api.dart';
@@ -39,21 +40,20 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
 
   ///button function
   purchaseButtonFunc() async {
-    Map<String, dynamic>? deviceId = await getDeviceInfo();
-    Map<String, dynamic>? dynamicData = deviceId;
+    Device device = await getDeviceInfo();
+
     // Other string data
-    final platform = deviceId?["platform"].toString();
-    final level = UserProvider().level;
-    final phone = widget.phone;
+
+    final level = UserProvider().userLevel;
     final name = userFullNameController.text;
     final email = emailController.text;
     try {
       // Combine dynamic data and other data
       Map<String, dynamic> requestData = {
-        'deviceId': dynamicData,
+        'deviceId': device.toMap(),
         'level': level,
-        'phone': phone,
-        'platform': platform,
+        'phone': widget.phone,
+        'platform': device.platform,
         'name': name,
         'email': email,
       };
@@ -63,28 +63,17 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
       //
       debugPrint("STRING$jsonData");
       // Make the POST request
-      var response = await HttpUtil().post(
+      var res = await HttpUtil().post(
         'https://mlggrand.ir/db/user/create_subscription.php',
         data: jsonData,
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
-      print("responseData$response");
-      var responseData = response["success"];
-      print("responseData$responseData");
-      //
-      if (responseData) {
-        String? value = widget.phone;
-        Map<String, dynamic>? deviceId = await getDeviceInfo();
-        Map<String, dynamic>? searchParams = deviceId;
-        debugPrint("dynamic data READ$searchParams");
-        Map<String, dynamic> requestData = {
-          'deviceId': searchParams,
-          'phone': value,
-        };
-        debugPrint("here is data for READ $requestData");
+      if (res["success"] ?? false) {
+        String? phone = widget.phone;
+        Device? device = await getDeviceInfo();
+
         String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-            'id=${searchParams?['id']}&brand=${searchParams?['brand']}&platform=${searchParams?['platform']}&phone=$value';
-        debugPrint("URL$url");
+            'id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone';
         // Make the GET request with the combined URL
         var response = await HttpUtil().get(
           url,
@@ -92,7 +81,6 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
         );
         debugPrint("RESPONSER HERER IIIII${response.toString()}");
         var jsonResponse = json.decode(response);
-        if (context.mounted) {
           debugPrint(jsonResponse.toString());
           debugPrint(jsonResponse['subsData'].toString());
           if (jsonResponse['success']) {
@@ -101,28 +89,21 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
             if (level != null && level != 0) {
               if (context.mounted) {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setLevel(level);
+                    .setUserLevel(level);
                 Navigator.pushNamed(context, HomeScreen.id);
               }
             } else {
               if (context.mounted) {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setLevel(level);
-                ZarinpalApi.payment(context, amount: 5000, phone: widget.phone);
+                    .setUserLevel(level);
+                ZarinpalApi.payment(context, amount: 1000, phone: widget.phone);
                 Navigator.pushNamed(context, HomeScreen.id);
               }
             }
           } else {
             print('Failure message: ${response["message"]}');
           }
-        } else {
-          print('-------context is not available-------');
-          if (context.mounted) {
-            Provider.of<UserProvider>(context, listen: false).setLevel(level);
-            ZarinpalApi.payment(context, amount: 5000, phone: widget.phone);
-            Navigator.pushNamed(context, HomeScreen.id);
-          }
-        }
+
       }
     } catch (error) {
       print("Errorooooooooooooooooo: $error");

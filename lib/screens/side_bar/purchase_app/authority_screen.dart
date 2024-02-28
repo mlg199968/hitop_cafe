@@ -6,12 +6,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/payamito_api.dart';
 import 'package:hitop_cafe/services/HttpUtil.dart';
+import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 import 'package:zarinpal/zarinpal.dart';
 
@@ -56,98 +60,53 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
   //
   //   });
   // }
-  authorityFunction() async {
-    Map<String, dynamic>? deviceId = await getDeviceInfo();
-    Map<String, dynamic>? dynamicData = deviceId;
-    // Other string data
-    final platform = deviceId?["platform"].toString();
-    final level = UserProvider().level;
+  authorityFunction(context) async {
+    Device? device = await getDeviceInfo();
+    final level = UserProvider().userLevel;
     final phone = phoneNumberController.text;
     try {
-      // Combine dynamic data and other data
-      Map<String, dynamic> requestData = {
-        'deviceId': dynamicData,
-        'level': level,
-        'phone': phone,
-        'platform': platform,
-      };
-      debugPrint("here is data for create $requestData");
-      // Convert the map to JSON
-      String jsonData = jsonEncode(requestData);
+      Subscription subs=Subscription()..platform=device.platform..device=device..phone=phone..level=level;
+
       //
-      debugPrint("STRING$jsonData");
-      // Make the POST request
-      var response = await HttpUtil().post(
-        'https://mlggrand.ir/db/user/create_subscription.php',
-        data: jsonData,
-        options: Options(headers: {'Content-Type': 'application/json'}),
-      );
-      print("responseData$response");
-      var responseData = response["success"];
-      print("responseData$responseData");
-      //
-      if (responseData) {
-        String? value = phoneNumberController.text;
-        Map<String, dynamic>? deviceId = await getDeviceInfo();
-        Map<String, dynamic>? searchParams = deviceId;
-        debugPrint("dynamic data READ$searchParams");
-        Map<String, dynamic> requestData = {
-          'deviceId': searchParams,
-          'phone': value,
-        };
-        debugPrint("here is data for READ $requestData");
-        String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-            'id=${searchParams?['id']}&brand=${searchParams?['brand']}&platform=${searchParams?['platform']}&phone=$value';
-        debugPrint("URL$url");
-        // Make the GET request with the combined URL
-        var response = await HttpUtil().get(
-          url,
-          options: Options(headers: {'Content-Type': 'application/json'}),
-        );
-        debugPrint("RESPONSER HERER IIIII${response.toString()}");
-        var jsonResponse = json.decode(response);
-        if (context.mounted) {
-          debugPrint(jsonResponse.toString());
-          debugPrint(jsonResponse['subsData'].toString());
-          if (jsonResponse['success']) {
-            final level = jsonResponse['subsData']['level'];
-            debugPrint("LEVEL{$level}");
-            if (level != null && level != 0) {
-              if (context.mounted) {
+      // var res = await HttpUtil().post(
+      //   'https://mlggrand.ir/db/user/create_subscription.php',
+      //   data: subs.toJson(),
+      //   options: Options(headers: {'Content-Type': 'application/json'}),
+      // );
+
+      bool? success=await BackendServices.createSubs(context, subs: subs);
+      if (success==true) {
+        // Device device= await getDeviceInfo();
+        // String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
+        //     'id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone';
+        // debugPrint("URL$url");
+        // // Make the GET request with the combined URL
+        // var res = await HttpUtil().get(
+        //   url,
+        //   options: Options(headers: {'Content-Type': 'application/json'}),
+        // );
+        // var jsonResponse = json.decode(res);
+        Subscription? readSubs=await BackendServices.readSubscription(context,phone);
+
+
+            final level = readSubs?.level ?? 0;
+            if (level != 0) {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setLevel(level);
+                    .setUserLevel(level);
                 Navigator.pushNamed(context, HomeScreen.id);
-              }
+
             } else {
-              if (context.mounted) {
                 Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
                     arguments: {
-                      "phone": phoneNumberController.text,
+                      "phone": phone,
                       "level": level
                     });
-              }
             }
-          } else {
-            print('Failure message: ${response["message"]}');
-          }
-        } else {
-          print('-------context is not available-------');
-          if (context.mounted) {
-            Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-                arguments: {
-                  "phone": phoneNumberController.text,
-                  "level": level
-                });
-            Navigator.pushNamed(context, HomeScreen.id);
-          }
-        }
+
+
       }
     } catch (error) {
-      final level = UserProvider().level;
-      Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-          arguments: {"phone": phoneNumberController.text, "level": level});
-
-      print("Errorooooooooooooooooo: $error");
+        ErrorHandler.errorManger(context, error,title: "AuthorityScreen Authority button function error",showSnackbar: true);
     }
 
     //
@@ -340,13 +299,14 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
                         const SizedBox(
                           height: 18,
                         ),
-                        if (isRightNumber)
+                        if (!isRightNumber)
                           CustomButton(
                               text: "احراز هویت",
                               color: Colors.green,
                               onPressed: () async {
+                                authorityFunction(context);
                                 if (_formKey.currentState!.validate()) {
-                                  authorityFunction();
+                                  authorityFunction(context);
                                 }
                               }),
                       ],

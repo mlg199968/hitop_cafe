@@ -17,8 +17,8 @@ class HttpUtil {
   void _initializeDio() {
     dio.options = BaseOptions(
       baseUrl: SERVER_API_URL,
-      connectTimeout: const Duration(seconds: 6000),
-      receiveTimeout: const Duration(seconds: 6000),
+      connectTimeout: const Duration(milliseconds: 6000),
+      receiveTimeout: const Duration(milliseconds: 6000),
       followRedirects: true, // Enable following redirects
       maxRedirects: 5,
       headers: {
@@ -48,9 +48,9 @@ class HttpUtil {
     // if (authorization != null) {
     //   requestOptions.headers!.addAll(authorization);
     // }
-    print(path);
+   // print(path);
     // print(data);
-    print(queryParameters);
+   // print(queryParameters);
     var response = await dio.post(
       path,
       data: data,
@@ -59,28 +59,28 @@ class HttpUtil {
     );
     // var response =
     //     await dio.post(path, data: data, queryParameters: queryParameters);
-    print(data);
-    print(queryParameters);
+   // print(data);
+   // print(queryParameters);
 
-    print(requestOptions);
-    print(response.toString());
-    print("my response is ${response.toString()}");
-    print("my status code is ${response.statusCode.toString()}");
-    print("data${data}");
+   // print(requestOptions);
+   // print(response.toString());
+   // print("my response is ${response.toString()}");
+  //  print("my status code is ${response.statusCode.toString()}");
+   // print("data${data}");
     return response.data;
   }
 
   Future get(String path, {Options? options, dynamic queryParameters}) async {
     Options requestOptions = options ?? Options();
-    print(path);
+    //print(path);
     var response = await dio.get(path,
         options: requestOptions, queryParameters: queryParameters);
-    print("Request: ${dio.options.baseUrl}${path}");
-    print("Headers: ${dio.options.headers}");
-    print(requestOptions);
-    print(response.toString());
-    print("my response is ${response.data.toString()}");
-    print("my status code is ${response.statusCode.toString()}");
+   // print("Request: ${dio.options.baseUrl}${path}");
+   // print("Headers: ${dio.options.headers}");
+   // print(requestOptions);
+  //  print(response.toString());
+  //  print("my response is ${response.data.toString()}");
+  //  print("my status code is ${response.statusCode.toString()}");
 
     return response.data;
   }

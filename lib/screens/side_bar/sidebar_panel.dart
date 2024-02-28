@@ -128,7 +128,7 @@ class SideBarPanel extends StatelessWidget {
                       height: 20,
                     ),
 
-                    userProvider.level == 0
+                    userProvider.userLevel == 0
                         ? const PurchaseButton()
                         : const SizedBox(),
 

@@ -18,28 +18,29 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
     };
     return Subscription()
       ..name = fields[0] as String
-      ..phoneNumber = fields[1] as String
+      ..phone = fields[1] as String
       ..email = fields[2] as String?
       ..level = fields[3] as int
       ..startDate = fields[4] as DateTime?
       ..endDate = fields[5] as DateTime?
-      ..payAmount = fields[6] as double?
+      ..amount = fields[6] as int?
       ..authority = fields[7] as String?
       ..status = fields[8] as String?
       ..refId = fields[9] as String?
-      ..deviceId = fields[10] as String?
+      ..device = fields[10] as Device?
       ..description = fields[11] as String
-      ..id = fields[12] as int?;
+      ..id = fields[12] as int?
+      ..platform = fields[13] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Subscription obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.phoneNumber)
+      ..write(obj.phone)
       ..writeByte(2)
       ..write(obj.email)
       ..writeByte(3)
@@ -49,7 +50,7 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       ..writeByte(5)
       ..write(obj.endDate)
       ..writeByte(6)
-      ..write(obj.payAmount)
+      ..write(obj.amount)
       ..writeByte(7)
       ..write(obj.authority)
       ..writeByte(8)
@@ -57,11 +58,13 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       ..writeByte(9)
       ..write(obj.refId)
       ..writeByte(10)
-      ..write(obj.deviceId)
+      ..write(obj.device)
       ..writeByte(11)
       ..write(obj.description)
       ..writeByte(12)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(13)
+      ..write(obj.platform);
   }
 
   @override

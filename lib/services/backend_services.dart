@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/FetchdataRequestEntity.dart';
-import 'package:hitop_cafe/models/SubscriptionResponseEntity.dart';
 import 'package:hitop_cafe/models/notice.dart';
-import 'package:hitop_cafe/models/onlinedatamodel.dart';
-import 'package:hitop_cafe/models/subRequest.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/services/HttpUtil.dart';
 import 'package:http/http.dart' as http;
@@ -19,67 +18,33 @@ import 'package:provider/provider.dart';
 class BackendServices {
 
 
-
-  static Future<dynamic>? createSubs({SubscriptionData? params}) async {
+  ///create new subscription data in host
+  static Future<dynamic>? createSubs(context,{required Subscription subs}) async {
     try {
-      var response = await HttpUtil().post('/user/create_subscription.php/',
-          queryParameters: params!.toJson());
-      print(response.toString());
-      // Assuming responseString is the JSON string you received from the server
-      Map<String, dynamic> jsonResponse = json.decode(response);
-      print(jsonResponse.toString());
+      http.Response res = await http.post(
+                Uri.parse("$hostUrl/user/create_subscription.php"),
+          headers: {
+                  'Content-Type': 'application/json',
+            },
+                body: subs.toJson());
+            if (res.statusCode == 200) {
+              print(res.body);
+              var backData = jsonDecode(res.body);
 
-// Check if the request was successful
-      if (jsonResponse["success"] == true) {
-        // Access other properties if needed
-        // Example: String message = jsonResponse["message"];
-        // Example: dynamic subsData = jsonResponse["subsData"];
-        return SubscriptionResponseEntity.fromJson(jsonResponse);
-      } else {
-        // Handle the case where the request was not successful
-        String errorMessage = jsonResponse["message"];
-        print("Error: $errorMessage");
-        return ErrorResponse.fromJson(jsonResponse);
-      }
-
-      // if (response['success']) {
-      //   return SubscriptionResponseEntity.fromJson(response);
-      // } else {
-      //   return ErrorResponse.fromJson(response);
-      // }
+              if (backData["success"]==true) {
+                showSnackBar(context,"Subscription successfully saved",type: SnackType.success);
+                print("backData[message]********");
+                print(backData["message"]);
+                return true;
+              } else {
+                showSnackBar(context,"Subscription Not Saved!",type: SnackType.warning);
+                return false;
+              }
+            }
     } catch (e) {
-      print('Error: $e');
-      // Handle network or other errors as needed
-      return null;
+      ErrorHandler.errorManger(context, e,title: "BackendServices createSubs error",showSnackbar: true);
     }
   }
-
-  static Future<dynamic>? fetchDataList(
-      // {String? phone, Map<String, dynamic>? deviceId}) async {
-          {FetchdataRequestEntity? params}) async {
-    try {
-      var response = await HttpUtil().get('db/user/read_subscription.php/',
-          queryParameters: params?.toJson());
-      print(response.toString());
-
-      Map<String, dynamic> jsonResponse = json.decode(response);
-
-      if (jsonResponse["success"] == true) {
-        // Access other properties if needed
-        return DatalistModel.fromJson(jsonResponse);
-      } else {
-        // Handle the case where the request was not successful
-        String errorMessage = jsonResponse["message"];
-        print("Error: $errorMessage");
-        return ErrorResponse.fromJson(jsonResponse);
-      }
-    } catch (e) {
-      print('Error: $e');
-      // Handle network or other errors as needed
-      return null;
-    }
-  }
-
 
   ///create new subscription data in host
   // Future<bool?> createSubscription(context,Subscription subs) async {
@@ -107,6 +72,35 @@ class BackendServices {
   //   return null;
   // }
   ///read subscription data from host
+  static Future<Subscription?> readSubscription(context, String phone) async {
+    try {
+     Device device=await getDeviceInfo();
+      http.Response res = await http.post(
+          Uri.parse("$hostUrl/user/read_subscription.php?id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone"),
+          headers: {'Content-Type': 'application/json'},
+         // body: {"phone": phone,"device-id":device.toJson()}
+      );
+      if (res.statusCode == 200) {
+        var backData = jsonDecode(res.body);
+        if (backData["success"] == true) {
+            Subscription subs = Subscription().fromMap(backData["subsData"]);
+            showSnackBar(context,"Subscription successfully being read!",type: SnackType.success);
+            return subs;
+
+        } else if(backData["success"] == false){
+          showSnackBar(context,"has not being purchase",type: SnackType.warning);
+          return null;
+
+        } else{
+          showSnackBar(context,"has not being read",type: SnackType.error);
+          return null;
+        }
+      }
+    } catch (e) {
+      ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
+    }
+    return null;
+  }
 //   Future<Subscription?> readSubscription(context, String phone) async {
 //     try {
 //      String deviceId=await getDeviceInfo();
@@ -171,20 +165,13 @@ class BackendServices {
       }
     }
   }
-
+///
   Future<void> fetchData(BuildContext context) async {
-    Map<String, dynamic>? deviceId = await getDeviceInfo();
-    Map<String, dynamic>? searchParams = deviceId;
-    debugPrint("dynamic data READ$searchParams");
+    Device device = await getDeviceInfo();
 
-    Map<String, dynamic> requestData = {
-      'deviceId': searchParams,
-      // 'phone': value,
-    };
-    debugPrint("here is data for READ $requestData");
     String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-        'id=${searchParams?['id']}&brand=${searchParams?['brand']}&platform=${searchParams?['platform']}';
-    debugPrint("URL$url");
+        'id=${device.id}&brand=${device.brand}&platform=${device.platform}';
+
     // Make the GET request with the combined URL
     var response = await HttpUtil().get(
       url,
@@ -199,20 +186,17 @@ class BackendServices {
         final level = jsonResponse['subsData']['level'];
         debugPrint("LEVEL{$level}");
         if (level != null && level != 0) {
-          Provider.of<UserProvider>(context, listen: false).setLevel(level!);
+          Provider.of<UserProvider>(context, listen: false).setUserLevel(level!);
         } else {
-          Provider.of<UserProvider>(context, listen: false).setLevel(level!);
+          Provider.of<UserProvider>(context, listen: false).setUserLevel(level!);
         }
       } else {
-        Map<String, dynamic>? deviceId = await getDeviceInfo();
-        Map<String, dynamic>? dynamicData = deviceId;
-        // Other string data
-        final platform = deviceId?["platform"].toString();
-        final level = UserProvider().level;
+        Device device = await getDeviceInfo();
+        final level = UserProvider().userLevel;
         Map<String, dynamic> requestData = {
-          'deviceId': dynamicData,
+          'deviceId': device.toMap(),
           'level': level,
-          'platform': platform,
+          'platform': device.platform,
         };
         debugPrint("here is data for create $requestData");
         // Convert the map to JSON
