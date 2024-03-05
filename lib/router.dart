@@ -104,7 +104,7 @@ Route generateRoute(RouteSettings routeSetting) {
       return MaterialPageRoute(
           builder: (_) => PurchaseAppScreen(
                 phone: args?["phone"],
-                level: args?["level"],
+                subsId: args?["subsId"],
               ));
 
     case AuthorityScreen.id:

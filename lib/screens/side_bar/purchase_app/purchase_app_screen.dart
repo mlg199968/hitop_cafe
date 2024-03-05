@@ -3,29 +3,35 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/price.dart';
 import 'package:hitop_cafe/models/server_models/device.dart';
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/zarinpal_api.dart';
 import 'package:hitop_cafe/services/HttpUtil.dart';
 import 'package:hitop_cafe/services/backend_services.dart';
+import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
-
 
 class PurchaseAppScreen extends StatefulWidget {
   static const String id = "/purchase-app-screen";
 
   const PurchaseAppScreen({
     super.key,
-    required this.phone, this.level,
+    required this.phone,
+    this.subsId,
   });
   final String phone;
-  final int? level;
+  final int? subsId;
   @override
   State<PurchaseAppScreen> createState() => _PurchaseAppScreenState();
 }
@@ -37,102 +43,45 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
   final authCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late Future _getPriceFromHost;
+  bool loading = false;
 
   ///button function
-  purchaseButtonFunc() async {
-    Device device = await getDeviceInfo();
-
-    // Other string data
-
-    final level = UserProvider().userLevel;
-    final name = userFullNameController.text;
-    final email = emailController.text;
+  purchaseButtonFunc(context, int price) async {
+    loading = true;
+    setState(() {});
     try {
-      // Combine dynamic data and other data
-      Map<String, dynamic> requestData = {
-        'deviceId': device.toMap(),
-        'level': level,
-        'phone': widget.phone,
-        'platform': device.platform,
-        'name': name,
-        'email': email,
-      };
-      debugPrint("here is data for create $requestData");
-      // Convert the map to JSON
-      String jsonData = jsonEncode(requestData);
-      //
-      debugPrint("STRING$jsonData");
-      // Make the POST request
-      var res = await HttpUtil().post(
-        'https://mlggrand.ir/db/user/create_subscription.php',
-        data: jsonData,
-        options: Options(headers: {'Content-Type': 'application/json'}),
-      );
-      if (res["success"] ?? false) {
-        String? phone = widget.phone;
-        Device? device = await getDeviceInfo();
+      Device? device = await getDeviceInfo();
+      if (widget.subsId == null) {
+        Subscription subs = Subscription()
+          ..phone = widget.phone
+          ..name = (userFullNameController.text)
+          ..level = 0
+          ..amount = price
+          ..device = device
+          ..email = emailController.text;
 
-        String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-            'id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone';
-        // Make the GET request with the combined URL
-        var response = await HttpUtil().get(
-          url,
-          options: Options(headers: {'Content-Type': 'application/json'}),
-        );
-        debugPrint("RESPONSER HERER IIIII${response.toString()}");
-        var jsonResponse = json.decode(response);
-          debugPrint(jsonResponse.toString());
-          debugPrint(jsonResponse['subsData'].toString());
-          if (jsonResponse['success']) {
-            final level = jsonResponse['subsData']['level'];
-            debugPrint("LEVEL{$level}");
-            if (level != null && level != 0) {
-              if (context.mounted) {
-                Provider.of<UserProvider>(context, listen: false)
-                    .setUserLevel(level);
-                Navigator.pushNamed(context, HomeScreen.id);
-              }
-            } else {
-              if (context.mounted) {
-                Provider.of<UserProvider>(context, listen: false)
-                    .setUserLevel(level);
-                ZarinpalApi.payment(context, amount: 1000, phone: widget.phone);
-                Navigator.pushNamed(context, HomeScreen.id);
-              }
-            }
-          } else {
-            print('Failure message: ${response["message"]}');
-          }
-
+        bool created = await BackendServices.createSubs(context, subs: subs);
+        if (created) {
+          await ZarinpalApi.payment(context,
+              amount: subs.amount!, phone: subs.phone);
+        }
       }
     } catch (error) {
-      print("Errorooooooooooooooooo: $error");
+      ErrorHandler.errorManger(context, error,
+          title: "خطا در ایجاد و ورود به فرایند خرید",
+          route: "PurchaseAppScreen purchaseButtonFunc error",
+          showSnackbar: true);
     }
+    loading = false;
+    setState(() {});
   }
-  ///button function
-// purchaseButtonFunc()async{
-//   if(widget.level==null) {
-//     Subscription subs = Subscription()
-//       ..phoneNumber = widget.phone
-//       ..name = (userFullNameController.text)
-//       ..level = 0
-//       ..payAmount=1100
-//       ..email = emailController.text;
-//     await BackendServices().createSubscription(context,subs).whenComplete((){
-//       if (context.mounted) {
-//         ZarinpalApi.payment(context,
-//             amount: 5000,
-//             phone: widget.phone);
-//       }
-//     });
-//   }
-// }
 
   @override
   void initState() {
-    _getPriceFromHost=BackendServices().readOption("hitop_cafe_price");
+    _getPriceFromHost = BackendServices().readOption(kPriceOptionKey);
     super.initState();
   }
+
   @override
   void dispose() {
     phoneNumberController.dispose();
@@ -161,17 +110,17 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
             height: 800,
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              gradient: kBlackWhiteGradiant,borderRadius: BorderRadius.circular(20),
+              gradient: kBlackWhiteGradiant,
+              borderRadius: BorderRadius.circular(20),
             ),
             child: FutureBuilder(
-                future:_getPriceFromHost ,
-                builder: (context,snapshot) {
-
-                  if(snapshot.connectionState==ConnectionState.waiting){
+                future: _getPriceFromHost,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
-                  }
-                  else if(snapshot.connectionState==ConnectionState.done && snapshot.hasData) {
-                    int price=int.parse(snapshot.data);
+                  } else if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    Price price = Price().fromJson(snapshot.data);
                     return SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -204,6 +153,7 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                               ),
                             ),
                           ),
+
                           ///info and purchase part
                           Directionality(
                             textDirection: TextDirection.rtl,
@@ -212,27 +162,23 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const SizedBox(height: 50),
-                                Row(
-                                  textBaseline: TextBaseline.ideographic,
-                                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(addSeparator(price),style: const TextStyle(color: Colors.black,fontSize: 30),),
-                                    const SizedBox(width: 5,),
-                                    const Text("تومان",style: TextStyle(color: Colors.black45),),
-                                  ],
-                                ),
+                                PriceHolder(price: price),
                                 const SizedBox(height: 20),
                                 const Center(
                                     child: Text(
-                                      "ویژگی های نسخه کامل برنامه :",
-                                      style: TextStyle(color: Colors.amber, fontSize: 17),
-                                    )),
+                                  "ویژگی های نسخه کامل برنامه :",
+                                  style: TextStyle(
+                                      color: Colors.amber, fontSize: 17),
+                                )),
                                 const SizedBox(height: 20),
-                                const TextWithIcon(text: " افزودن نامحدود سفارش "),
-                                const TextWithIcon(text: "افزودن نامحدود کالا به لیست"),
-                                const TextWithIcon(text: "امکان گرفتن فایل پشتیبان"),
-                                const TextWithIcon(text: "دسترسی به بخش تنظیمات"),
+                                const TextWithIcon(
+                                    text: " افزودن نامحدود سفارش "),
+                                const TextWithIcon(
+                                    text: "افزودن نامحدود کالا به لیست"),
+                                const TextWithIcon(
+                                    text: "امکان گرفتن فایل پشتیبان"),
+                                const TextWithIcon(
+                                    text: "دسترسی به بخش تنظیمات"),
                                 const TextWithIcon(text: "صدور نامحدود فاکتور"),
                                 const SizedBox(
                                   height: 25,
@@ -259,19 +205,21 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                                   thickness: 0,
                                 ),
                                 CustomTextField(
-                                    label: "ایمیل", controller: emailController),
-
+                                    label: "ایمیل",
+                                    controller: emailController),
 
                                 const SizedBox(
                                   height: 20,
                                 ),
 
                                 CustomButton(
+                                    loading: loading,
                                     text: "ادامه فرایند خرید",
                                     color: Colors.orange,
-                                    onPressed: ()async {
+                                    onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        purchaseButtonFunc();
+                                        purchaseButtonFunc(
+                                            context, price.price.toInt());
                                       }
                                     }),
                               ],
@@ -280,15 +228,84 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                         ],
                       ),
                     );
+                  } else {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const EmptyHolder(
+                            text: "خطا در برقراری ارتباط با سرور",
+                            icon: Icons
+                                .signal_wifi_connected_no_internet_4_rounded),
+                        ActionButton(
+                          icon: Icons.refresh_rounded,
+                          label: "تلاش دوباره",
+                          onPress: () async {
+                            _getPriceFromHost=BackendServices().readOption(kPriceOptionKey);
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    );
                   }
-                  else{
-                    return const Center(child: Text("خطا در برقراری ارتباط با سرور",style: TextStyle(color: Colors.white),));
-                  }
-                }
-            ),
+                }),
           ),
         ),
       ),
+    );
+  }
+}
+
+class PriceHolder extends StatelessWidget {
+  const PriceHolder({
+    super.key,
+    required this.price,
+  });
+
+  final Price price;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          textBaseline: TextBaseline.ideographic,
+          crossAxisAlignment:
+              CrossAxisAlignment.baseline,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ///discount percent
+            if(price.hasDiscount)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(20)),
+                child: Text("${price.discount}%".toPersianDigit(),style: const TextStyle(color: Colors.white),)),
+            Text(
+              addSeparator(price.price),
+              style: const TextStyle(
+                  color: Colors.black, fontSize: 30),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            ///main price
+            if(price.hasDiscount)
+            const Text(
+              "تومان",
+              style: TextStyle(color: Colors.black45),
+            ),
+          ],
+        ),
+        Text(
+          addSeparator(price.mainPrice),
+          style: const TextStyle(
+            decoration: TextDecoration.lineThrough,
+              color: Colors.black38, fontSize: 20),
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+      ],
     );
   }
 }

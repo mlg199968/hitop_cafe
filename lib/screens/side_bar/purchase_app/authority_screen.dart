@@ -1,8 +1,7 @@
-import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/constants/constants.dart';
@@ -14,7 +13,6 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/payamito_api.dart';
-import 'package:hitop_cafe/services/HttpUtil.dart';
 import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 import 'package:zarinpal/zarinpal.dart';
@@ -35,130 +33,91 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
 
   PaymentRequest paymentRequest = PaymentRequest();
   bool isRightNumber = false;
+  bool msgLoading = false;
+  bool authLoading = false;
   String? sendCode;
-  String? payReference;
+  ///send code button function
+Future<void> sendCodeFunction(context)async{
+  msgLoading = true;
+  setState(() {});
+  try{
+      Map? phoneAuthData =
+          await PayamitoApi.sentMessage(context, phoneNumberController.text);
+
+      if (phoneAuthData != null) {
+        isRightNumber = phoneAuthData["isRight"];
+        sendCode = phoneAuthData["authCode"];
+      }
+    }catch(error){
+    ErrorHandler.errorManger(context, error,
+        title: "خطا در ارسال کد!",
+        route: "AuthorityScreen sendCode button function error",
+        showSnackbar: true);
+  }
+  msgLoading = false;
+  setState(() {});
+  }
 
 
-  // authorityFunction()async{
-  //   await BackendServices()
-  //       .readSubscription(
-  //       context, phoneNumberController.text)
-  //       .then((value) {
-  //     if(value!=null && value.level!=0){
-  //       // print(value.toMap());
-  //       Provider.of<UserProvider>(context,listen: false).setUserLevel(value.level);
-  //       Navigator.pushNamed(context, HomeScreen.id);
-  //     }else {
-  //       print("no match phone number found in mySql");
-  //       Navigator.pushReplacementNamed(
-  //           context, PurchaseAppScreen.id,arguments: {
-  //         "phone":phoneNumberController.text,
-  //         "level":value?.level
-  //       });
-  //     }
-  //     return null;
-  //
-  //   });
-  // }
-  authorityFunction(context) async {
+///authority button function
+  Future<void> authorityFunction(context) async {
+  authLoading=true;
+  setState(() {});
     Device? device = await getDeviceInfo();
-    final level = UserProvider().userLevel;
     final phone = phoneNumberController.text;
     try {
-      Subscription subs=Subscription()..platform=device.platform..device=device..phone=phone..level=level;
-
-      //
-      // var res = await HttpUtil().post(
-      //   'https://mlggrand.ir/db/user/create_subscription.php',
-      //   data: subs.toJson(),
-      //   options: Options(headers: {'Content-Type': 'application/json'}),
-      // );
-
-      bool? success=await BackendServices.createSubs(context, subs: subs);
-      if (success==true) {
-        // Device device= await getDeviceInfo();
-        // String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-        //     'id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone';
-        // debugPrint("URL$url");
-        // // Make the GET request with the combined URL
-        // var res = await HttpUtil().get(
-        //   url,
-        //   options: Options(headers: {'Content-Type': 'application/json'}),
-        // );
-        // var jsonResponse = json.decode(res);
-        Subscription? readSubs=await BackendServices.readSubscription(context,phone);
-
-
-            final level = readSubs?.level ?? 0;
-            if (level != 0) {
+      List<Subscription>? readSubs =
+          await BackendServices.readSubscription(context, phone);
+      if (readSubs != null && readSubs.isNotEmpty) {
+        for (Subscription subs in readSubs) {
+          if (subs.level == 1) {
+            if (subs.device != null) {
+              if(subs.device!.id==device.id) {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setUserLevel(level);
+                    .setUserLevel(1);
                 Navigator.pushNamed(context, HomeScreen.id);
 
-            } else {
-                Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-                    arguments: {
-                      "phone": phone,
-                      "level": level
-                    });
             }
+              else {
+                Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
+                    arguments: {"phone": phone, "subsId": null});
+              }
+            }
+            else if(subs.device == null && subs.level==1){
+              Subscription newSubs = Subscription()
+                ..phone = subs.phone
+                ..id=subs.id
+                ..device=device
+                ..level = 1;
+              await BackendServices.createSubs(context, subs: newSubs).whenComplete(() {
+                Provider.of<UserProvider>(context, listen: false)
+                    .setUserLevel(1);
+                Navigator.pushReplacementNamed(context, HomeScreen.id);
+              });
 
-
+            }
+            else{
+              Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
+                  arguments: {"phone": phone, "subsId": null});
+            }
+          }
+          else if(subs.level==0){
+            Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
+                arguments: {"phone": phone, "subsId": null});
+          }
+        }
+      } else {
+        Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
+            arguments: {"phone": phone, "subsId": null});
       }
-    } catch (error) {
-        ErrorHandler.errorManger(context, error,title: "AuthorityScreen Authority button function error",showSnackbar: true);
-    }
 
-    //
-    // String? value = phoneNumberController.text;
-    // Map<String, dynamic>? deviceId = await getDeviceInfo();
-    // Map<String, dynamic>? searchParams = deviceId;
-    // debugPrint("dynamic data READ${searchParams}");
-    // Map<String, dynamic> requestData = {
-    //   'deviceId': searchParams,
-    //   'phone': value,
-    // };
-    // debugPrint("here is data for READ $requestData");
-    // String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-    //     'id=${searchParams?['id']}&brand=${searchParams?['brand']}&platform=${searchParams?['platform']}&phone=$value';
-    // debugPrint("URL${url}");
-    // // Make the GET request with the combined URL
-    // var response = await HttpUtil().get(
-    //   url,
-    //   options: Options(headers: {'Content-Type': 'application/json'}),
-    // );
-    // debugPrint("RESPONSER HERER IIIII${response.toString()}");
-    // var jsonResponse = json.decode(response);
-    // if (context.mounted) {
-    //   debugPrint(jsonResponse.toString());
-    //   debugPrint(jsonResponse['subsData'].toString());
-    //   if (jsonResponse['success']) {
-    //     final level = jsonResponse['subsData']['level'];
-    //     debugPrint("LEVEL{$level}");
-    //     if (level != null && level != 0) {
-    //       if (context.mounted) {
-    //         Provider.of<UserProvider>(context, listen: false).setLevel(level);
-    //         Navigator.pushNamed(context, HomeScreen.id);
-    //       }
-    //     } else {
-    //       if (context.mounted) {
-    //         final level = UserProvider().level;
-    //         Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-    //             arguments: {
-    //               "phone": phoneNumberController.text,
-    //               "level": level
-    //             });
-    //       }
-    //     }
-    //   } else {
-    //     if (context.mounted) {
-    //       final level = UserProvider().level;
-    //       Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-    //           arguments: {"phone": phoneNumberController.text, "level": level});
-    //     }
-    //     print('Failure message: ${jsonResponse["message"]}');
-    //   }
-    // }
+    } catch (error) {
+      ErrorHandler.errorManger(context, error,
+          title: "AuthorityScreen Authority button function error",
+          showSnackbar: true);
+    }
+  authLoading=false;
+  setState(() {});
   }
 
   @override
@@ -187,8 +146,7 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
               gradient: kBlackWhiteGradiant,
-              borderRadius: BorderRadius.circular(20)
-          ),
+              borderRadius: BorderRadius.circular(20)),
           child: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -236,48 +194,34 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
                         ),
 
                         ///phone number field and auth button
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomButton(
-                                text: "ارسال کد",
-                                height: 40,
-                                color: Colors.teal,
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    Map? phoneAuthData =
-                                    await PayamitoApi.sentMessage(
-                                        context, phoneNumberController.text);
-                                    if(phoneAuthData!=null) {
-                                      isRightNumber = phoneAuthData["isRight"];
-                                      sendCode = phoneAuthData["authCode"];
-                                    }
-                                    setState(() {});
-                                  }
-                                }),
-                            const VerticalDivider(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CustomTextField(
-                                label: "شماره موبایل",
-                                controller: phoneNumberController,
-                                textFormat: TextFormatter.number,
-                                maxLength: 11,
-                                validate: true,
-                                extraValidate: (val) {
-                                  String newVal = val!;
-                                  if (val[0] == "0") {
-                                    newVal = val.replaceFirst("0", "");
-                                    phoneNumberController.text = newVal;
-                                  }
-                                  if (newVal.length < 10 || newVal[0] != "9") {
-                                    return "شماره معتبر نیست";
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
+                        CustomTextField(
+                          label: "شماره موبایل",
+                          controller: phoneNumberController,
+                          textFormat: TextFormatter.number,
+                          maxLength: 11,
+                          borderRadius: 50,
+                          validate: true,
+                          extraValidate: (val) {
+                            String newVal = val!;
+                            if (val[0] == "0") {
+                              newVal = val.replaceFirst("0", "");
+                              phoneNumberController.text = newVal;
+                            }
+                            if (newVal.length < 10 || newVal[0] != "9") {
+                              return "شماره معتبر نیست";
+                            }
+                          },
+                          suffixIcon:ActionButton(
+                              loading: msgLoading,
+                              label: "ارسال کد",
+                              icon: Icons.send,
+                              height: 40,
+                              bgColor: kSecondaryColor,
+                              onPress: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  await sendCodeFunction(context);
+                                }
+                              }),
                         ),
                         const SizedBox(
                           height: 50,
@@ -299,12 +243,12 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
                         const SizedBox(
                           height: 18,
                         ),
-                        if (!isRightNumber)
+                        if (isRightNumber)
                           CustomButton(
+                            loading: authLoading,
                               text: "احراز هویت",
                               color: Colors.green,
                               onPressed: () async {
-                                authorityFunction(context);
                                 if (_formKey.currentState!.validate()) {
                                   authorityFunction(context);
                                 }

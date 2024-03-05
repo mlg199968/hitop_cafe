@@ -3,8 +3,7 @@ import 'package:hitop_cafe/constants/enums.dart';
 
 const String kAppName = "hitop-cafe";
 const String hostUrl = "https://mlggrand.ir/db";
-const String SERVER_API_URL = 'https://mlggrand.ir/';
-
+const String kPriceOptionKey="hitop_cafe_price";
 const kMainGradiant2 = LinearGradient(
   colors: [Colors.brown, Colors.deepOrangeAccent],
 );

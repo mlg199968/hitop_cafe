@@ -17,7 +17,7 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Subscription()
-      ..name = fields[0] as String
+      ..name = fields[0] as String?
       ..phone = fields[1] as String
       ..email = fields[2] as String?
       ..level = fields[3] as int
@@ -28,7 +28,7 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       ..status = fields[8] as String?
       ..refId = fields[9] as String?
       ..device = fields[10] as Device?
-      ..description = fields[11] as String
+      ..description = fields[11] as String?
       ..id = fields[12] as int?
       ..platform = fields[13] as String?;
   }

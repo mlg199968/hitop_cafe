@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hive/hive.dart';
 
-
+part 'device.g.dart';
 
 @HiveType(typeId: 20)
 class Device extends HiveObject{
@@ -44,3 +44,7 @@ class Device extends HiveObject{
   String toJson()=>jsonEncode(toMap());
   factory Device.fromJson(String source)=>Device.fromMap(jsonDecode(source));
 }
+
+//run this code for create adaptor:
+//flutter packages pub run build_runner build --delete-conflicting-outputs
+//dart run build_runner build --delete-conflicting-outputs

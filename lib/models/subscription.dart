@@ -46,15 +46,15 @@ class Subscription extends HiveObject{
       'phone': phone,
       'email': email,
       'level': level,
-      'startDate': startDate?.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
+      'start_date': startDate?.toIso8601String(),
+      'end_date': endDate?.toIso8601String(),
       'amount': amount,
       'Authority': authority,
       'Status': status,
-      'refId': refId,
-      'deviceId': device?.toMap(),
+      'ref_id': refId,
+      'device': device?.toMap(),
       'description': description ,
-     'user_id': id,
+     'id': id,
      'platform': platform,
     };
   }
@@ -65,21 +65,20 @@ class Subscription extends HiveObject{
       ..name= map['name'] ?? ""
       ..phone= map['phone'] ?? ""
       ..email= map['email'] ?? ""
-      ..level= map['level'] ?? 0
-      ..startDate= DateTime.tryParse(map['startDate'])
-      ..endDate= DateTime.tryParse(map['endDate'])
-      ..amount= map['amount'] ?? 0
+       ..level= int.tryParse(map['level'] ?? "0") ?? 0
+      ..startDate= DateTime.tryParse(map['start_date'] ?? "")
+      ..endDate= DateTime.tryParse(map['end_date'] ?? "")
+       ..amount= int.tryParse(map['amount'] ?? "0")
       ..authority= map['Authority']
       ..status= map['Status']
-      ..refId= map['refId']
-      ..device=map['deviceId']!=null? Device.fromMap(map['device']):null
+      ..refId= map['ref_id']
+      ..device=map['device']!=null? Device.fromMap(map['device']):null
       ..description= map['description']
-      ..id= int.tryParse(map['user_id']);
-    print("from map***************");
+       ..id= int.tryParse(map['id'] ?? "");
      return subscription;
   }
 
-  String toJson() => jsonEncode(toMap());
+  String toJson() => json.encode(toMap());
 
   Subscription fromJson(String source) => fromMap(
     jsonDecode(source),

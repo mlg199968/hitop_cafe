@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,158 +15,132 @@ import 'package:hitop_cafe/services/HttpUtil.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-
 class BackendServices {
-
-
   ///create new subscription data in host
-  static Future<dynamic>? createSubs(context,{required Subscription subs}) async {
+  static Future<bool> createSubs(context,
+      {required Subscription subs}) async {
     try {
-      http.Response res = await http.post(
-                Uri.parse("$hostUrl/user/create_subscription.php"),
-          headers: {
-                  'Content-Type': 'application/json',
-            },
-                body: subs.toJson());
-            if (res.statusCode == 200) {
-              print(res.body);
-              var backData = jsonDecode(res.body);
-
-              if (backData["success"]==true) {
-                showSnackBar(context,"Subscription successfully saved",type: SnackType.success);
-                print("backData[message]********");
-                print(backData["message"]);
-                return true;
-              } else {
-                showSnackBar(context,"Subscription Not Saved!",type: SnackType.warning);
-                return false;
-              }
-            }
-    } catch (e) {
-      ErrorHandler.errorManger(context, e,title: "BackendServices createSubs error",showSnackbar: true);
-    }
-  }
-
-  ///create new subscription data in host
-  // Future<bool?> createSubscription(context,Subscription subs) async {
-  //   try {
-  //
-  //     http.Response res = await http.post(
-  //         Uri.parse("$hostUrl/user/create_subscription.php"),
-  //         body: subs.toMap());
-  //     print(res.body);
-  //     if (res.statusCode == 200) {
-  //       print(res.body);
-  //       var backData = jsonDecode(res.body);
-  //
-  //       if (backData["success"] == true) {
-  //         showSnackBar(context,"Subscription successfully saved",type: SnackType.success);
-  //         return true;
-  //       } else {
-  //         showSnackBar(context,"Subscription Not Saved!",type: SnackType.warning);
-  //         return false;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     ErrorHandler.errorManger(context, e,title: "BackendServices-createSubscription error",showSnackbar: true);
-  //   }
-  //   return null;
-  // }
-  ///read subscription data from host
-  static Future<Subscription?> readSubscription(context, String phone) async {
-    try {
-     Device device=await getDeviceInfo();
-      http.Response res = await http.post(
-          Uri.parse("$hostUrl/user/read_subscription.php?id=${device.id}&brand=${device.brand}&platform=${device.platform}&phone=$phone"),
-          headers: {'Content-Type': 'application/json'},
-         // body: {"phone": phone,"device-id":device.toJson()}
-      );
+      http.Response res =
+          await http.post(Uri.parse("$hostUrl/user/create_subscription2.php"),
+              body: subs.toJson());
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
+
         if (backData["success"] == true) {
-            Subscription subs = Subscription().fromMap(backData["subsData"]);
-            showSnackBar(context,"Subscription successfully being read!",type: SnackType.success);
-            return subs;
+          showSnackBar(context, backData["message"] ?? "success",
+              type: SnackType.success);
+          print(backData);
+          return true;
+        } else {
+          showSnackBar(context, backData["message"] ?? "not success",
+              type: SnackType.warning);
+          if(backData["error"]!=null) {
+            ErrorHandler.errorManger(context, backData["error"],
+              title: backData["message"] ?? "backData success is false" , showSnackbar: true);
+          }
+          return false;
+        }
+      }
 
-        } else if(backData["success"] == false){
-          showSnackBar(context,"has not being purchase",type: SnackType.warning);
+
+    } catch (e) {
+      ErrorHandler.errorManger(context, e,
+          title: "BackendServices createSubs error", showSnackbar: true);
+    }
+    return false;
+  }
+
+  ///read subscription data from host
+  static Future<List<Subscription>?> readSubscription(
+      context, String phone) async {
+    try {
+      Device device = await getDeviceInfo();
+
+      http.Response res = await http
+          .post(Uri.parse("$hostUrl/user/read_subscription2.php"),
+          body: {
+        "phone": phone,
+        "device": device.toJson(),
+      });
+      print(res.body);
+      if (res.statusCode == 200) {
+
+        var backData = jsonDecode(res.body);
+        if (backData["success"] == true) {
+          List? subsMap=backData["subsData"];
+          List<Subscription>? subsList = (subsMap == null || subsMap.isEmpty)
+              ? null
+              : (backData["subsData"] as List)
+                  .map((e) => Subscription().fromMap(e))
+                  .toList();
+          showSnackBar(context, "Subscription successfully being read!",
+              type: SnackType.success);
+          return subsList;
+        } else if (backData["success"] == false) {
+          showSnackBar(context, "has not being purchase",
+              type: SnackType.warning);
           return null;
-
-        } else{
-          showSnackBar(context,"has not being read",type: SnackType.error);
+        } else {
+          showSnackBar(context, "has not being read", type: SnackType.error);
           return null;
         }
       }
     } catch (e) {
-      ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
+      ErrorHandler.errorManger(context, e,
+          title: "BackendServices-readSubscription error", showSnackbar: true);
     }
     return null;
   }
-//   Future<Subscription?> readSubscription(context, String phone) async {
-//     try {
-//      String deviceId=await getDeviceInfo();
-//       http.Response res = await http.post(
-//           Uri.parse("$hostUrl/user/read_subscription.php"),
-//           body: {"phone": phone,"device-id":deviceId});
-//       if (res.statusCode == 200) {
-//         var backData = jsonDecode(res.body);
-//         if (backData["success"] == true) {
-//             Subscription subs = Subscription().fromMap(backData["subsData"]);
-//             showSnackBar(context,"Subscription successfully being read!",type: SnackType.success);
-//             return subs;
-//
-//         } else {
-//           showSnackBar(context,"has not being purchase",type: SnackType.warning);
-//           return null;
-//
-//         }
-//       }
-//     } catch (e) {
-//       ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
-//     }
-//     return null;
-//   }
+
 
   ///read Notifications from host
-  Future<List<Notice?>?> readNotice(context, {String appName=kAppName,int timeout=20}) async {
+  Future<List<Notice?>?> readNotice(context,
+      {String appName = kAppName, int timeout = 20}) async {
     try {
-
       http.Response res = await http.post(
           Uri.parse("$hostUrl/notification/read_notice.php"),
-          body: {"app-name":appName}).timeout(Duration(seconds:timeout ));
+          body: {"app-name": appName}).timeout(Duration(seconds: timeout));
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
-          List<Notice> notices =(backData["notification-list"] as List).map((e) => Notice().fromJson(e["notice_object"])).toList() ;
+          List<Notice> notices = (backData["notification-list"] as List)
+              .map((e) => Notice().fromJson(e["notice_object"]))
+              .toList();
 
           debugPrint("notifications successfully being read!");
           return notices;
-
         } else {
           debugPrint("error in backendServices.readNotice php api error error");
           return null;
-
         }
       }
     } catch (e) {
-      ErrorHandler.errorManger(context, e,title: "BackendServices-readSubscription error",showSnackbar: true);
+      ErrorHandler.errorManger(context, e,
+          title: "BackendServices-readSubscription error", showSnackbar: true);
     }
     return null;
   }
 
   ///get the options from mysql like the price of the app
-  Future readOption(String optionName)async{
-    final res=await http.post(
-        Uri.parse("$hostUrl/user/read_options.php"),
-        body:{"option_name":optionName});
-    if(res.statusCode==200){
-      var backData=jsonDecode(res.body);
-      if (backData["success"] == true){
-        return backData["values"]["option_value"];
+  Future readOption(String optionName) async {
+    final res = await http.post(Uri.parse("$hostUrl/user/read_options.php"),
+        body: {"option_name": optionName});
+    if (res.statusCode == 200) {
+      var backData = jsonDecode(res.body);
+      if (backData["success"] == true) {
+        //return different value(price) for each platform
+        if(Platform.isWindows){
+          return backData["values"]["option_json"];
+        }
+        else{
+          return backData["values"]["option_json2"] ?? backData["values"]["option_json"];
+        }
+
       }
     }
   }
-///
+
+  ///
   Future<void> fetchData(BuildContext context) async {
     Device device = await getDeviceInfo();
 
@@ -186,9 +161,11 @@ class BackendServices {
         final level = jsonResponse['subsData']['level'];
         debugPrint("LEVEL{$level}");
         if (level != null && level != 0) {
-          Provider.of<UserProvider>(context, listen: false).setUserLevel(level!);
+          Provider.of<UserProvider>(context, listen: false)
+              .setUserLevel(level!);
         } else {
-          Provider.of<UserProvider>(context, listen: false).setUserLevel(level!);
+          Provider.of<UserProvider>(context, listen: false)
+              .setUserLevel(level!);
         }
       } else {
         Device device = await getDeviceInfo();

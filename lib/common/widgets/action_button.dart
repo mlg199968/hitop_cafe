@@ -14,7 +14,9 @@ class ActionButton extends StatelessWidget {
       this.onLongPress,
       this.iconColor,
       this.margin,
-      this.padding, this.borderRadius=20});
+      this.padding, this.borderRadius=20,
+        this.loading = false,
+      });
 
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
@@ -28,6 +30,7 @@ class ActionButton extends StatelessWidget {
   final TextDirection direction;
   final EdgeInsets? margin;
   final EdgeInsets? padding;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,15 @@ class ActionButton extends StatelessWidget {
                 backgroundColor: MaterialStateProperty.all(bgColor)),
             onPressed: onPress,
             onLongPress: onLongPress,
-            child: Row(
+            child: loading
+            ///show loading indicator
+                ?Container(
+              width: height,
+              height: height,
+              padding: const EdgeInsets.all(8.0),
+              child: const CircularProgressIndicator(color: Colors.white70,strokeWidth: 1.5,),
+            )
+                :Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

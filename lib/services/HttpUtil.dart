@@ -16,7 +16,7 @@ class HttpUtil {
 
   void _initializeDio() {
     dio.options = BaseOptions(
-      baseUrl: SERVER_API_URL,
+      baseUrl: "https://mlggrand.ir/",
       connectTimeout: const Duration(milliseconds: 6000),
       receiveTimeout: const Duration(milliseconds: 6000),
       followRedirects: true, // Enable following redirects

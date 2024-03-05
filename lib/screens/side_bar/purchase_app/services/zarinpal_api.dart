@@ -10,11 +10,10 @@ class ZarinpalApi{
   static payment(BuildContext context,
       {required String phone, required int amount}) async {
     Device device = await getDeviceInfo();
-    debugPrint("STRING zarinpal${device.toJson()}");
     PaymentRequest paymentRequest = PaymentRequest()
       ..setIsSandBox(false)
       ..setAmount(amount)
-      ..setDescription("description")
+      ..setDescription(device.toJson())
       ..setMerchantID(PrivateKeys.zarinpalId)
       ..setCallbackURL(
           "https://mlggrand.ir/db/payment/payzarin.php?phone=$phone&amount=$amount&deviceId=${device.toJson()}");
