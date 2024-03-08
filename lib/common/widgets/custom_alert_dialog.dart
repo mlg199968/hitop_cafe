@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
-
+import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 class CustomDialog extends StatelessWidget {
   const CustomDialog({
     super.key,
@@ -13,13 +12,14 @@ class CustomDialog extends StatelessWidget {
     required this.child,
     this.height,
     this.textDirection = TextDirection.rtl,
-    this.opacity = .8,
+    this.opacity = .9,
     this.image,
-    this.borderRadius = 20,
+    this.borderRadius=20,this.vip=false,
     this.contentPadding,
     this.topTrail,
   });
   final String? title;
+  final EdgeInsets? contentPadding;
   final Widget child;
   final Widget? topTrail;
   final double? height;
@@ -28,12 +28,11 @@ class CustomDialog extends StatelessWidget {
   final double opacity;
   final double borderRadius;
   final String? image;
-  final EdgeInsets? contentPadding;
+  final bool vip;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
       iconPadding: EdgeInsets.zero,
       contentPadding: EdgeInsets.zero,
       backgroundColor: Colors.white.withOpacity(opacity),
@@ -41,7 +40,6 @@ class CustomDialog extends StatelessWidget {
       scrollable: true,
       content: HideKeyboard(
         child: BlurryContainer(
-          blur: 10,
           padding: const EdgeInsets.all(0),
           borderRadius: BorderRadius.circular(borderRadius),
           child: Stack(
@@ -53,7 +51,7 @@ class CustomDialog extends StatelessWidget {
                   width: width,
                   height: 250,
                   decoration: BoxDecoration(
-                    image: (image == null || image == "")
+                    image: (image == null || image=="")
                         ? null
                         : DecorationImage(
                             image: FileImage(File(image!)),
@@ -65,13 +63,13 @@ class CustomDialog extends StatelessWidget {
               Container(
                 width: width,
                 height: 250,
-                decoration:  const BoxDecoration(
+                decoration: const BoxDecoration(
                     backgroundBlendMode: BlendMode.dstIn,
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [Colors.white, Colors.transparent],
-                        stops: [.4, .9])),
+                        stops: [.5, .9])),
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -91,6 +89,7 @@ class CustomDialog extends StatelessWidget {
                           icon: const Icon(
                             Icons.close_rounded,
                             color: Colors.red,
+                            shadows: [BoxShadow(blurRadius: 5,offset:Offset(.5, .8),color: Colors.black54)],
                             size: 30,
                           ),
                         ),
@@ -105,19 +104,19 @@ class CustomDialog extends StatelessWidget {
                       child: title == null
                           ? null
                           : Text(
-                              title!,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 18),
-                            )),
+                        title!,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 18,shadows: [kShadow]),
+                      )),
                   Directionality(
                     textDirection: textDirection,
                     child: Flexible(
                       child: Container(
-                          margin: (image == null || image == "")
+                          margin: (image == null || image=="")
                               ? null
-                              : const EdgeInsets.all(20).copyWith(top: 80),
+                              : const EdgeInsets.all(0).copyWith(top: 80),
                           //decoration for image if image is not null
-                          decoration: (image == null || image == "")
+                          decoration: (image == null || image=="")
                               ? null
                               : BoxDecoration(
                                   // gradient: const LinearGradient(
@@ -136,13 +135,39 @@ class CustomDialog extends StatelessWidget {
                           height:
                               height, // ?? MediaQuery.of(context).size.height,
                           width: width, // ?? MediaQuery.of(context).size.width,
-                          padding: contentPadding ??
-                              const EdgeInsets.all(20).copyWith(top: 10),
+                          padding:contentPadding ?? const EdgeInsets.all(20).copyWith(top: 10) ,
                           child: child),
                     ),
                   ),
                 ],
               ),
+              ///vip Button show here when user is not vip
+              if (vip)
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(top: 70),
+                  width:  MediaQuery.of(context).size.width,
+                  height: height ?? MediaQuery.of(context).size.height * .8,
+                  color: Colors.black87.withOpacity(.7),
+                  //height: MediaQuery.of(context).size.height,
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text(
+                          "برای استفاده از این پنل نسخه پرو برنامه را فعال کنید.",
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      PurchaseButton(),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

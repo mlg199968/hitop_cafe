@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -15,7 +16,7 @@ class GlobalTask {
     storageService = await StorageService().init();
   }
 
-  static getInitData(context)async{
+  static Future<void> getInitData(context)async{
 
     Provider.of<WareProvider>(context, listen: false).loadCategories();
     Shop shop=Shop();
@@ -25,10 +26,22 @@ class GlobalTask {
     }else{
       HiveBoxes.getShopInfo().add(shop);
     }
-    ///get notifications
-    runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
-    if(Provider.of<UserProvider>(context, listen: false).userLevel==0) {
-      await BackendServices().fetchData(context);
+
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi ||
+        connectivityResult == ConnectivityResult.ethernet ||
+        connectivityResult == ConnectivityResult.vpn) {
+      print("connectivityResult");
+      print(connectivityResult);
+      /// fetch subscription data
+      BackendServices().fetchSubscription(context).whenComplete(() {
+        print("fetchSubscription completed");
+      });
+      ///get notifications
+      runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
     }
+
+
   }
 }

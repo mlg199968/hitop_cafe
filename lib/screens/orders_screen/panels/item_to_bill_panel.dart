@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
+import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -79,47 +81,32 @@ void replaceOldPurchase(Item? old){
                       const SizedBox(
                         height: 20,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: CustomButton(
-                              height: 40,
-                              text: "انتخاب",
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                        context, ItemsScreen.id,
-                                        arguments: const Key(ItemToBillPanel.id))
-                                    .then((value) {
-                                  if (value != null) {
-                                    value as Item;
-                                    getItemData(value);
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Expanded(
-                            flex: 3,
-                            ///ware suggestion textfield part
-                            child: ItemSuggestionTextField(
-                              label:"نام کالا",
-                                controller: itemNameController,
-                              onSuggestionSelected:  (Item item){
-                                itemNameController.text=item.itemName;
-                                salePriceController.text=addSeparator(item.sale);
-                                quantityController.text=1.toString();
-                                unitItem=item.unit;
-                                selectedItem=item;
-                              },
-                            )
-                          ),
-                        ],
+                      ItemSuggestionTextField(
+                        label:"نام آیتم",
+                          controller: itemNameController,
+                        borderRadius: 50,
+                        onSuggestionSelected:  (Item item){
+                          itemNameController.text=item.itemName;
+                          salePriceController.text=addSeparator(item.sale);
+                          quantityController.text=1.toString();
+                          unitItem=item.unit;
+                          selectedItem=item;
+                        },
+                        suffixIcon: ActionButton(
+                          icon: Icons.list_alt_rounded,
+                          label: "انتخاب",
+                          onPress: () {
+                            Navigator.pushNamed(
+                                context, ItemsScreen.id,
+                                arguments: const Key(ItemToBillPanel.id))
+                                .then((value) {
+                              if (value != null) {
+                                value as Item;
+                                getItemData(value);
+                              }
+                            });
+                          },
+                        ),
                       ),
                       const SizedBox(
                         height: 10,
@@ -140,10 +127,9 @@ void replaceOldPurchase(Item? old){
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            child: CustomTextField(
+                            child: CounterTextfield(
                               label: "مقدار",
                               controller: quantityController,
-                              textFormat: TextFormatter.number,
                             ),
                           ),
                           DropListModel(
@@ -163,17 +149,10 @@ void replaceOldPurchase(Item? old){
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: CustomTextField(
+                            child: CounterTextfield(
                               label: "درصد تخفیف",
                               controller: discountController,
-                              textFormat: TextFormatter.number,
-                              onChange: (val) {
-                                if (val != "" &&
-                                    stringToDouble(val) > 100) {
-                                  discountController.text = 100.toString();
-                                  setState(() {});
-                                }
-                              },
+                              maxNum: 100,
                             ),
                           ),
                         ],

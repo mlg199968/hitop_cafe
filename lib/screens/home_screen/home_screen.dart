@@ -156,7 +156,6 @@ bool showAlertNotice=true;
                       Container(
                         alignment: Alignment.center,
                         padding: const EdgeInsets.all(10),
-                        height: 70,
                         decoration:  BoxDecoration(
                           gradient: kMainGradiant,
                           borderRadius:screenType(context) != ScreenType.desktop?null:const BorderRadius.horizontal(left: Radius.circular(20)),

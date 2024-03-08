@@ -1,3 +1,4 @@
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hive/hive.dart';
 
@@ -59,6 +60,8 @@ class Shop extends HiveObject {
   String? subnet;
   @HiveField(25)
   String? backupDirectory;
+  @HiveField(26)
+  Subscription? subscription;
 
 
 }

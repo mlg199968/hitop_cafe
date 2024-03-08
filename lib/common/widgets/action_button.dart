@@ -2,25 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 
 class ActionButton extends StatelessWidget {
-  const ActionButton(
-      {super.key,
-      this.onPress,
-      required this.icon,
-      this.bgColor = kMainColor,
-      this.label,
-      this.height = 30,
-      this.width,
-      this.direction = TextDirection.rtl,
-      this.onLongPress,
-      this.iconColor,
-      this.margin,
-      this.padding, this.borderRadius=20,
-        this.loading = false,
-      });
+  const ActionButton({
+    super.key,
+    this.onPress,
+    required this.icon,
+    this.bgColor = kMainColor,
+    this.label,
+    this.height = 30,
+    this.width,
+    this.direction = TextDirection.rtl,
+    this.onLongPress,
+    this.iconColor,
+    this.margin,
+    this.padding,
+    this.borderRadius = 20,
+    this.loading = false,
+    this.child,
+    this.disable = true,
+  });
 
+  final Widget? child;
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
-  final IconData icon;
+  final IconData? icon;
   final String? label;
   final Color bgColor;
   final Color? iconColor;
@@ -31,6 +35,7 @@ class ActionButton extends StatelessWidget {
   final EdgeInsets? margin;
   final EdgeInsets? padding;
   final bool loading;
+  final bool disable;
 
   @override
   Widget build(BuildContext context) {
@@ -43,47 +48,55 @@ class ActionButton extends StatelessWidget {
           height: height,
           child: ElevatedButton(
             style: ButtonStyle(
-              shape:MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius))),
+                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(borderRadius))),
                 padding: MaterialStatePropertyAll(padding ??
                     EdgeInsets.symmetric(
                         horizontal: label == null ? 0 : 5, vertical: 0)),
                 backgroundColor: MaterialStateProperty.all(bgColor)),
-            onPressed: onPress,
+            onPressed: disable ? () {} :onPress ,
             onLongPress: onLongPress,
             child: loading
-            ///show loading indicator
-                ?Container(
-              width: height,
-              height: height,
-              padding: const EdgeInsets.all(8.0),
-              child: const CircularProgressIndicator(color: Colors.white70,strokeWidth: 1.5,),
-            )
-                :Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                constraint.maxWidth < 100
-                    ? const SizedBox()
-                    : Flexible(
-                        child: Text(
-                          label ?? "",
-                          overflow: TextOverflow.fade,
-                          maxLines: 1,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                constraint.maxWidth < 100
-                    ? const SizedBox()
-                    : const SizedBox(
-                        width: 3,
-                      ),
-                Icon(
-                  icon,
-                  color: iconColor ?? Colors.white,
-                  size: 18,
-                ),
-              ],
-            ),
+
+                ///show loading indicator
+                ? Container(
+                    width: height,
+                    height: height,
+                    padding: const EdgeInsets.all(8.0),
+                    child: const CircularProgressIndicator(
+                      color: Colors.white70,
+                      strokeWidth: 1.5,
+                    ),
+                  )
+                : child!=null?Directionality(textDirection: TextDirection.ltr, child: child!):
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        constraint.maxWidth < 100
+                            ? const SizedBox()
+                            : Flexible(
+                                child: Text(
+                                  label ?? "",
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  style:
+                                      const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                        constraint.maxWidth < 100
+                            ? const SizedBox()
+                            : const SizedBox(
+                                width: 3,
+                              ),
+                        if (icon != null)
+                          Icon(
+                            icon,
+                            color: iconColor ?? Colors.white,
+                            size: 18,
+                          ),
+                      ],
+                    ),
           ),
         ),
       );

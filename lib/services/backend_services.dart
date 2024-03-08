@@ -9,9 +9,11 @@ import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/server_models/device.dart';
+import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/services/HttpUtil.dart';
+import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -62,7 +64,6 @@ class BackendServices {
         "phone": phone,
         "device": device.toJson(),
       });
-      print(res.body);
       if (res.statusCode == 200) {
 
         var backData = jsonDecode(res.body);
@@ -139,7 +140,28 @@ class BackendServices {
       }
     }
   }
-
+  ///fetch subscription
+  Future<void> fetchSubscription(context) async{
+    // Subscription? storedSubs=Provider.of<UserProvider>(context,listen:false).subscription;
+    Subscription? storedSubs=HiveBoxes.getShopInfo().getAt(0)?.subscription;
+    if(storedSubs!=null){
+      List<Subscription>? readSubs =await readSubscription(context, storedSubs.phone);
+      if (readSubs != null && readSubs.isNotEmpty) {
+        for (Subscription subs in readSubs) {
+          print("subs.device?.id==storedSubs.device?.id");
+          print(subs.device?.id==storedSubs.device?.id);
+          if(subs.device?.id==storedSubs.device?.id){
+            Provider.of<UserProvider>(context,listen:false)..setSubscription(subs)..setUserLevel(subs.level);
+            break;
+          }
+          else{
+            storedSubs.level=0;
+            Provider.of<UserProvider>(context,listen:false)..setSubscription(storedSubs)..setUserLevel(subs.level);
+          }
+        }
+      }
+    }
+  }
   ///
   Future<void> fetchData(BuildContext context) async {
     Device device = await getDeviceInfo();

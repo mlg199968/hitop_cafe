@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
-import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/shop.dart';
+import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:printing/printing.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
   int _userLevel = 0;
-  int get userLevel => _userLevel;
-
+  int get userLevel =>_subscription!=null?_subscription!.level: _userLevel;
+  Subscription? _subscription;
+  Subscription? get subscription=>_subscription;
 
   //ceil count is for how many item you can add to list
   int get ceilCount => _userLevel == 0 ? 10 : 1000;
@@ -83,7 +83,7 @@ class UserProvider extends ChangeNotifier {
     _user = shop.activeUser;
     _appType = shop.appType;
     _userLevel = shop.userLevel ?? 0;
-
+    _subscription=shop.subscription;
 
     ///this for just use complete for debug app
     if (kDebugMode) {
@@ -100,7 +100,14 @@ class UserProvider extends ChangeNotifier {
     _userLevel = input;
     notifyListeners();
   }
-
+  ///set subscription
+  void setSubscription(Subscription? subs){
+    Shop shop = HiveBoxes.getShopInfo().getAt(0)!;
+    shop.subscription = subs;
+    HiveBoxes.getShopInfo().putAt(0, shop);
+    _subscription=subs;
+    notifyListeners();
+  }
   // void getUserLevel() async{
   //   SharedPreferences prefs= await SharedPreferences.getInstance();
   //   int? subsInfo= prefs.getInt("level");
@@ -165,40 +172,4 @@ class UserProvider extends ChangeNotifier {
       _fontFamily = shop.fontFamily!;
     }
   }
-  // loadNotification(context) async {
-  //   if(context.mounted) {
-  //     await NoticeTools.readNotifications(context,timeout: 5);
-  //   }
-  // }
-
-
-  //   late dynamic _level = 0;
-  //
-  // dynamic get level => _level;
-  //
-  // Future<void> setLevel(dynamic newLevel) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   _level = newLevel;
-  //   prefs.setInt('level', newLevel!);
-  //
-  //   notifyListeners();
-  // }
-  //
-  // Future<void> loadLevel() async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   final dynamic storedLevel = prefs.get('level');
-  //   // Check if storedLevel is not null before assigning it to _level
-  //   if (storedLevel != null) {
-  //     _level = storedLevel;
-  //   } else {
-  //     // Handle the case where 'level' is not found or not an integer
-  //     // You might want to provide a default value or handle it in a way that fits your application logic
-  //     // For example, you could set a default level or log an error.
-  //     _level =
-  //         0; // Replace defaultValue with an appropriate default value or set it to null.
-  //   }
-  //
-  //   notifyListeners();
-  // }
-
 }

@@ -58,12 +58,15 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
           ..level = 0
           ..amount = price
           ..device = device
+          ..platform=device.platform
           ..email = emailController.text;
 
         bool created = await BackendServices.createSubs(context, subs: subs);
         if (created) {
+          Provider.of<UserProvider>(context,listen:false).setSubscription(subs);
           await ZarinpalApi.payment(context,
               amount: subs.amount!, phone: subs.phone);
+          Navigator.pushReplacementNamed(context, HomeScreen.id);
         }
       }
     } catch (error) {
@@ -288,14 +291,14 @@ class PriceHolder extends StatelessWidget {
             const SizedBox(
               width: 5,
             ),
-            ///main price
-            if(price.hasDiscount)
             const Text(
               "تومان",
               style: TextStyle(color: Colors.black45),
             ),
           ],
         ),
+        ///main price
+        if(price.hasDiscount)
         Text(
           addSeparator(price.mainPrice),
           style: const TextStyle(

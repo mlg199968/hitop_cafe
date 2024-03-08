@@ -3,11 +3,13 @@ import 'package:hitop_cafe/common/widgets/custom_text.dart';
 
 class EmptyHolder extends StatelessWidget {
   const EmptyHolder({
-    super.key, required this.text, required this.icon, this.color,
+    super.key, required this.text, required this.icon, this.color,this.iconSize=30,this.fontSize=10,
   });
   final String text;
   final IconData icon;
   final Color? color;
+  final double iconSize;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +19,11 @@ class EmptyHolder extends StatelessWidget {
           child: Column(
             mainAxisAlignment:MainAxisAlignment.center ,
             children: [
-              Icon(icon,size: 30,color: color ?? Colors.black38,),
+              Icon(icon,size: iconSize,color: color ?? Colors.black38,),
               const SizedBox(height: 5,),
               CText(
                 text,
-                fontSize: 10,
+                fontSize: fontSize,
                 color:color ?? Colors.black38,
                 textDirection: TextDirection.rtl,
               ),

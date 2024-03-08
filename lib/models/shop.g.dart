@@ -42,13 +42,14 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..port = fields[22] as int?
       ..ipAddress = fields[23] as String?
       ..subnet = fields[24] as String?
-      ..backupDirectory = fields[25] as String?;
+      ..backupDirectory = fields[25] as String?
+      ..subscription = fields[26] as Subscription?;
   }
 
   @override
   void write(BinaryWriter writer, Shop obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.shopName)
       ..writeByte(1)
@@ -100,7 +101,9 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..writeByte(24)
       ..write(obj.subnet)
       ..writeByte(25)
-      ..write(obj.backupDirectory);
+      ..write(obj.backupDirectory)
+      ..writeByte(26)
+      ..write(obj.subscription);
   }
 
   @override

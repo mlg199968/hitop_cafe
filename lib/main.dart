@@ -10,9 +10,11 @@ import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/models/payment.dart';
+import 'package:hitop_cafe/models/price.dart';
 import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/models/user.dart';
@@ -53,6 +55,8 @@ Future main() async {
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(PackAdapter());
   Hive.registerAdapter(DBAdapter());
+  Hive.registerAdapter(DeviceAdapter());
+  Hive.registerAdapter(PriceAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());

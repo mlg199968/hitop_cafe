@@ -66,9 +66,9 @@ class CustomTextField extends StatelessWidget {
           enabled: enable,
           onChanged: onChange,
           focusNode: focus,
-          validator: validate
-              ? (val) {
-                  if (val == null || val.isEmpty) {
+          validator:(val) {
+
+                  if (validate && (val == null || val.isEmpty)) {
                     return " ضروری !";
                   } else {
                     if (extraValidate != null) {
@@ -78,7 +78,7 @@ class CustomTextField extends StatelessWidget {
 
                   return null;
                 }
-              : null,
+              ,
           keyboardType: (textFormat == TextFormatter.number ||
                   textFormat == TextFormatter.price)
               ? const TextInputType.numberWithOptions(decimal: true)

@@ -1,41 +1,49 @@
 import 'dart:async';
-
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
+import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
-
+import 'package:persian_number_utility/persian_number_utility.dart';
+import 'package:provider/provider.dart';
 
 class WareSuggestionTextField extends StatelessWidget {
   const WareSuggestionTextField(
       {super.key,
-      required this.label,
+      this.label,
       required this.controller,
       this.maxLine = 1,
       this.maxLength = 35,
-      this.width = 150,
-      this.height = 20,
+      this.width,
+      this.height,
       this.textFormat = TextFormatter.normal,
       this.onChange,
       this.validate = false,
       this.enable = true,
-      required this.onSuggestionSelected});
+      required this.onSuggestionSelected,
+      this.suffixIcon,
+      this.borderRadius = 10,
+      this.hint,
+      this.prefixIcon});
 
-  final String label;
+  final String? label;
   final TextEditingController controller;
   final int maxLine;
   final int maxLength;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final TextFormatter textFormat;
+  final double borderRadius;
+  final String? hint;
+  final Widget? suffixIcon;
+  final IconData? prefixIcon;
 
-  // ignore: prefer_typing_uninitialized_variables
   final Function(String val)? onChange;
   final Function(RawWare val) onSuggestionSelected;
 
-  // ignore: prefer_typing_uninitialized_variables
   final bool validate;
   final bool enable;
 
@@ -54,9 +62,12 @@ class WareSuggestionTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String currency =
+        Provider.of<UserProvider>(context, listen: false).currency;
     bool isPressed = false;
     return SizedBox(
       width: width,
+      height: height,
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: TypeAheadField<RawWare>(
@@ -72,51 +83,70 @@ class WareSuggestionTextField extends StatelessWidget {
             maxLength: maxLength,
             maxLines: maxLine,
             decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(fontSize: 12),
+              prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
+              suffixIcon: suffixIcon,
               isDense: true,
-              contentPadding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+              // contentPadding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               counterText: "",
               filled: true,
               fillColor: Colors.white,
               hoverColor: Colors.white70,
-              label: AutoSizeText(
-                label,
-                style: const TextStyle(color: Colors.blueGrey),
-                maxFontSize: 14,
-                minFontSize: 10,
-                maxLines: 1,
-                overflow: TextOverflow.fade,
-              ),
+              label: label == null
+                  ? null
+                  : Text(
+                      textFormat == TextFormatter.price
+                          ? "${label!} ($currency)"
+                          : label!,
+                      style: const TextStyle(color: kMainColor3),
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                    ),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(width: .5),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide:
-                    const BorderSide(width: .5, color: Colors.lightBlue),
-                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(width: .5, color: kMainColor2),
+                borderRadius: BorderRadius.circular(borderRadius + 5),
               ),
               enabledBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(borderRadius),
                   borderSide:
                       const BorderSide(color: Colors.blueGrey, width: 1)),
               errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(borderRadius + 5),
                   borderSide: const BorderSide(color: Colors.red)),
             ),
           ),
           suggestionsCallback: suggestion,
           itemBuilder: (context, suggestion) {
             return Container(
-              padding: const EdgeInsets.fromLTRB(5, 5, 10, 10),
-                child: Text(
-              suggestion.wareName,
-              textDirection: TextDirection.rtl,
-            ));
+                padding: const EdgeInsets.fromLTRB(5, 5, 10, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      addSeparator(suggestion.cost),
+                      style: const TextStyle(fontSize: 10,color: Colors.black54),
+                    ),
+                  Flexible(
+                    child: Text(
+                        suggestion.wareName,
+                        textDirection: TextDirection.rtl,
+                      style: const TextStyle(fontSize: 12,color: Colors.black87),
+                      ),
+                  ),
+                  ],
+                ));
           },
           onSuggestionSelected: onSuggestionSelected,
-          suggestionsBoxDecoration:  const SuggestionsBoxDecoration(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20),)
-          ),
+          suggestionsBoxDecoration: const SuggestionsBoxDecoration(
+              borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          )),
         ),
       ),
     );

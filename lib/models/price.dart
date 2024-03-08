@@ -18,14 +18,13 @@ class Price extends HiveObject {
   @HiveField(5)
   int priceId = 0;
 
-  num get price => fixDiscount != null
-      ? mainPrice - fixDiscount!
-      : discount != null
+  num get price =>  discount != null
           ? mainPrice - mainPrice * discount! / 100
-          : mainPrice;
+          : fixDiscount != null
+      ? mainPrice - fixDiscount!
+      :mainPrice;
   bool get hasDiscount =>fixDiscount==null && discount==null?false:
       endDate != null ? DateTime.now().isBefore(endDate!) : true;
-
   Map<String, dynamic> toMap() {
     return {
       'mainPrice': mainPrice,

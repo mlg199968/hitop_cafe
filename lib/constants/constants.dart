@@ -72,3 +72,5 @@ final kBoxDecoration = BoxDecoration(
     gradient: kBlackWhiteGradiant,
     borderRadius: BorderRadius.circular(5),
     boxShadow: const [BoxShadow(offset: Offset(1, 3),blurRadius: 5,color: Colors.black54)]);
+const BoxShadow kShadow= BoxShadow(
+    blurRadius: 5, offset: Offset(1, 2), color: Colors.black54);

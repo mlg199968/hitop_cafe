@@ -1,5 +1,8 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
@@ -30,9 +33,13 @@ class _AuthorityScreenState extends State<AuthorityScreen> {
   final phoneNumberController = TextEditingController();
   final authCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _codeFormKey = GlobalKey<FormState>();
 
   PaymentRequest paymentRequest = PaymentRequest();
   bool isRightNumber = false;
+  bool patient = false;
+
+
   bool msgLoading = false;
   bool authLoading = false;
   String? sendCode;
@@ -55,6 +62,7 @@ Future<void> sendCodeFunction(context)async{
         showSnackbar: true);
   }
   msgLoading = false;
+  patient=true;
   setState(() {});
   }
 
@@ -74,7 +82,7 @@ Future<void> sendCodeFunction(context)async{
             if (subs.device != null) {
               if(subs.device!.id==device.id) {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setUserLevel(1);
+                    ..setUserLevel(1)..setSubscription(subs);
                 Navigator.pushNamed(context, HomeScreen.id);
 
             }
@@ -91,7 +99,7 @@ Future<void> sendCodeFunction(context)async{
                 ..level = 1;
               await BackendServices.createSubs(context, subs: newSubs).whenComplete(() {
                 Provider.of<UserProvider>(context, listen: false)
-                    .setUserLevel(1);
+                    ..setUserLevel(1)..setSubscription(subs);
                 Navigator.pushReplacementNamed(context, HomeScreen.id);
               });
 
@@ -119,7 +127,25 @@ Future<void> sendCodeFunction(context)async{
   authLoading=false;
   setState(() {});
   }
-
+  ///button timer
+  messageTimer(DateTime time){
+    return TimerCountdown(
+      enableDescriptions: false,
+      timeTextStyle: const TextStyle(color: Colors.white70),
+      colonsTextStyle: const TextStyle(color: Colors.white70),
+      spacerWidth: 0,
+      format: CountDownTimerFormat.minutesSeconds,
+      endTime: DateTime.now().add(
+        const Duration(
+          seconds: 60,
+        ),
+      ),
+      onEnd: () {
+        patient=false;
+        setState(() {});
+      },
+    );
+  }
   @override
   void dispose() {
     authCodeController.dispose();
@@ -183,18 +209,17 @@ Future<void> sendCodeFunction(context)async{
                   const SizedBox(
                     height: 50,
                   ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
-
-                        ///phone number field and auth button
-                        CustomTextField(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      ///phone number field and auth button
+                      Form(
+                        key: _formKey,
+                        child: CustomTextField(
                           label: "شماره موبایل",
                           controller: phoneNumberController,
                           textFormat: TextFormatter.number,
@@ -212,6 +237,8 @@ Future<void> sendCodeFunction(context)async{
                             }
                           },
                           suffixIcon:ActionButton(
+                            disable: patient,
+                            child:patient? messageTimer(DateTime.now()):null,
                               loading: msgLoading,
                               label: "ارسال کد",
                               icon: Icons.send,
@@ -223,13 +250,16 @@ Future<void> sendCodeFunction(context)async{
                                 }
                               }),
                         ),
-                        const SizedBox(
-                          height: 50,
-                        ),
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
 
-                        ///show code textfield when authorization code has been sent
-                        if (isRightNumber)
-                          CustomTextField(
+                      ///show code textfield when authorization code has been sent
+                      if (isRightNumber)
+                        Form(
+                          key: _codeFormKey,
+                          child: CustomTextField(
                             validate: true,
                             label: "کد ارسال شده",
                             textFormat: TextFormatter.number,
@@ -240,21 +270,21 @@ Future<void> sendCodeFunction(context)async{
                               }
                             },
                           ),
-                        const SizedBox(
-                          height: 18,
                         ),
-                        if (isRightNumber)
-                          CustomButton(
-                            loading: authLoading,
-                              text: "احراز هویت",
-                              color: Colors.green,
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  authorityFunction(context);
-                                }
-                              }),
-                      ],
-                    ),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      if (isRightNumber)
+                        CustomButton(
+                          loading: authLoading,
+                            text: "احراز هویت",
+                            color: Colors.green,
+                            onPressed: () async {
+                              if (_codeFormKey.currentState!.validate()) {
+                                authorityFunction(context);
+                              }
+                            }),
+                    ],
                   ),
                   const SizedBox(
                     height: 50,

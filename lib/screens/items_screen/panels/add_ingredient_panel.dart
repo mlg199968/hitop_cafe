@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
@@ -43,10 +44,11 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
   @override
   Widget build(BuildContext context) {
     return CustomDialog(
+      height: 200,
       title: 'افزودن ماده تشکیل دهنده جدید',
       child: Consumer<WareProvider>(builder: (context, wareProvider, child) {
         return Container(
-          padding: const EdgeInsetsDirectional.all(20),
+          padding: const EdgeInsetsDirectional.all(0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -58,56 +60,51 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         ///choose material part
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              child: CustomButton(
-                                height: 40,
-                                text: "انتخاب",
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                          context, WareListScreen.id,
-                                          arguments:
-                                               const Key(AddIngredientPanel.id))
-                                      .then((value) {
-                                    if (value != null) {
-                                      value as RawWare;
-                                      ingredientNameController.text =
-                                          value.wareName;
-                                      selectedRawWare = value;
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Expanded(
-                                flex: 3,
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        SizedBox(
+                          width: 500,
+                          child: WareSuggestionTextField(
+                            label: "نام کالا خام",
 
-                                ///ware suggestion textfield part
-                                child: WareSuggestionTextField(
-                                  label: "نام کالا خام",
-                                  controller: ingredientNameController,
-                                  onSuggestionSelected: (RawWare ware) {
+                            controller: ingredientNameController,
+                            borderRadius: 50,
+                            onSuggestionSelected: (RawWare ware) {
+                              ingredientNameController.text =
+                                  ware.wareName;
+                              selectedRawWare = ware;
+                              setState(() {});
+                            },
+                            ///choose button
+                            suffixIcon: ActionButton(
+                              label: "انتخاب",
+                              icon: Icons.list_alt_rounded,
+                              onPress: () {
+                                Navigator.pushNamed(
+                                    context, WareListScreen.id,
+                                    arguments:
+                                    const Key(AddIngredientPanel.id))
+                                    .then((value) {
+                                  if (value != null) {
+                                    value as RawWare;
                                     ingredientNameController.text =
-                                        ware.wareName;
-                                    selectedRawWare = ware;
-                                    setState(() {});
-                                  },
-                                )),
-                          ],
+                                        value.wareName;
+                                    selectedRawWare = value;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
                         ),
-                        const Text("مقدار مورد استفاده"),
                         ///demon type ,how much need
                         CounterTextfield(
+                          label: "مقدار مورد استفاده",
                           controller: demandController,
+                          borderRadius: 50,
                           onChange: (val){
 
                             setState(() {});
