@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -16,8 +15,6 @@ import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
@@ -42,18 +39,14 @@ class _SettingScreenState extends State<SettingScreen> {
   String selectedFont = kFonts[0];
   late UserProvider provider;
   String? backupDirectory;
+  bool isBackupLoading=false;
 
   ///printer
   Printer? selectedPrinter;
   Printer? selectedPrinter2;
   String printTemplate = PrintType.p80mm.value;
 
-  ///android printer
-  BluetoothDevice? selectedBluetoothPrinter;
-  final bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
-  bool isBtScanning = false;
-  final devices = <BluetoothDevice>[];
-  final _isBle = true;
+
 
   ///save setting
   void storeInfoShop() {
@@ -94,16 +87,6 @@ class _SettingScreenState extends State<SettingScreen> {
     }
   }
 
-  void selectDevice(BluetoothDevice device) async {
-    if (selectedBluetoothPrinter != null) {
-      if (device.address != selectedBluetoothPrinter!.address) {
-        await bluetoothManager.disconnect();
-      }
-    }
-
-    selectedBluetoothPrinter = device;
-    setState(() {});
-  }
 
   @override
   void initState() {
@@ -167,6 +150,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 Flexible(
                                   child: ActionButton(
+                                    loading: isBackupLoading,
                                     label: "بارگیری فایل پشتیبان",
                                     icon: Icons.settings_backup_restore,
                                     bgColor: Colors.teal,
@@ -176,10 +160,13 @@ class _SettingScreenState extends State<SettingScreen> {
                                         await storagePermission(
                                             context, Allow.externalStorage);
                                       }
+                                      isBackupLoading=true;
+                                      setState(() {});
                                       if (context.mounted) {
-                                        // await BackupTools.restoreBackup(context);
                                         await BackupTools.readZipFile(context);
                                       }
+                                      isBackupLoading=false;
+                                      setState(() {});
                                     },
                                   ),
                                 ),
@@ -304,51 +291,6 @@ class _SettingScreenState extends State<SettingScreen> {
                                 buttonLabel: selectedPrinter == null
                                     ? "انتخاب نشده"
                                     : selectedPrinter!.name),
-
-                          ///list of bluetooth devices in android and ios if exist
-                          if (Platform.isAndroid || Platform.isIOS)
-                            ButtonTile(
-                              label: "انتخاب پرینتر بلوتوثی",
-                              buttonLabel: isBtScanning
-                                  ? "درحال اسکن"
-                                  : selectedBluetoothPrinter == null
-                                      ? "پرینتری یافت نشد"
-                                      : selectedBluetoothPrinter!.name,
-                              extra: isBtScanning
-                                  ? const CircularProgressIndicator()
-                                  : ActionButton(
-                                      bgColor: Colors.white70,
-                                      icon: Icons.search,
-                                      onPress: () {
-                                        Navigator.pushNamed(context, PrinterPage.id);
-                                      },
-                                    ),
-                              onPress: () async {
-                                // Show the native printer picker and get the selected printer
-                                isBtScanning = true;
-                                await PrintServices.scanSimpleBluetoothDevices(_isBle,
-                                    onChange: (btList, scanning) {
-                                  isBtScanning = scanning!;
-                                  if (btList != null) {
-                                    devices.addAll(btList);
-                                    setState(() {});
-                                  }
-                                });
-                                Column(
-                                    children: devices
-                                        .map(
-                                          (device) => ListTile(
-                                            title: Text(device.name),
-                                            subtitle: Text(device.address),
-                                            onTap: () {
-                                              // do something
-                                              selectDevice(device);
-                                            },
-                                          ),
-                                        )
-                                        .toList());
-                              },
-                            ),
                           ///printer ip textfield
                           InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip"),
                           InputItem(controller: printerIp2Controller, label: "ای پی پرینتر 2", inputLabel: "ip"),

@@ -18,7 +18,7 @@ class ActionButton extends StatelessWidget {
     this.borderRadius = 20,
     this.loading = false,
     this.child,
-    this.disable = true,
+    this.disable = false,
   });
 
   final Widget? child;
@@ -42,61 +42,63 @@ class ActionButton extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraint) {
       return Directionality(
         textDirection: TextDirection.rtl,
-        child: Container(
-          margin: margin ?? const EdgeInsets.all(3),
-          width: width,
-          height: height,
-          child: ElevatedButton(
-            style: ButtonStyle(
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(borderRadius))),
-                padding: MaterialStatePropertyAll(padding ??
-                    EdgeInsets.symmetric(
-                        horizontal: label == null ? 0 : 5, vertical: 0)),
-                backgroundColor: MaterialStateProperty.all(bgColor)),
-            onPressed: disable ? () {} :onPress ,
-            onLongPress: onLongPress,
-            child: loading
-
-                ///show loading indicator
-                ? Container(
-                    width: height,
-                    height: height,
-                    padding: const EdgeInsets.all(8.0),
-                    child: const CircularProgressIndicator(
-                      color: Colors.white70,
-                      strokeWidth: 1.5,
-                    ),
-                  )
-                : child!=null?Directionality(textDirection: TextDirection.ltr, child: child!):
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        constraint.maxWidth < 100
-                            ? const SizedBox()
-                            : Flexible(
-                                child: Text(
-                                  label ?? "",
-                                  overflow: TextOverflow.fade,
-                                  maxLines: 1,
-                                  style:
-                                      const TextStyle(color: Colors.white),
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          child: Container(
+            margin: margin ?? const EdgeInsets.all(3),
+            width: width,
+            height: height,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(borderRadius))),
+                  padding: MaterialStatePropertyAll(padding ??
+                      EdgeInsets.symmetric(
+                          horizontal: label == null ? 0 : 5, vertical: 0)),
+                  backgroundColor: MaterialStateProperty.all(bgColor)),
+              onPressed: disable ? () {} :onPress ,
+              onLongPress: onLongPress,
+              child: loading
+                  ///show loading indicator
+                  ? Container(
+                      width: height,
+                      height: height,
+                      padding: const EdgeInsets.all(8.0),
+                      child: const CircularProgressIndicator(
+                        color: Colors.white70,
+                        strokeWidth: 1.5,
+                      ),
+                    )
+                  : child!=null?Directionality(textDirection: TextDirection.ltr, child: child!):
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          constraint.maxWidth < 100
+                              ? const SizedBox()
+                              : Flexible(
+                                  child: Text(
+                                    label ?? "",
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style:
+                                        const TextStyle(color: Colors.white),
+                                  ),
                                 ),
-                              ),
-                        constraint.maxWidth < 100
-                            ? const SizedBox()
-                            : const SizedBox(
-                                width: 3,
-                              ),
-                        if (icon != null)
-                          Icon(
-                            icon,
-                            color: iconColor ?? Colors.white,
-                            size: 18,
-                          ),
-                      ],
-                    ),
+                          constraint.maxWidth < 100
+                              ? const SizedBox()
+                              : const SizedBox(
+                                  width: 3,
+                                ),
+                          if (icon != null)
+                            Icon(
+                              icon,
+                              color: iconColor ?? Colors.white,
+                              size: 18,
+                            ),
+                        ],
+                      ),
+            ),
           ),
         ),
       );

@@ -58,6 +58,7 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
           ..level = 0
           ..amount = price
           ..device = device
+          ..fetchDate=DateTime.now()
           ..platform=device.platform
           ..email = emailController.text;
 

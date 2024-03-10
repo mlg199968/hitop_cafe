@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
@@ -23,7 +24,7 @@ class BackendServices {
       {required Subscription subs}) async {
     try {
       http.Response res =
-          await http.post(Uri.parse("$hostUrl/user/create_subscription2.php"),
+          await http.post(Uri.parse("$hostUrl/user/create_subscription.php"),
               body: subs.toJson());
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
@@ -47,7 +48,7 @@ class BackendServices {
 
     } catch (e) {
       ErrorHandler.errorManger(context, e,
-          title: "BackendServices createSubs error", showSnackbar: true);
+          title: "BackendServices createSubs error");
     }
     return false;
   }
@@ -63,6 +64,7 @@ class BackendServices {
           body: {
         "phone": phone,
         "device": device.toJson(),
+        "app_name": kAppName,
       });
       if (res.statusCode == 200) {
 
@@ -74,12 +76,10 @@ class BackendServices {
               : (backData["subsData"] as List)
                   .map((e) => Subscription().fromMap(e))
                   .toList();
-          showSnackBar(context, "Subscription successfully being read!",
-              type: SnackType.success);
+          debugPrint("Subscription successfully being read!");
           return subsList;
         } else if (backData["success"] == false) {
-          showSnackBar(context, "has not being purchase",
-              type: SnackType.warning);
+          debugPrint("has not being purchase");
           return null;
         } else {
           showSnackBar(context, "has not being read", type: SnackType.error);
@@ -88,7 +88,7 @@ class BackendServices {
       }
     } catch (e) {
       ErrorHandler.errorManger(context, e,
-          title: "BackendServices-readSubscription error", showSnackbar: true);
+          title: "BackendServices-readSubscription error");
     }
     return null;
   }
@@ -117,7 +117,7 @@ class BackendServices {
       }
     } catch (e) {
       ErrorHandler.errorManger(context, e,
-          title: "BackendServices-readSubscription error", showSnackbar: true);
+          title: "BackendServices-readSubscription error",);
     }
     return null;
   }
@@ -142,77 +142,43 @@ class BackendServices {
   }
   ///fetch subscription
   Future<void> fetchSubscription(context) async{
-    // Subscription? storedSubs=Provider.of<UserProvider>(context,listen:false).subscription;
-    Subscription? storedSubs=HiveBoxes.getShopInfo().getAt(0)?.subscription;
-    if(storedSubs!=null){
-      List<Subscription>? readSubs =await readSubscription(context, storedSubs.phone);
-      if (readSubs != null && readSubs.isNotEmpty) {
-        for (Subscription subs in readSubs) {
-          print("subs.device?.id==storedSubs.device?.id");
-          print(subs.device?.id==storedSubs.device?.id);
-          if(subs.device?.id==storedSubs.device?.id){
-            Provider.of<UserProvider>(context,listen:false)..setSubscription(subs)..setUserLevel(subs.level);
-            break;
-          }
-          else{
-            storedSubs.level=0;
-            Provider.of<UserProvider>(context,listen:false)..setSubscription(storedSubs)..setUserLevel(subs.level);
+
+    try {
+      Subscription? storedSubs=HiveBoxes.getShopInfo().getAt(0)?.subscription;
+      if(storedSubs!=null){
+        List<Subscription>? readSubs =await readSubscription(context, storedSubs.phone);
+        if (readSubs != null && readSubs.isNotEmpty) {
+          for (Subscription subs in readSubs) {
+            if(subs.device?.id==storedSubs.device?.id && subs.appName==kAppName){
+              Provider.of<UserProvider>(context,listen:false)..setSubscription(subs)..setUserLevel(subs.level);
+              updateFetchDate(context, subs);
+              break;
+            }
+            else{
+              storedSubs.level=0;
+              Provider.of<UserProvider>(context,listen:false)..setSubscription(storedSubs)..setUserLevel(subs.level);
+            }
           }
         }
       }
+    }catch(e) {
+      ErrorHandler.errorManger(context, e,title: "BackendServices fetchSubscription function error");
     }
   }
   ///
-  Future<void> fetchData(BuildContext context) async {
-    Device device = await getDeviceInfo();
+  static void updateFetchDate(context ,Subscription subs){
+    //we save the date of this fetch
+    subs.fetchDate=DateTime.now();
+    subs.startDate ??= DateTime.now();
+    BackendServices.createSubs(context, subs: subs).then((isCreated) {
+      if(isCreated==true){
+        debugPrint("fetch date has been updated after fetch subscription");
 
-    String url = 'https://mlggrand.ir/db/user/read_subscription.php?'
-        'id=${device.id}&brand=${device.brand}&platform=${device.platform}';
-
-    // Make the GET request with the combined URL
-    var response = await HttpUtil().get(
-      url,
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
-    debugPrint("RESPONSER HERER IIIII${response.toString()}");
-    var jsonResponse = json.decode(response);
-    if (context.mounted) {
-      debugPrint(jsonResponse.toString());
-      debugPrint(jsonResponse['subsData'].toString());
-      if (jsonResponse['success']) {
-        final level = jsonResponse['subsData']['level'];
-        debugPrint("LEVEL{$level}");
-        if (level != null && level != 0) {
-          Provider.of<UserProvider>(context, listen: false)
-              .setUserLevel(level!);
-        } else {
-          Provider.of<UserProvider>(context, listen: false)
-              .setUserLevel(level!);
-        }
-      } else {
-        Device device = await getDeviceInfo();
-        final level = UserProvider().userLevel;
-        Map<String, dynamic> requestData = {
-          'deviceId': device.toMap(),
-          'level': level,
-          'platform': device.platform,
-        };
-        debugPrint("here is data for create $requestData");
-        // Convert the map to JSON
-        String jsonData = jsonEncode(requestData);
-        //
-        debugPrint("STRING$jsonData");
-        // Make the POST request
-        var response = await HttpUtil().post(
-          'https://mlggrand.ir/db/user/create_subscription.php',
-          data: jsonData,
-          options: Options(headers: {'Content-Type': 'application/json'}),
-        );
-        print("responseData$response");
-        var responseData = response["success"];
-        print("responseData$responseData");
-        print('Failure message: ${jsonResponse["message"]}');
+      }else{
+        debugPrint("fetch date has not been updated after fetch subscription");
       }
-    }
+    });
+
   }
+
 }

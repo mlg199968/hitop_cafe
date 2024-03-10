@@ -72,7 +72,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
      HiveBoxes.getItem().put(item.itemId, item);
   }
 
-  void restoreOldItem() {
+  void restoreOldItem() async{
     ingredients=[];
     itemNameController.text = widget.oldItem!.itemName;
     salePriceController.text = addSeparator(widget.oldItem!.sale);
@@ -81,7 +81,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
     unitItem = widget.oldItem!.unit;
     ingredients.addAll(widget.oldItem!.ingredients);
     imagePath=widget.oldItem!.imagePath;
-    print(widget.oldItem!.imagePath);
+
   }
 
   ///calculate the how much cost to create each item

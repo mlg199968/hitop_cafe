@@ -5,6 +5,7 @@ import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
@@ -28,130 +29,140 @@ class SideBarPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      width: 250,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      child: Consumer<UserProvider>(builder: (context, userProvider, child) {
-        return Container(
-          margin:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height*.1),
-          child: BlurryContainer(
-            color: Colors.white70.withOpacity(.4),
-            blur: 5,
-            elevation: 10,
-            padding: const EdgeInsets.all(0),
-            borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(20),
-                topRight: Radius.circular(10)),
-            child: SingleChildScrollView(
+    return Align(
+      alignment: Alignment.topLeft,
+      child: SizedBox(
+        height: 600,
+        child: Drawer(
+          width: 250,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Consumer<UserProvider>(builder: (context, userProvider, child) {
+            return BlurryContainer(
+              color: Colors.white70.withOpacity(.4),
+              blur: 5,
+              elevation: 10,
+              padding: const EdgeInsets.all(0),
+              borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(20),
+                  topRight: Radius.circular(10)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  ///top info part
-                  Stack(children: [
-                    ///top background
-                    Container(
-                      height: 150,
-                      decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage('assets/images/photo3.jpg'),
-                              fit: BoxFit.fitWidth,
-                              opacity: .6)),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const BackButton(
-                            color: Colors.white70,
+                children: [
+                  SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        ///top info part
+                        Stack(children: [
+                          ///top background
+                          Container(
+                            height: 150,
+                            decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                    image: AssetImage('assets/images/photo3.jpg'),
+                                    fit: BoxFit.fitWidth,
+                                    opacity: .6)),
                           ),
-                          ///Notification icon button
-                          IconButton(
-                              color: Colors.white,
-                              onPressed: () {
-                                Navigator.pushNamed(context, NoticeScreen.id);
+
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const BackButton(
+                                  color: Colors.white70,
+                                ),
+                                ///Notification icon button
+                                IconButton(
+                                    color: Colors.white,
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, NoticeScreen.id);
+                                    },
+                                    icon: const Icon(Icons.notifications,size: 25,))
+                              ],
+                            ),
+                          ),
+                          ///cafe name
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0).copyWith(top: 40),
+                              child: Text(
+                                userProvider.shopName,
+                                style:
+                                const TextStyle(color: Colors.white, fontSize: 20),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          const AvatarHolder()
+                        ]),
+                        ///buttons
+                        const Gap(20),
+                        Column(
+                          children: [
+                            BarButton(
+                              text: "مشخصات فروشگاه",
+                              icon: Icons.storefront_outlined,
+                              onPress: () {
+                                if(UserTools.userPermission(context,userTypes: [])) {
+                                  Navigator.pushNamed(context, ShopInfoScreen.id);}
                               },
-                              icon: const Icon(Icons.notifications,size: 25,))
-                        ],
-                      ),
-                    ),
-                    ///cafe name
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0).copyWith(top: 40),
-                        child: Text(
-                          userProvider.shopName,
-                          style:
-                          const TextStyle(color: Colors.white, fontSize: 20),
-                          overflow: TextOverflow.ellipsis,
+                            ),
+                            BarButton(
+                              text: "کاربران",
+                              icon: Icons.person_outlined,
+                              onPress: () {
+                                if(UserTools.userPermission(context,userTypes: [UserType.manager])) {
+                                  Navigator.pushNamed(
+                                      context, UserListScreen.id);
+                                }},
+                            ),
+                            BarButton(
+                              text: "تنظیمات",
+                              icon: Icons.settings_outlined,
+                              onPress: () {
+                                if(UserTools.userPermission(context,userTypes: [UserType.waiter])) {
+                                  Navigator.pushNamed(context, SettingScreen.id);}
+                              },
+                            ),
+                            BarButton(
+                              text: "ارتباط با ما",
+                              icon: Icons.support_agent_outlined,
+                              onPress: () {
+                                urlLauncher(
+                                    context: context, urlTarget: "http://mlggrand.ir");
+                              },
+
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+
+                            if(userProvider.userLevel == 0)
+                               const PurchaseButton(),
+
+
+                            ///a button just for test
+                            if(kDebugMode)
+                            ActionButton(
+                              icon: Icons.account_balance_outlined,
+                              onPress: () async{
+                                Navigator.pushNamed(context, PurchaseAppScreen.id,
+                                    arguments: {"phone": "9306374837"});
+                                // List<Subscription>? subs= await BackendServices.readSubscription(context, "9152361766");
+                                // print(subs?.map((e) => e.toMap()));
+                                // Device testDevice=await getDeviceInfo();
+                                // Subscription subs= Subscription()..name="test"..phone="9152361766"..platform="Windows"..level=0..device=testDevice;
+                                // await BackendServices.createSubs(context, subs: subs);
+                              },
+                            ),
+                          ],
                         ),
-                      ),
+
+                      ],
                     ),
-                    const AvatarHolder()
-                  ]),
-                  Column(
-                    children: [
-                      menu_button(
-                        text: "مشخصات فروشگاه",
-                        icon: Icons.storefront_outlined,
-                        onPress: () {
-                          if(UserTools.userPermission(context,userTypes: [])) {
-                            Navigator.pushNamed(context, ShopInfoScreen.id);}
-                        },
-                      ),
-                      menu_button(
-                        text: "کاربران",
-                        icon: Icons.person_outlined,
-                        onPress: () {
-                          if(UserTools.userPermission(context,userTypes: [UserType.manager])) {
-                            Navigator.pushNamed(
-                                context, UserListScreen.id);
-                          }},
-                      ),
-                      menu_button(
-                        text: "تنظیمات",
-                        icon: Icons.settings_outlined,
-                        onPress: () {
-                          if(UserTools.userPermission(context,userTypes: [UserType.waiter])) {
-                            Navigator.pushNamed(context, SettingScreen.id);}
-                        },
-                      ),
-                      menu_button(
-                        text: "ارتباط با ما",
-                        icon: Icons.support_agent_outlined,
-                        onPress: () {
-                          urlLauncher(
-                              context: context, urlTarget: "http://mlggrand.ir");
-                        },
-
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      userProvider.userLevel == 0
-                          ? const PurchaseButton()
-                          : const SizedBox(),
-
-                      ///a button just for test
-                      if(kDebugMode)
-                      ActionButton(
-                        icon: Icons.account_balance_outlined,
-                        onPress: () async{
-                          Navigator.pushNamed(context, PurchaseAppScreen.id,
-                              arguments: {"phone": "9306374837"});
-                          // List<Subscription>? subs= await BackendServices.readSubscription(context, "9152361766");
-                          // print(subs?.map((e) => e.toMap()));
-                          // Device testDevice=await getDeviceInfo();
-                          // Subscription subs= Subscription()..name="test"..phone="9152361766"..platform="Windows"..level=0..device=testDevice;
-                          // await BackendServices.createSubs(context, subs: subs);
-                        },
-                      ),
-                    ],
                   ),
                   ///links
                   Padding(
@@ -191,10 +202,10 @@ class SideBarPanel extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        );
-      }),
+            );
+          }),
+        ),
+      ),
     );
   }
 }
@@ -277,8 +288,8 @@ class PurchaseButton extends StatelessWidget {
   }
 }
 
-class menu_button extends StatelessWidget {
-  const menu_button(
+class BarButton extends StatelessWidget {
+  const BarButton(
       {super.key, required this.text, required this.onPress, this.icon, this.enable=true});
   final String text;
   final bool enable;
@@ -290,7 +301,7 @@ class menu_button extends StatelessWidget {
     Color textColor = Colors.black.withOpacity(.7);
     Color borderColor = kMainColor;
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(.7),
           border: Border(
@@ -299,7 +310,7 @@ class menu_button extends StatelessWidget {
               color: borderColor,
             ),
             left: BorderSide(
-              width: 5,
+              width: 10,
               color: textColor,
             ),
           ),

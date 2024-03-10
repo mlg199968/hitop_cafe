@@ -76,49 +76,45 @@ Future<void> sendCodeFunction(context)async{
     try {
       List<Subscription>? readSubs =
           await BackendServices.readSubscription(context, phone);
+      bool isPurchase=false;
       if (readSubs != null && readSubs.isNotEmpty) {
         for (Subscription subs in readSubs) {
-          if (subs.level == 1) {
-            if (subs.device != null) {
-              if(subs.device!.id==device.id) {
-                Provider.of<UserProvider>(context, listen: false)
-                    ..setUserLevel(1)..setSubscription(subs);
-                Navigator.pushNamed(context, HomeScreen.id);
-
-            }
-              else {
-                Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-                    arguments: {"phone": phone, "subsId": null});
-              }
-            }
-            else if(subs.device == null && subs.level==1){
-              Subscription newSubs = Subscription()
-                ..phone = subs.phone
-                ..id=subs.id
-                ..device=device
-                ..level = 1;
-              await BackendServices.createSubs(context, subs: newSubs).whenComplete(() {
-                Provider.of<UserProvider>(context, listen: false)
-                    ..setUserLevel(1)..setSubscription(subs);
-                Navigator.pushReplacementNamed(context, HomeScreen.id);
-              });
-
-            }
-            else{
-              Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-                  arguments: {"phone": phone, "subsId": null});
-            }
+          if (subs.level == 1 && subs.device?.id==device.id && subs.appName==kAppName) {
+            Provider.of<UserProvider>(context, listen: false)
+              ..setUserLevel(1)..setSubscription(subs);
+            BackendServices.updateFetchDate(context, subs);
+            isPurchase=true;
+            Navigator.pushReplacementNamed(context, HomeScreen.id);
+            break;
           }
-          else if(subs.level==0){
-            Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-                arguments: {"phone": phone, "subsId": null});
+          //if device is null but level is 1,we update the device with sending subs id.then activated the app
+          else if(subs.level==1 && subs.device == null && subs.appName==kAppName){
+            Subscription newSubs = Subscription()
+              ..phone = subs.phone
+              ..id=subs.id
+              ..device=device
+              ..fetchDate=DateTime.now()
+              ..level = 1;
+            await BackendServices.createSubs(context, subs: newSubs).whenComplete(() {
+              Provider.of<UserProvider>(context, listen: false)
+                ..setUserLevel(1)..setSubscription(subs);
+              Navigator.pushReplacementNamed(context, HomeScreen.id);
+            });
+            isPurchase=true;
+            break;
+          }
+          else{
+            isPurchase=false;
           }
         }
-      } else {
+      }
+      else {
+        isPurchase=false;
+      }
+      if(!isPurchase){
         Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
             arguments: {"phone": phone, "subsId": null});
       }
-
     } catch (error) {
       ErrorHandler.errorManger(context, error,
           title: "AuthorityScreen Authority button function error",

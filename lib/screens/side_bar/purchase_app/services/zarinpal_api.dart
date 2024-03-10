@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/private.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -16,7 +17,7 @@ class ZarinpalApi{
       ..setDescription(device.toJson())
       ..setMerchantID(PrivateKeys.zarinpalId)
       ..setCallbackURL(
-          "https://mlggrand.ir/db/payment/payzarin.php?phone=$phone&amount=$amount&deviceId=${device.toJson()}");
+          "https://mlggrand.ir/db/payment/payzarin.php?phone=$phone&amount=$amount&appName=$kAppName&deviceId=${device.toJson()}");
 
     ZarinPal().startPayment(paymentRequest, (status, paymentGatewayUri) {
       try {

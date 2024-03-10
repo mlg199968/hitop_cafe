@@ -85,7 +85,7 @@ class WaiterSideBarPanel extends StatelessWidget {
                 ]),
                 Column(
                   children: [
-                    menu_button(
+                    BarButton(
                       text: "کاربر",
                       icon: Icons.person,
                       onPress: () {
@@ -99,14 +99,14 @@ class WaiterSideBarPanel extends StatelessWidget {
                             arguments: currentUser);
                       },
                     ),
-                    menu_button(
+                    BarButton(
                       text: "تنظیمات",
                       icon: Icons.settings_outlined,
                       onPress: () {
                         Navigator.pushNamed(context, WaiterAppSettingScreen.id);
                       }
                     ),
-                    menu_button(
+                    BarButton(
                       text: "ارتباط با ما",
                       icon: Icons.support_agent_outlined,
                       onPress: () {

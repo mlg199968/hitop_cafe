@@ -36,6 +36,10 @@ class Subscription extends HiveObject{
   int? id;
   @HiveField(13)
   String? platform;
+  @HiveField(14)
+  String? appName;
+  @HiveField(15)
+  DateTime? fetchDate;
 
 
 
@@ -48,6 +52,7 @@ class Subscription extends HiveObject{
       'level': level,
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
+      'fetch_date': fetchDate?.toIso8601String(),
       'amount': amount,
       'Authority': authority,
       'Status': status,
@@ -56,6 +61,7 @@ class Subscription extends HiveObject{
       'description': description ,
      'id': id,
      'platform': platform,
+     'app_name': appName,
     };
   }
 
@@ -68,12 +74,14 @@ class Subscription extends HiveObject{
        ..level= int.tryParse(map['level'] ?? "0") ?? 0
       ..startDate= DateTime.tryParse(map['start_date'] ?? "")
       ..endDate= DateTime.tryParse(map['end_date'] ?? "")
+      ..fetchDate= DateTime.tryParse(map['fetch_date'] ?? "")
        ..amount= int.tryParse(map['amount'] ?? "0")
       ..authority= map['Authority']
       ..status= map['Status']
       ..refId= map['ref_id']
       ..device=map['device']!=null? Device.fromMap(map['device']):null
       ..description= map['description']
+      ..appName= map['app_name']
        ..id= int.tryParse(map['id'] ?? "");
      return subscription;
   }

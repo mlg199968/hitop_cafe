@@ -32,16 +32,11 @@ class GlobalTask {
         connectivityResult == ConnectivityResult.wifi ||
         connectivityResult == ConnectivityResult.ethernet ||
         connectivityResult == ConnectivityResult.vpn) {
-      print("connectivityResult");
-      print(connectivityResult);
+
       /// fetch subscription data
-      BackendServices().fetchSubscription(context).whenComplete(() {
-        print("fetchSubscription completed");
-      });
+      BackendServices().fetchSubscription(context);
       ///get notifications
       runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
     }
-
-
   }
 }
