@@ -55,14 +55,15 @@ Future<void> sendCodeFunction(context)async{
         isRightNumber = phoneAuthData["isRight"];
         sendCode = phoneAuthData["authCode"];
       }
+      msgLoading = false;
+      patient=true;
     }catch(error){
     ErrorHandler.errorManger(context, error,
         title: "خطا در ارسال کد!",
         route: "AuthorityScreen sendCode button function error",
         showSnackbar: true);
+    patient=false;
   }
-  msgLoading = false;
-  patient=true;
   setState(() {});
   }
 

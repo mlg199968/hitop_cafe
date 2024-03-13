@@ -5,7 +5,7 @@ class ActionButton extends StatelessWidget {
   const ActionButton({
     super.key,
     this.onPress,
-    required this.icon,
+    this.icon,
     this.bgColor = kMainColor,
     this.label,
     this.height = 30,

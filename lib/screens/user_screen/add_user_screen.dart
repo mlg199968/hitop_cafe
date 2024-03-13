@@ -231,6 +231,18 @@ class _AddUserScreenState extends State<AddUserScreen> {
                                 const SizedBox(height: 15),
                                 CustomTextField(
                                   label: "شماره تلفن",
+                                  validate: true,
+                                  maxLength: 11,
+                                  extraValidate: (val){
+                                    String newVal = val!;
+                                    if (val[0] == "0") {
+                                      newVal = val.replaceFirst("0", "");
+                                      phoneNumberController.text = newVal;
+                                    }
+                                    if (newVal.length != 10 || newVal[0] != "9") {
+                                      return "شماره معتبر نیست";
+                                    }
+                                  },
                                   controller: phoneNumberController,
                                   textFormat: TextFormatter.number,
                                 ),

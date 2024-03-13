@@ -62,6 +62,8 @@ class Shop extends HiveObject {
   String? backupDirectory;
   @HiveField(26)
   Subscription? subscription;
+ @HiveField(27)
+  List? descriptionList=[];
 
 
 }

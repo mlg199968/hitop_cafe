@@ -4,6 +4,7 @@ import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 customAlert(
     {required BuildContext context,
     VoidCallback? onYes,
@@ -123,6 +124,7 @@ class CustomAlert extends StatelessWidget {
                   Icons.close_rounded,
                   color: Colors.red,
                   size: 30,
+                    shadows: [BoxShadow(blurRadius: 5,offset:Offset(.5, .8),color: Colors.black54)],
                 ),
               ),
             ),

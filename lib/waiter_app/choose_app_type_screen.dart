@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
+import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -26,95 +28,66 @@ class _AppTypeScreenState extends State<AppTypeScreen> {
       body: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(20),
+
           decoration: const BoxDecoration(gradient: kMainGradiant),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const CText(
-                "انتخاب نوع کاربری",
-                fontSize: 18,
-                color: Colors.white,
-                textDirection: TextDirection.rtl,
-              ),
-              const CText(
-                "در این بخش با توجه به نوع کاربری که از برنامه میخواهید یک گزینه را انتخاب کنید.\n بخش سفارشگیر نیاز است به برنامه اصلی در دستگاه دیگر نصب شود.",
-                color: Colors.white60,
-                textDirection: TextDirection.rtl,
-              ),
-              Wrap(
-                alignment: WrapAlignment.center,
-                children: [
-                  _LabelButton(
-                    icon: FontAwesomeIcons.person,
-                    label: "سفارشگیر",
-                    onPress: () {
-                      Shop shop = HiveBoxes.getShopInfo().values.single;
-                      shop.appType = AppType.waiter.value;
-                      HiveBoxes.getShopInfo().putAt(0, shop);
-                      Provider.of<UserProvider>(context, listen: false)
-                          .getData(shop);
-                      Navigator.pushReplacementNamed(
-                          context, WaiterHomeScreen.id);
-                    },
+          child: SizedBox(
+            width: 500,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const CText(
+                  "انتخاب نوع کاربری",
+                  fontSize: 18,
+                  color: Colors.white,
+                  textDirection: TextDirection.rtl,
+                ),
+                const Gap(30),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    CardButton(
+                      image: "waiter.png",
+                      label: "سفارشگیر",
+                      fit: BoxFit.fitHeight,
+
+                      onTap: () {
+                        Shop shop = HiveBoxes.getShopInfo().values.single;
+                        shop.appType = AppType.waiter.value;
+                        HiveBoxes.getShopInfo().putAt(0, shop);
+                        Provider.of<UserProvider>(context, listen: false)
+                            .getData(shop);
+                        Navigator.pushReplacementNamed(
+                            context, WaiterHomeScreen.id);
+                      },
+                    ),
+                    CardButton(
+                      image: "accountancy.png",
+                      fit: BoxFit.fitWidth,
+                      label: "برنامه اصلی",
+                      onTap: () {
+                        Shop shop = HiveBoxes.getShopInfo().values.first;
+                        shop.appType = AppType.main.value;
+                        HiveBoxes.getShopInfo().putAt(0, shop);
+                        Navigator.pushReplacementNamed(context, SplashScreen.id);
+                      },
+                    ),
+                  ],
+                ),
+                const Gap(30),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30,),
+                  child: CText(
+                    "در این بخش با توجه به نوع کاربری که از برنامه میخواهید یک گزینه را انتخاب کنید.\n بخش سفارشگیر نیاز است به برنامه اصلی در دستگاه دیگر نصب شود.",
+                    color: Colors.white70,
+                    textDirection: TextDirection.rtl,
                   ),
-                  _LabelButton(
-                    icon: FontAwesomeIcons.computer,
-                    label: "برنامه اصلی",
-                    onPress: () {
-                      Shop shop = HiveBoxes.getShopInfo().values.first;
-                      shop.appType = AppType.main.value;
-                      HiveBoxes.getShopInfo().putAt(0, shop);
-                      Navigator.pushReplacementNamed(context, SplashScreen.id);
-                    },
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           )),
     );
   }
 }
 
-class _LabelButton extends StatelessWidget {
-  const _LabelButton({
-    this.onPress,
-    this.icon,
-    this.label,
-    this.image,
-  });
 
-  final VoidCallback? onPress;
-  final IconData? icon;
-  final String? label;
-  final String? image;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPress,
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: kBlackWhiteGradiant),
-        width: 150,
-        height: 200,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 40,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            CText(label),
-          ],
-        ),
-      ),
-    );
-  }
-}

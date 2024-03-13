@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
@@ -409,13 +410,11 @@ class AddOrSubtract extends StatelessWidget {
               onTap: (){
                     onChange(value-1);
               },
-              child: const CircleAvatar(
-                  minRadius: 3,
-                  backgroundColor: Colors.red,
-                  child: Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  ))),
+              child: const Icon(
+                CupertinoIcons.minus_rectangle_fill,
+                size: 20,
+                color: Colors.redAccent,
+              )),
           const SizedBox(
             width: 3,
           ),
@@ -423,13 +422,11 @@ class AddOrSubtract extends StatelessWidget {
               onTap: (){
                 onChange(value+1);
               },
-              child: const CircleAvatar(
-                  minRadius: 3,
-                  backgroundColor: Colors.teal,
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ))),
+              child: const Icon(
+                CupertinoIcons.plus_rectangle_fill,
+                size: 20,
+                color: Colors.teal,
+              )),
         ],
       ),
     );

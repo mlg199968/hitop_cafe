@@ -35,6 +35,9 @@ class UserProvider extends ChangeNotifier {
     ..currency = "ریال";
 
 
+  List descriptionList=[];
+
+
   String shopName = "نام فروشگاه";
   String address = "آدرس فروشگاه";
   String phoneNumber = "شماره تلفن اول";
@@ -84,7 +87,9 @@ class UserProvider extends ChangeNotifier {
     _appType = shop.appType;
     _userLevel = shop.userLevel ?? 0;
     _subscription=shop.subscription;
-
+    if(shop.descriptionList!=null) {
+      descriptionList.addAll(shop.descriptionList!);
+    }
     ///this for just use complete for debug app
     if (kDebugMode) {
       _userLevel = 0;
@@ -171,5 +176,14 @@ class UserProvider extends ChangeNotifier {
     if (shop != null && shop.fontFamily != null) {
       _fontFamily = shop.fontFamily!;
     }
+  }
+  ///item or order description list actions
+  addDescription(String des){
+    descriptionList.add(des);
+    notifyListeners();
+  }
+  removeDescription(String des){
+    descriptionList.remove(des);
+    notifyListeners();
   }
 }

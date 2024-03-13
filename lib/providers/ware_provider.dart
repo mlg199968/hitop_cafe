@@ -10,7 +10,12 @@ class WareProvider extends ChangeNotifier{
  List itemCategories=["default",];
   String selectedItemCategory="default";
 
-
+List descriptionList= [
+  "کم نمک",
+  "سس اضافه",
+  "بدون کاهو کلم",
+  "کم نمک",
+];
 
 
 

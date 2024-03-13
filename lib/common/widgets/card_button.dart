@@ -12,14 +12,17 @@ class CardButton extends InkWell {
       this.width = 150,
         this.cornerRadius=8,
       required super.onTap,
-      this.verticalDirection = true});
+      this.verticalDirection = true,
+        this.fit=BoxFit.cover,
+      });
+
   final String label;
   final String? image;
-
   final double width;
   final double height;
   final bool verticalDirection;
   final double cornerRadius;
+  final BoxFit? fit;
   //final VoidCallback onTap;
 @override
   BorderRadius? get borderRadius => BorderRadius.circular(cornerRadius);
@@ -39,7 +42,7 @@ class CardButton extends InkWell {
         decoration: BoxDecoration(
           border: Border.all(width: 0,color:kSecondaryColor),
           color: Colors.white,
-          image:image==null?null:DecorationImage(image: AssetImage("assets/images/$image.jpg"),fit: BoxFit.cover) ,
+          image:image==null?null:DecorationImage(image: AssetImage("assets/images/$image"),fit: fit) ,
             borderRadius: borderRadius,
         boxShadow: const [
           BoxShadow(offset: Offset(2, 4),blurRadius: 5,color: Colors.black54),

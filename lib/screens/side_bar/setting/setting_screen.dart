@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
@@ -123,7 +124,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   decoration: const BoxDecoration(gradient: kMainGradiant),
                   child: SingleChildScrollView(
                     child: SizedBox(
-                      width: 450,
+                      width: 500,
                       child: Column(
                         children: [
                           ///backup buttons
@@ -175,13 +176,13 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           Container(
                               alignment: Alignment.centerRight,
-                              padding: EdgeInsets.all(10),
-                              child: CText("انتخاب مسیر ذخیره سازی فایل پشتیبان :",color: Colors.white,textDirection: TextDirection.rtl,)),
+                              padding: const EdgeInsets.all(10),
+                              child: const CText("انتخاب مسیر ذخیره سازی فایل پشتیبان :",color: Colors.white,textDirection: TextDirection.rtl,)),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
-                                margin: EdgeInsets.all(5),
-                                padding: EdgeInsets.all(5),
+                                margin: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(5),
                                 alignment: Alignment.centerRight,
                                 height: 40,
                                 decoration: BoxDecoration(gradient: kBlackWhiteGradiant,borderRadius: BorderRadius.circular(20)),
@@ -189,13 +190,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Flexible(child: CText(backupDirectory ?? "مسیری انتخاب نشده است")),
-                                    SizedBox(width: 8,),
+                                    const SizedBox(width: 8,),
                                     ActionButton(
                                       label: "انتخاب",
                                       icon: Icons.folder_open_rounded,
                                       onPress: ()async{
                                         await storagePermission(context, Allow.externalStorage);
-                                        await storagePermission(context, Allow.storage);
+                                        if(context.mounted) {
+                                          await storagePermission(context, Allow.storage);
+                                        }
                                         String? newDir=await BackupTools.chooseDirectory();
                                         if(newDir!=null) {
                                           backupDirectory = newDir;
@@ -205,7 +208,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   ],
                                 )),
                           ),
-                          SizedBox(height: 30,),
+                          const SizedBox(height: 30,),
                           ///currency unit
                           DropListItem(
                               title: "واحد پول",
@@ -311,7 +314,17 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           ///back to app Type screen
                           ButtonTile(onPress: (){
-                            Navigator.pushNamedAndRemoveUntil(context, AppTypeScreen.id,(context)=>false);
+                            showDialog(
+                              context: context,
+                              builder: (context) =>  CustomAlert(
+                                title:
+                                "آیا از تغییر نوع برنامه (اصلی به سفارشگیر) مطمئن هستید؟",
+                                onNo: (){Navigator.pop(context);},
+                                onYes: (){
+                                  Navigator.pushNamedAndRemoveUntil(context, AppTypeScreen.id,(context)=>false);
+                                },
+                              ),
+                            );
                           }, label: "تغییر نوع کاربری برنامه", buttonLabel:"تغییر"),
                           ///developer section
                           const CText(

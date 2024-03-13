@@ -7,7 +7,7 @@ import 'package:hitop_cafe/constants/private.dart';
 import 'package:http/http.dart' as http;
 
 class PayamitoApi {
-  static Future<Map?> sentMessage(context, String phoneNumber) async {
+  static Future<Map?> sentMessage(context, String phoneNumber,{String bodyId=PrivateKeys.bodyIdPurchase}) async {
     try{
       Random random = Random();
       String authCode = (random.nextInt(8998) + 1001).toString();
@@ -16,7 +16,7 @@ class PayamitoApi {
         "password": PrivateKeys.payamitoPass,
         "text": "$authCode;",
         "to": phoneNumber,
-        "bodyId": "164658",
+        "bodyId": bodyId,
       };
 
       http.Response res = await http.post(

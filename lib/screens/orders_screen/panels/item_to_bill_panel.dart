@@ -12,6 +12,7 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/services/item_tools.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/description_bar.dart';
 import 'package:provider/provider.dart';
 
 class ItemToBillPanel extends StatefulWidget {
@@ -160,6 +161,14 @@ void replaceOldPurchase(Item? old){
                       const SizedBox(height: 5),
                       customDivider(
                           context: context, color: Colors.white70),
+                       DescriptionBar(controller: descriptionController,
+                         onChange: (val){
+                         if(val!=null && val!="") {
+                           descriptionController.text=val;
+                         }
+                         setState(() {});
+                         },
+                       ),
                       CustomTextField(controller: descriptionController,label: "توضیحات",maxLine: 4,maxLength: 250,),
                     ],
                   ),

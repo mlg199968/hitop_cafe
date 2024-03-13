@@ -242,7 +242,7 @@ bool showAlertNotice=true;
                                   child: CardButton(
                                       label: "سفارشات حاضر",
                                       width: 250,
-                                      image: "active-orders",
+                                      image: "active-orders.jpg",
                                       onTap: () {
                                         onTapFunction(1, () {
                                           Navigator.pushNamed(
@@ -255,7 +255,7 @@ bool showAlertNotice=true;
                                   child: CardButton(
                                       label: "تاریخچه سفارشات",
                                       width: 150,
-                                      image: "orders-history",
+                                      image: "orders-history.jpg",
                                       onTap: () {
                                         onTapFunction(0, () {
                                           Navigator.pushNamed(
@@ -272,7 +272,7 @@ bool showAlertNotice=true;
                                 label: "لیست آیتم ها ",
                                 width: 400,
                                 height: 100,
-                                image: "items",
+                                image: "items.jpg",
                                 verticalDirection: false,
                                 onTap: () {
                                   onTapFunction(2, () {
@@ -283,7 +283,7 @@ bool showAlertNotice=true;
                                 label: "لیست مواد خام ",
                                 width: 400,
                                 height: 100,
-                                image: "raw-wares",
+                                image: "raw-wares.jpg",
                                 verticalDirection: false,
                                 onTap: () {
                                   onTapFunction(3, () {
@@ -301,7 +301,7 @@ bool showAlertNotice=true;
                                   children: [
                                     SmallCardButton(
                                         label: "فاکتور خرید",
-                                        image: "bills.jpg",
+                                        image: "bill.png",
                                         onTap: () {
                                           onTapFunction(4, () {
                                               Navigator.pushNamed(

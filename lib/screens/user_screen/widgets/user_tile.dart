@@ -27,6 +27,7 @@ class UserTile extends StatelessWidget {
   final Color color;
   @override
   Widget build(BuildContext context) {
+    double radius=selected ? 30 : 20;
     return Consumer<UserProvider>(builder: (context, userProvider, child) {
       return Directionality(
         textDirection: TextDirection.rtl,
@@ -35,35 +36,43 @@ class UserTile extends StatelessWidget {
           child: SizedBox(
             width: 400,
             child: Card(
+
               shape: RoundedRectangleBorder(
                 side: BorderSide(
-                    color: selected ? kSecondaryColor : Colors.black26,
+                    color: selected ? kSecondaryColor : Colors.black38,
                     width: 2),
-                borderRadius: BorderRadius.circular(selected ? 30 : 20),
+                borderRadius: BorderRadius.circular(radius),
               ),
               surfaceTintColor: Colors.white,
               color: Colors.white,
               elevation: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: kMainColor,
-                      foregroundImage: userDetail.image == null
-                          ? null
-                          : FileImage(File(userDetail.image!)),
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 50,
-                      ),
+              child: Row(
+                children: [
+                  ///avatar holder
+                  Container(
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                        color: kMainColor,
+                        borderRadius: BorderRadius.horizontal(right:Radius.circular(radius),left:Radius.circular(5) ),
+                        image: userDetail.image == null
+                            ? null
+                            : DecorationImage(
+                                image: FileImage(File(userDetail.image!)),
+                          fit: BoxFit.cover
+                              ),
                     ),
-                    const SizedBox(
-                      width: 10,
+                    child: userDetail.image != null
+                        ? null
+                        : const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 50,
                     ),
-                    Expanded(
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -72,8 +81,7 @@ class UserTile extends StatelessWidget {
                             children: [
                               Text(userDetail.name),
                               Text(
-                                UserType()
-                                    .englishToPersian(userDetail.userType),
+                                UserType().englishToPersian(userDetail.userType),
                                 style: const TextStyle(color: kMainColor2),
                               ),
                             ],
@@ -83,12 +91,6 @@ class UserTile extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (userProvider.activeUser?.userId ==
-                                  userDetail.userId)
-                                const CircleAvatar(
-                                  backgroundColor: Colors.teal,
-                                  radius: 10,
-                                ),
                               Text(
                                 userDetail.createDate.toPersianDate(),
                                 style: const TextStyle(
@@ -104,8 +106,19 @@ class UserTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  if (userProvider.activeUser?.userId ==
+                      userDetail.userId)
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    width: 10,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.circular(radius),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
