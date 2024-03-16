@@ -51,25 +51,26 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
     setState(() {});
     try {
       Device? device = await getDeviceInfo();
-      if (widget.subsId == null) {
         Subscription subs = Subscription()
           ..phone = widget.phone
-          ..name = (userFullNameController.text)
+          ..name = userFullNameController.text
           ..level = 0
           ..amount = price
           ..device = device
-          ..fetchDate=DateTime.now()
-          ..platform=device.platform
-          ..email = emailController.text;
+          ..fetchDate = DateTime.now()
+          ..platform = device.platform
+          ..email = emailController.text
+          ..id = widget.subsId;
 
         bool created = await BackendServices.createSubs(context, subs: subs);
         if (created) {
-          Provider.of<UserProvider>(context,listen:false).setSubscription(subs);
+          Provider.of<UserProvider>(context, listen: false)
+              .setSubscription(subs);
           await ZarinpalApi.payment(context,
               amount: subs.amount!, phone: subs.phone);
           Navigator.pushReplacementNamed(context, HomeScreen.id);
         }
-      }
+
     } catch (error) {
       ErrorHandler.errorManger(context, error,
           title: "خطا در ایجاد و ورود به فرایند خرید",
@@ -244,7 +245,8 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                           icon: Icons.refresh_rounded,
                           label: "تلاش دوباره",
                           onPress: () async {
-                            _getPriceFromHost=BackendServices().readOption(kPriceOptionKey);
+                            _getPriceFromHost =
+                                BackendServices().readOption(kPriceOptionKey);
                             setState(() {});
                           },
                         ),
@@ -273,21 +275,24 @@ class PriceHolder extends StatelessWidget {
       children: [
         Row(
           textBaseline: TextBaseline.ideographic,
-          crossAxisAlignment:
-              CrossAxisAlignment.baseline,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ///discount percent
-            if(price.hasDiscount)
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(20)),
-                child: Text("${price.discount}%".toPersianDigit(),style: const TextStyle(color: Colors.white),)),
+            if (price.hasDiscount)
+              Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Text(
+                    "${price.discount}%".toPersianDigit(),
+                    style: const TextStyle(color: Colors.white),
+                  )),
             Text(
               addSeparator(price.price),
-              style: const TextStyle(
-                  color: Colors.black, fontSize: 30),
+              style: const TextStyle(color: Colors.black, fontSize: 30),
             ),
             const SizedBox(
               width: 5,
@@ -298,14 +303,16 @@ class PriceHolder extends StatelessWidget {
             ),
           ],
         ),
+
         ///main price
-        if(price.hasDiscount)
-        Text(
-          addSeparator(price.mainPrice),
-          style: const TextStyle(
-            decoration: TextDecoration.lineThrough,
-              color: Colors.black38, fontSize: 20),
-        ),
+        if (price.hasDiscount)
+          Text(
+            addSeparator(price.mainPrice),
+            style: const TextStyle(
+                decoration: TextDecoration.lineThrough,
+                color: Colors.black38,
+                fontSize: 20),
+          ),
         const SizedBox(
           width: 5,
         ),

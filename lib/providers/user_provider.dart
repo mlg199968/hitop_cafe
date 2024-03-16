@@ -35,7 +35,7 @@ class UserProvider extends ChangeNotifier {
     ..currency = "ریال";
 
 
-  List descriptionList=[];
+  List<Map> descriptionList=[];
 
 
   String shopName = "نام فروشگاه";
@@ -88,7 +88,7 @@ class UserProvider extends ChangeNotifier {
     _userLevel = shop.userLevel ?? 0;
     _subscription=shop.subscription;
     if(shop.descriptionList!=null) {
-      descriptionList.addAll(shop.descriptionList!);
+      descriptionList=shop.descriptionList!;
     }
     ///this for just use complete for debug app
     if (kDebugMode) {
@@ -178,12 +178,26 @@ class UserProvider extends ChangeNotifier {
     }
   }
   ///item or order description list actions
-  addDescription(String des){
+  addDescription(Map des){
     descriptionList.add(des);
     notifyListeners();
+
   }
-  removeDescription(String des){
+  removeDescription(Map des){
     descriptionList.remove(des);
     notifyListeners();
+    Shop shop=HiveBoxes.getShopInfo().values.single;
+    shop.descriptionList=descriptionList;
+    HiveBoxes.getShopInfo().putAt(0, shop);
+  }
+ sortDescription(String? id){
+   descriptionList.sort((a,b) {
+     if(a["id"]==id) {
+       return -1;
+     }else{
+       return 1;
+     }
+   });
+   // notifyListeners();
   }
 }

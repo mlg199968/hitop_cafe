@@ -63,7 +63,7 @@ class Shop extends HiveObject {
   @HiveField(26)
   Subscription? subscription;
  @HiveField(27)
-  List? descriptionList=[];
+  List<Map>? descriptionList=[];
 
 
 }

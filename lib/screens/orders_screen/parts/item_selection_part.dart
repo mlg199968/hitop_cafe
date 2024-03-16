@@ -173,6 +173,20 @@ class _ItemSelectionPartState extends State<ItemSelectionPart> {
 
                           setState(() {});
                         },
+                        onSecondaryTap: () {
+                          for (int i=0;i<widget.selectedItems.length;i++) {
+                            Item element= widget.selectedItems[i];
+                            if (element.itemName == item.itemName) {
+                              element.quantity>1
+                                  ?element.quantity--
+                                  :
+                              widget.selectedItems.removeAt(i);
+                              widget.onChange();
+                            }
+                          }
+
+                          setState(() {});
+                        },
                       );
                     } else {
                       return const SizedBox();

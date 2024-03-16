@@ -162,6 +162,7 @@ void replaceOldPurchase(Item? old){
                       customDivider(
                           context: context, color: Colors.white70),
                        DescriptionBar(controller: descriptionController,
+                         id: selectedItem?.itemId,
                          onChange: (val){
                          if(val!=null && val!="") {
                            descriptionController.text=val;

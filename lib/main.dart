@@ -1,11 +1,14 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
+import 'package:hitop_cafe/constants/extensions.dart';
 import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/database.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/note.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
@@ -35,9 +38,9 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GlobalTask.init();
   // To turn off landscape mode
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp],
-  );
+  // await SystemChrome.setPreferredOrientations(
+  //   [DeviceOrientation.portraitUp],
+  // );
 
   ///Data base Hive initial
   await Hive.initFlutter();
@@ -57,6 +60,7 @@ Future main() async {
   Hive.registerAdapter(DBAdapter());
   Hive.registerAdapter(DeviceAdapter());
   Hive.registerAdapter(PriceAdapter());
+  Hive.registerAdapter(NoteAdapter());
 
   //create box for store data
   await Hive.openBox<RawWare>("ware_db",path: await Address.hiveDirectory());
@@ -68,6 +72,7 @@ Future main() async {
   await Hive.openBox<User>("user_db",path: await Address.hiveDirectory());
   await Hive.openBox<Pack>("pack_db",path: await Address.hiveDirectory());
   await Hive.openBox<Notice>("notice_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Note>("note_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),
@@ -102,6 +107,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Hitop Cafe',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: MyCustomScrollBehavior(),
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           foregroundColor: Colors.white,

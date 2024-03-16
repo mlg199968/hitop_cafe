@@ -150,7 +150,7 @@ class SideBarPanel extends StatelessWidget {
                               icon: Icons.account_balance_outlined,
                               onPress: () async{
                                 Navigator.pushNamed(context, PurchaseAppScreen.id,
-                                    arguments: {"phone": "9306374837"});
+                                    arguments: {"phone": "9910606073","subsId":770});
                                 // List<Subscription>? subs= await BackendServices.readSubscription(context, "9152361766");
                                 // print(subs?.map((e) => e.toMap()));
                                 // Device testDevice=await getDeviceInfo();

@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,6 +13,9 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
+import 'package:hitop_cafe/screens/note_list_screen/note_list_screen.dart';
+import 'package:hitop_cafe/screens/note_list_screen/services/todo_tools.dart';
+import 'package:hitop_cafe/screens/note_list_screen/widgets/note_carousel.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
@@ -127,33 +131,36 @@ bool showAlertNotice=true;
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
-        alignment: Alignment.center,
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Row(
-            children: [
-              ///extent panel in desktop view
-              if (screenType(context) == ScreenType.desktop)
-                Expanded(
-                  flex: 3,
-                  child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 20,left: 20),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child: screens[screenIndex],
-                    ),
+        alignment: Alignment.topCenter,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ///extent panel in desktop view
+            if (screenType(context) == ScreenType.desktop)
+              Expanded(
+                flex: 3,
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 20,left: 20),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white),
+                    child: screens[screenIndex],
                   ),
                 ),
-              Flexible(
-                flex: 2,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ///home screen header
-                      Container(
+              ),
+            Flexible(
+              flex: 2,
+              child: SingleChildScrollView(
+                child: Column(
+
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ///home screen header
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
                         alignment: Alignment.center,
                         padding: const EdgeInsets.all(10),
                         decoration:  BoxDecoration(
@@ -225,116 +232,121 @@ bool showAlertNotice=true;
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(
+                    ),
+                    ///Note Carousel Slider
+                    NoteCarouselSlider(onChange:  () {
+                      setState(() {});
+                    },),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(
 
-                            ///card button sections
-                            child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  flex: 3,
-                                  child: CardButton(
-                                      label: "سفارشات حاضر",
-                                      width: 250,
-                                      image: "active-orders.jpg",
+                          ///card button sections
+                          child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 3,
+                                child: CardButton(
+                                    label: "سفارشات حاضر",
+                                    width: 250,
+                                    image: "active-orders.jpg",
+                                    onTap: () {
+                                      onTapFunction(1, () {
+                                        Navigator.pushNamed(
+                                            context, PresentOrderScreen.id);
+                                      });
+                                    }),
+                              ),
+                              Flexible(
+                                flex: 2,
+                                child: CardButton(
+                                    label: "تاریخچه سفارشات",
+                                    width: 150,
+                                    image: "orders-history.jpg",
+                                    onTap: () {
+                                      onTapFunction(0, () {
+                                        Navigator.pushNamed(
+                                            context, OrderScreen.id);
+                                      });
+                                    }),
+                              ),
+                            ],
+                          ),
+
+                          ///ware house button raw wares and main items
+
+                          CardButton(
+                              label: "لیست آیتم ها ",
+                              width: 400,
+                              height: 100,
+                              image: "items.jpg",
+                              verticalDirection: false,
+                              onTap: () {
+                                onTapFunction(2, () {
+                                  Navigator.pushNamed(context, ItemsScreen.id);
+                                });
+                              }),
+                          CardButton(
+                              label: "لیست مواد خام ",
+                              width: 400,
+                              height: 100,
+                              image: "raw-wares.jpg",
+                              verticalDirection: false,
+                              onTap: () {
+                                onTapFunction(3, () {
+                                  Navigator.pushNamed(
+                                      context, WareListScreen.id);
+                                });
+                              }),
+
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SmallCardButton(
+                                      label: "فاکتور خرید",
+                                      image: "bill.png",
                                       onTap: () {
-                                        onTapFunction(1, () {
-                                          Navigator.pushNamed(
-                                              context, PresentOrderScreen.id);
-                                        });
+                                        onTapFunction(4, () {
+                                            Navigator.pushNamed(
+                                              context, ShoppingBillScreen.id);
+                                        },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
                                       }),
-                                ),
-                                Flexible(
-                                  flex: 2,
-                                  child: CardButton(
-                                      label: "تاریخچه سفارشات",
-                                      width: 150,
-                                      image: "orders-history.jpg",
+                                  SmallCardButton(
+                                      label: "آنالیز",
+                                      image: "analytics3.png",
                                       onTap: () {
-                                        onTapFunction(0, () {
-                                          Navigator.pushNamed(
-                                              context, OrderScreen.id);
-                                        });
+                                        onTapFunction(5, () {
+                                            Navigator.pushNamed(
+                                                context, AnalyticsScreen.id);
+                                        },permission: UserTools.userPermission(context,userTypes: kupAnalyticsScreen));
                                       }),
-                                ),
-                              ],
-                            ),
-
-                            ///ware house button raw wares and main items
-
-                            CardButton(
-                                label: "لیست آیتم ها ",
-                                width: 400,
-                                height: 100,
-                                image: "items.jpg",
-                                verticalDirection: false,
-                                onTap: () {
-                                  onTapFunction(2, () {
-                                    Navigator.pushNamed(context, ItemsScreen.id);
-                                  });
-                                }),
-                            CardButton(
-                                label: "لیست مواد خام ",
-                                width: 400,
-                                height: 100,
-                                image: "raw-wares.jpg",
-                                verticalDirection: false,
-                                onTap: () {
-                                  onTapFunction(3, () {
-                                    Navigator.pushNamed(
-                                        context, WareListScreen.id);
-                                  });
-                                }),
-
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    SmallCardButton(
-                                        label: "فاکتور خرید",
-                                        image: "bill.png",
-                                        onTap: () {
-                                          onTapFunction(4, () {
-                                              Navigator.pushNamed(
-                                                context, ShoppingBillScreen.id);
-                                          },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
-                                        }),
-                                    SmallCardButton(
-                                        label: "آنالیز",
-                                        image: "analytics3.png",
-                                        onTap: () {
-                                          onTapFunction(5, () {
-                                              Navigator.pushNamed(
-                                                  context, AnalyticsScreen.id);
-                                          },permission: UserTools.userPermission(context,userTypes: kupAnalyticsScreen));
-                                        }),
-                                  ],
-                                ),
+                                ],
                               ),
                             ),
-                            const SizedBox(
-                              height: 100,
-                            ),
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
+                          ),
+                          const SizedBox(
+                            height: 100,
+                          ),
+                        ],
+                      )),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+

@@ -29,11 +29,12 @@ class InfoPanelRow extends StatelessWidget {
           ),
           Expanded(
             flex: 1,
-            child: Text(
+            child: SelectableText(
               infoList.toPersianDigit(),
               textAlign: TextAlign.left,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+              minLines: 1,
+              maxLines: 7,
+              // overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

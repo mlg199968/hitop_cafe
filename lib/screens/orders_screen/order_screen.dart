@@ -24,6 +24,7 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _CustomerListScreenState extends State<OrderScreen> {
+
   FocusNode focusNode = FocusNode();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey filterScreenKey = GlobalKey();
@@ -140,9 +141,31 @@ class CreditListPart extends StatefulWidget {
   @override
   State<CreditListPart> createState() => _CreditListPartState();
 }
-
 class _CreditListPartState extends State<CreditListPart> {
+  final scrollController=ScrollController();
   Order? selectedOrder;
+  List<Order> lazyList=[];
+  int lazyCounter=1;
+
+  lazyLoader()async{
+    await Future.delayed(const Duration(seconds: 2));
+    lazyList.addAll(widget.orderList.where((element) => element.hashCode>(lazyCounter-1)*20 && element.hashCode<lazyCounter*20));
+    lazyCounter++;
+    setState(() {});
+  }
+  @override
+  void initState() {
+    lazyList.addAll(widget.orderList.getRange(0, 20));
+    scrollController.addListener(() {
+      if(scrollController.position.pixels==scrollController.position.maxScrollExtent){
+        print(lazyCounter);
+        setState(() {
+          lazyLoader();
+        });
+      }
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -169,38 +192,39 @@ class _CreditListPartState extends State<CreditListPart> {
             ///main list view
             Expanded(
               child: ListView.builder(
-                  itemCount: widget.orderList.length,
+                controller: scrollController,
+                  itemCount: lazyList.length,
                   itemBuilder: (context, index) {
                     //color condition for tile color
-                    final colorCondition = widget.orderList[index].payable <= 0
-                        ? (widget.orderList[index].payable == 0
+                    final colorCondition = lazyList[index].payable <= 0
+                        ? (lazyList[index].payable == 0
                         ? Colors.teal
                         : Colors.indigoAccent)
                         : Colors.redAccent;
                     if (Provider.of<FilterProvider>(context, listen: false)
                         .compareData(
-                        widget.orderList[index].dueDate,
-                        widget.orderList[index].payable,
-                        widget.orderList[index].orderDate)) {
+                       lazyList[index].dueDate,
+                       lazyList[index].payable,
+                       lazyList[index].orderDate)) {
                       return GestureDetector(
                         onTap: () {
-                          selectedOrder = widget.orderList[index];
+                          selectedOrder = lazyList[index];
                           setState(() {});
                         },
                         child: OrderTile(
                           enabled: isMobile,
-                          orderDetail: widget.orderList[index],
+                          orderDetail: lazyList[index],
                           color: colorCondition,
-                          surfaceColor: selectedOrder == widget.orderList[index]?kMainColor:null ,
+                          surfaceColor: selectedOrder == lazyList[index]?kMainColor:null ,
                           onSee: () {
                             //if we come from the select order list to add order to some where this line get running
                             if (widget.key != null) {
-                              Navigator.pop(context, widget.orderList[index]);
+                              Navigator.pop(context, lazyList[index]);
                             } else {
-                              selectedOrder=widget.orderList[index];
+                              selectedOrder=lazyList[index];
                               setState(() {});
                               Navigator.pushNamed(context, AddOrderScreen.id,
-                                  arguments: widget.orderList[index]);
+                                  arguments: lazyList[index]);
                             }
                           },
                         ),

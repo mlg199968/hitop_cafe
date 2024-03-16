@@ -78,6 +78,7 @@ Future<void> sendCodeFunction(context)async{
       List<Subscription>? readSubs =
           await BackendServices.readSubscription(context, phone);
       bool isPurchase=false;
+      int? existSubsId;
       if (readSubs != null && readSubs.isNotEmpty) {
         for (Subscription subs in readSubs) {
           if (subs.level == 1 && subs.device?.id==device.id && subs.appName==kAppName) {
@@ -104,6 +105,9 @@ Future<void> sendCodeFunction(context)async{
             isPurchase=true;
             break;
           }
+          else if(subs.level == 0 &&( subs.device?.id==device.id || subs.device?.id==null) && subs.appName==kAppName){
+            existSubsId=subs.id;
+          }
           else{
             isPurchase=false;
           }
@@ -114,7 +118,7 @@ Future<void> sendCodeFunction(context)async{
       }
       if(!isPurchase){
         Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-            arguments: {"phone": phone, "subsId": null});
+            arguments: {"phone": phone, "subsId": existSubsId});
       }
     } catch (error) {
       ErrorHandler.errorManger(context, error,

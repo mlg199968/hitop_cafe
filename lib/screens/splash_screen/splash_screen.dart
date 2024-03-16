@@ -47,8 +47,6 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
       await GlobalTask.getInitData(context);
       Timer(const Duration(milliseconds:900 ), () async{
 
-
-
         // Shop shop = HiveBoxes.getShopInfo().getAt(0)!;
         // userProvider.getData(shop);
 

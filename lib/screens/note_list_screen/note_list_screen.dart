@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_divider.dart';
+import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
+import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/screens/note_list_screen/panels/add_task_panel.dart';
+import 'package:hitop_cafe/screens/note_list_screen/services/todo_tools.dart';
+import 'package:persian_number_utility/persian_number_utility.dart';
+
+
+class NoteListScreen extends StatefulWidget {
+  static const String id = "/NoteListScreen";
+  const NoteListScreen({
+    super.key,
+  });
+
+  @override
+  State<NoteListScreen> createState() => _NoteListScreenState();
+}
+
+class _NoteListScreenState extends State<NoteListScreen> {
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  DateTime checkDate = (DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: scaffoldKey,
+      floatingActionButton: CustomFloatActionButton(onPressed: () {
+        showDialog(context: context, builder: (context) => const AddTaskPanel())
+            .then((value) {
+          setState(() {});
+        });
+      }),
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back)),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: kMainGradiant),
+        ),
+        title: Container(
+          padding: const EdgeInsets.only(right: 5),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("لیست یاد آوری"),
+            ],
+          ),
+        ),
+        elevation: 5.0,
+      ),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            width: 500,
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            child: Column(
+              children: <Widget>[
+                ///Top part for backward or forward the date
+                Card(
+                  margin: const EdgeInsets.all(10),
+                  elevation: 7,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          checkDate = checkDate.subtract(const Duration(days: 1));
+                          setState(() {});
+                        },
+                        child: const Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.arrow_back_ios_outlined),
+                            Text("روز قبل"),
+                          ],
+                        ),
+                      ),
+                      Text(checkDate.isSameDate(DateTime.now())
+                          ? "امروز"
+                          : checkDate.toPersianDateStr()),
+                      TextButton(
+                          onPressed: () {
+                            checkDate = checkDate.add(const Duration(days: 1));
+                            setState(() {});
+                          },
+                          child: const Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("روز بعد"),
+                              Icon(Icons.arrow_forward_ios),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+
+
+                Expanded(
+                  child: ListView(
+                    children: [
+                      ///present day check list
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          width: double.maxFinite,
+                          child: ToDoTools.getCurrentDayToDoList(checkDate).isEmpty
+                              ? const SizedBox(
+                                  height: 400,
+                                  child: Center(
+                                      child: Text("چیزی برای یاد آوری نیست")))
+                              : Column(
+                              children: ToDoTools.generateNoteList(
+                                onChange: () {
+                                  setState(() {});
+                                },
+                                all: ToDoTools.getCurrentDayToDoList(checkDate),
+                                context: context,
+                              ),
+                                ),),
+                      const CustomDivider(title: "همه یادآور های گذشته",),
+
+                      ///past days check list
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: double.maxFinite,
+                        child: ToDoTools.getPastDaysToDoList(checkDate.add(const Duration(hours: 7))).isEmpty
+                            ? const SizedBox(
+                            height: 70,
+                            child: Center(
+                                child: Text("چیزی برای یاد آوری نیست")))
+                            : Column(
+                              children: ToDoTools.generateNoteList(
+                                onChange: () {
+                                  setState(() {});
+                                },
+                                all: ToDoTools.getPastDaysToDoList(checkDate.add(const Duration(hours: 7))),
+                                context: context,
+                              ),
+                            ),),
+                    ],
+                  ),
+                ),
+
+
+
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -214,6 +214,21 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
 
                                         setState(() {});
                                       },
+                                     onSecondaryTap: () {
+                                        bool existedItem = false;
+                                        for (int i=0;i<selectedItems.length;i++) {
+                                         Item element= selectedItems[i];
+                                          if (element.itemName == item.itemName) {
+                                            element.quantity>1
+                                                ?element.quantity--
+                                            :
+                                            selectedItems.removeAt(i);
+                                            existedItem = true;
+                                          }
+                                        }
+
+                                        setState(() {});
+                                      },
                                     );
                                   } else {
                                     return const SizedBox();
@@ -276,6 +291,7 @@ class LabelTile extends StatelessWidget {
     required this.label,
     this.count = 0,
     this.onTap,
+    this.onSecondaryTap,
     this.disable = true,
     this.disableColor = kMainDisableColor,
     this.activeColor = kMainActiveColor,
@@ -283,6 +299,7 @@ class LabelTile extends StatelessWidget {
   final String label;
   final num count;
   final VoidCallback? onTap;
+  final VoidCallback? onSecondaryTap;
   final bool disable;
   final Color activeColor;
   final Color disableColor;
@@ -290,6 +307,7 @@ class LabelTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      onSecondaryTap: onSecondaryTap,
       child: AnimatedSize(
         duration: const Duration(milliseconds: 200),
         child: Container(
