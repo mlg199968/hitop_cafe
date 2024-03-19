@@ -24,6 +24,7 @@ import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dar
 import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/storage_manger/storage_manage_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/add_user_screen.dart';
@@ -101,6 +102,9 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case NoteListScreen.id:
       return MaterialPageRoute(builder: (_) => const NoteListScreen());
+
+    case StorageManageScreen.id:
+      return MaterialPageRoute(builder: (_) => const StorageManageScreen());
 
     case PurchaseAppScreen.id:
       Map? args = routeSetting.arguments as Map?;

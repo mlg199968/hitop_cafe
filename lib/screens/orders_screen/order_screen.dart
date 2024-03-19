@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -29,6 +31,7 @@ class _CustomerListScreenState extends State<OrderScreen> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey filterScreenKey = GlobalKey();
   TextEditingController searchCustomerController = TextEditingController();
+  late List<Order> orderList;
   final List<String> sortList = [
     SortItem.modifiedDate.value,
     SortItem.createdDate.value,
@@ -118,9 +121,9 @@ class _CustomerListScreenState extends State<OrderScreen> {
                         return const Expanded(
                           child: Align(
                             alignment: Alignment.center,
-                            child: Text(
-                              "سفارشی یافت نشد!",
-                              textDirection: TextDirection.rtl,
+                            child: EmptyHolder(
+                              text: "سفارشی یافت نشد!",
+                              icon: FontAwesomeIcons.beerMugEmpty,
                             ),
                           ),
                         );
@@ -144,28 +147,6 @@ class CreditListPart extends StatefulWidget {
 class _CreditListPartState extends State<CreditListPart> {
   final scrollController=ScrollController();
   Order? selectedOrder;
-  List<Order> lazyList=[];
-  int lazyCounter=1;
-
-  lazyLoader()async{
-    await Future.delayed(const Duration(seconds: 2));
-    lazyList.addAll(widget.orderList.where((element) => element.hashCode>(lazyCounter-1)*20 && element.hashCode<lazyCounter*20));
-    lazyCounter++;
-    setState(() {});
-  }
-  @override
-  void initState() {
-    lazyList.addAll(widget.orderList.getRange(0, 20));
-    scrollController.addListener(() {
-      if(scrollController.position.pixels==scrollController.position.maxScrollExtent){
-        print(lazyCounter);
-        setState(() {
-          lazyLoader();
-        });
-      }
-    });
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -193,38 +174,39 @@ class _CreditListPartState extends State<CreditListPart> {
             Expanded(
               child: ListView.builder(
                 controller: scrollController,
-                  itemCount: lazyList.length,
+                  itemCount: widget.orderList.length,
                   itemBuilder: (context, index) {
+                  Order order=widget.orderList[index];
                     //color condition for tile color
-                    final colorCondition = lazyList[index].payable <= 0
-                        ? (lazyList[index].payable == 0
+                    final colorCondition = order.payable <= 0
+                        ? (order.payable == 0
                         ? Colors.teal
                         : Colors.indigoAccent)
                         : Colors.redAccent;
                     if (Provider.of<FilterProvider>(context, listen: false)
                         .compareData(
-                       lazyList[index].dueDate,
-                       lazyList[index].payable,
-                       lazyList[index].orderDate)) {
+                        order.dueDate,
+                        order.payable,
+                        order.orderDate)) {
                       return GestureDetector(
                         onTap: () {
-                          selectedOrder = lazyList[index];
+                          selectedOrder = order;
                           setState(() {});
                         },
                         child: OrderTile(
                           enabled: isMobile,
-                          orderDetail: lazyList[index],
+                          orderDetail: order,
                           color: colorCondition,
-                          surfaceColor: selectedOrder == lazyList[index]?kMainColor:null ,
+                          surfaceColor: selectedOrder == order?kMainColor:null ,
                           onSee: () {
                             //if we come from the select order list to add order to some where this line get running
                             if (widget.key != null) {
-                              Navigator.pop(context, lazyList[index]);
+                              Navigator.pop(context, order);
                             } else {
-                              selectedOrder=lazyList[index];
+                              selectedOrder=order;
                               setState(() {});
                               Navigator.pushNamed(context, AddOrderScreen.id,
-                                  arguments: lazyList[index]);
+                                  arguments: order);
                             }
                           },
                         ),

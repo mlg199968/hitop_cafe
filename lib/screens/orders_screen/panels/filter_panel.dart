@@ -26,6 +26,7 @@ class _FilterScreenState extends State<FilterPanel> {
   late final FilterProvider filterProvider;
   late final UserProvider userProvider;
   late SfRangeValues _payableValues;
+  double borderRadius=15;
   num _minPayablePrice=0;
   num _maxPayablePrice=100;
   num _interval=20;
@@ -111,7 +112,9 @@ class _FilterScreenState extends State<FilterPanel> {
       scrollable: true,
       titlePadding: const EdgeInsets.all(0),
       actionsPadding: const EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
       title: BlurryContainer(
+        borderRadius: BorderRadius.vertical(top:Radius.circular(borderRadius)),
         child: Container(
           width: 500,
             alignment:Alignment.topRight,
@@ -123,6 +126,7 @@ class _FilterScreenState extends State<FilterPanel> {
       ),
       actions: [
         BlurryContainer(
+          borderRadius: BorderRadius.vertical(bottom:Radius.circular(borderRadius)),
           child: CustomButton(
             width: 500,
             text: "اعمال فیلتر",
@@ -152,8 +156,9 @@ class _FilterScreenState extends State<FilterPanel> {
             }),
         ),],
       contentPadding: EdgeInsets.zero,
-      backgroundColor: Colors.blue.shade100.withOpacity(.2),
+      backgroundColor: Colors.white.withOpacity(.6),
       content: BlurryContainer(
+        borderRadius: BorderRadius.zero,
         child: Container(
             height: MediaQuery.of(context).size.height*.65,
             padding: const EdgeInsets.all(10),
@@ -177,7 +182,7 @@ class _FilterScreenState extends State<FilterPanel> {
                       startDate: startCreateDate,
                       endDate: endCreateDate,
                       onSwitch: (value){
-                        isCreateDate=value;
+                        isCreateDate=value!;
                         setState(() {});
                       },
                       onPress: (picked){
@@ -192,7 +197,11 @@ class _FilterScreenState extends State<FilterPanel> {
                   ///payable price range picker
                   Container(
                     padding: const EdgeInsets.symmetric(vertical:10),
-                    decoration: kBoxDecoration.copyWith(color: Colors.transparent),
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: kMainColor),
+                        borderRadius: BorderRadius.circular(10)
+                    ),
                     child: Column(
                       children: [
                         const Divider(height: 50,),
@@ -225,7 +234,7 @@ class _FilterScreenState extends State<FilterPanel> {
                       startDate: startDueDate,
                       endDate: endDueDate,
                       onSwitch: (value){
-                        isDueDate=value;
+                        isDueDate=value!;
                         setState(() {});
                       },
                       onPress: (picked){

@@ -16,6 +16,7 @@ import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/backup/backup_tools.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/setting/storage_manger/storage_manage_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/sidebar_panel.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/waiter_app/choose_app_type_screen.dart';
@@ -40,14 +41,12 @@ class _SettingScreenState extends State<SettingScreen> {
   String selectedFont = kFonts[0];
   late UserProvider provider;
   String? backupDirectory;
-  bool isBackupLoading=false;
+  bool isBackupLoading = false;
 
   ///printer
   Printer? selectedPrinter;
   Printer? selectedPrinter2;
   String printTemplate = PrintType.p80mm.value;
-
-
 
   ///save setting
   void storeInfoShop() {
@@ -60,10 +59,12 @@ class _SettingScreenState extends State<SettingScreen> {
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
       ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap()
       ..printer2 = selectedPrinter2 == null ? null : selectedPrinter2!.toMap()
-    ..printerIp=printerIpController.text==""?null:printerIpController.text
-    ..printerIp2=printerIp2Controller.text==""?null:printerIp2Controller.text
-    ..printTemplate=printTemplate
-    ..backupDirectory=backupDirectory;
+      ..printerIp =
+          printerIpController.text == "" ? null : printerIpController.text
+      ..printerIp2 =
+          printerIp2Controller.text == "" ? null : printerIp2Controller.text
+      ..printTemplate = printTemplate
+      ..backupDirectory = backupDirectory;
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
   }
@@ -76,18 +77,18 @@ class _SettingScreenState extends State<SettingScreen> {
       selectedFont = shopInfo.fontFamily ?? kFonts[0];
       taxController.text = shopInfo.preTax.toString();
       billNumberController.text = shopInfo.preBillNumber.toString();
-      printerIpController.text=shopInfo.printerIp ?? "192.168.1.1";
-      printerIp2Controller.text=shopInfo.printerIp2 ?? "192.168.1.2";
+      printerIpController.text = shopInfo.printerIp ?? "192.168.1.1";
+      printerIp2Controller.text = shopInfo.printerIp2 ?? "192.168.1.2";
       selectedPrinter =
           shopInfo.printer != null ? Printer.fromMap(shopInfo.printer!) : null;
-      selectedPrinter2 =
-          shopInfo.printer2 != null ? Printer.fromMap(shopInfo.printer2!) : null;
-      printTemplate=shopInfo.printTemplate ?? PrintType.p80mm.value;
-      backupDirectory=shopInfo.backupDirectory;
+      selectedPrinter2 = shopInfo.printer2 != null
+          ? Printer.fromMap(shopInfo.printer2!)
+          : null;
+      printTemplate = shopInfo.printTemplate ?? PrintType.p80mm.value;
+      backupDirectory = shopInfo.backupDirectory;
       setState(() {});
     }
   }
-
 
   @override
   void initState() {
@@ -129,7 +130,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         children: [
                           ///backup buttons
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 20),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -142,9 +144,11 @@ class _SettingScreenState extends State<SettingScreen> {
                                       await storagePermission(
                                           context, Allow.externalStorage);
                                       // ignore: use_build_context_synchronously
-                                      await storagePermission(context, Allow.storage);
+                                      await storagePermission(
+                                          context, Allow.storage);
                                       if (context.mounted) {
-                                        await BackupTools.createBackup(context,directory: backupDirectory);
+                                        await BackupTools.createBackup(context,
+                                            directory: backupDirectory);
                                       }
                                     },
                                   ),
@@ -156,17 +160,18 @@ class _SettingScreenState extends State<SettingScreen> {
                                     icon: Icons.settings_backup_restore,
                                     bgColor: Colors.teal,
                                     onPress: () async {
-                                      await storagePermission(context, Allow.storage);
+                                      await storagePermission(
+                                          context, Allow.storage);
                                       if (context.mounted) {
                                         await storagePermission(
                                             context, Allow.externalStorage);
                                       }
-                                      isBackupLoading=true;
+                                      isBackupLoading = true;
                                       setState(() {});
                                       if (context.mounted) {
                                         await BackupTools.readZipFile(context);
                                       }
-                                      isBackupLoading=false;
+                                      isBackupLoading = false;
                                       setState(() {});
                                     },
                                   ),
@@ -177,7 +182,11 @@ class _SettingScreenState extends State<SettingScreen> {
                           Container(
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.all(10),
-                              child: const CText("انتخاب مسیر ذخیره سازی فایل پشتیبان :",color: Colors.white,textDirection: TextDirection.rtl,)),
+                              child: const CText(
+                                "انتخاب مسیر ذخیره سازی فایل پشتیبان :",
+                                color: Colors.white,
+                                textDirection: TextDirection.rtl,
+                              )),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
@@ -185,30 +194,44 @@ class _SettingScreenState extends State<SettingScreen> {
                                 padding: const EdgeInsets.all(5),
                                 alignment: Alignment.centerRight,
                                 height: 40,
-                                decoration: BoxDecoration(gradient: kBlackWhiteGradiant,borderRadius: BorderRadius.circular(20)),
+                                decoration: BoxDecoration(
+                                    gradient: kBlackWhiteGradiant,
+                                    borderRadius: BorderRadius.circular(20)),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Flexible(child: CText(backupDirectory ?? "مسیری انتخاب نشده است")),
-                                    const SizedBox(width: 8,),
+                                    Flexible(
+                                        child: CText(backupDirectory ??
+                                            "مسیری انتخاب نشده است")),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
                                     ActionButton(
                                       label: "انتخاب",
                                       icon: Icons.folder_open_rounded,
-                                      onPress: ()async{
-                                        await storagePermission(context, Allow.externalStorage);
-                                        if(context.mounted) {
-                                          await storagePermission(context, Allow.storage);
+                                      onPress: () async {
+                                        await storagePermission(
+                                            context, Allow.externalStorage);
+                                        if (context.mounted) {
+                                          await storagePermission(
+                                              context, Allow.storage);
                                         }
-                                        String? newDir=await BackupTools.chooseDirectory();
-                                        if(newDir!=null) {
+                                        String? newDir =
+                                            await BackupTools.chooseDirectory();
+                                        if (newDir != null) {
                                           backupDirectory = newDir;
                                         }
                                         setState(() {});
-                                      },),
+                                      },
+                                    ),
                                   ],
                                 )),
                           ),
-                          const SizedBox(height: 30,),
+                          const SizedBox(
+                            height: 30,
+                          ),
+
                           ///currency unit
                           DropListItem(
                               title: "واحد پول",
@@ -252,6 +275,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             fontSize: 16,
                             color: Colors.white60,
                           ),
+
                           ///change font family entire app
                           DropListItem(
                             title: "قاب پیشفرض چاپ",
@@ -263,13 +287,15 @@ class _SettingScreenState extends State<SettingScreen> {
                               setState(() {});
                             },
                           ),
+
                           ///list of windows printers when platform is windows
                           if (Platform.isWindows)
                             ButtonTile(
                                 onPress: () async {
                                   // Show the native printer picker and get the selected printer
                                   final printer = await Printing.pickPrinter(
-                                      context: context, title: "پرینتر را انتخاب کنید");
+                                      context: context,
+                                      title: "پرینتر را انتخاب کنید");
                                   if (printer != null) {
                                     selectedPrinter = printer;
                                   }
@@ -284,57 +310,87 @@ class _SettingScreenState extends State<SettingScreen> {
                                 onPress: () async {
                                   // Show the native printer picker and get the selected printer
                                   final printer = await Printing.pickPrinter(
-                                      context: context, title: "پرینتر2 را انتخاب کنید");
+                                      context: context,
+                                      title: "پرینتر2 را انتخاب کنید");
                                   if (printer != null) {
                                     selectedPrinter2 = printer;
                                   }
                                   setState(() {});
                                 },
                                 label: "انتخاب پرینتر2",
-                                buttonLabel: selectedPrinter == null
+                                buttonLabel: selectedPrinter2 == null
                                     ? "انتخاب نشده"
-                                    : selectedPrinter!.name),
+                                    : selectedPrinter2!.name),
+
                           ///printer ip textfield
-                          InputItem(controller: printerIpController, label: "ای پی پرینتر", inputLabel: "ip"),
-                          InputItem(controller: printerIp2Controller, label: "ای پی پرینتر 2", inputLabel: "ip"),
+                          InputItem(
+                              controller: printerIpController,
+                              label: "ای پی پرینتر",
+                              inputLabel: "ip"),
+                          InputItem(
+                              controller: printerIp2Controller,
+                              label: "ای پی پرینتر 2",
+                              inputLabel: "ip"),
+
                           ///local network options section
                           const CText(
                             "تنظیمات شبکه",
                             fontSize: 16,
                             color: Colors.white60,
                           ),
-                          ButtonTile(onPress: (){
-                            Navigator.pushNamed(context, LocalServerScreen.id);
-                          }, label: "تنظیمات سرور", buttonLabel: "تعیین سرور"),
+                          ButtonTile(
+                              onPress: () {
+                                Navigator.pushNamed(
+                                    context, LocalServerScreen.id);
+                              },
+                              label: "تنظیمات سرور",
+                              buttonLabel: "تعیین سرور"),
 
                           const CText(
                             "متفرقه",
                             fontSize: 16,
                             color: Colors.white60,
                           ),
+                          ButtonTile(
+                              onPress: () {
+                                Navigator.pushNamed(context, StorageManageScreen.id);
+                              },
+                              label: "مدیریت داده ها",
+                              buttonLabel: "رفتن به صفحه مدیریت"),
+
                           ///back to app Type screen
-                          ButtonTile(onPress: (){
-                            showDialog(
-                              context: context,
-                              builder: (context) =>  CustomAlert(
-                                title:
-                                "آیا از تغییر نوع برنامه (اصلی به سفارشگیر) مطمئن هستید؟",
-                                onNo: (){Navigator.pop(context);},
-                                onYes: (){
-                                  Navigator.pushNamedAndRemoveUntil(context, AppTypeScreen.id,(context)=>false);
-                                },
-                              ),
-                            );
-                          }, label: "تغییر نوع کاربری برنامه", buttonLabel:"تغییر"),
+                          ButtonTile(
+                              onPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => CustomAlert(
+                                    title:
+                                        "آیا از تغییر نوع برنامه (اصلی به سفارشگیر) مطمئن هستید؟",
+                                    onNo: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onYes: () {
+                                      Navigator.pushNamedAndRemoveUntil(context,
+                                          AppTypeScreen.id, (context) => false);
+                                    },
+                                  ),
+                                );
+                              },
+                              label: "تغییر نوع کاربری برنامه",
+                              buttonLabel: "تغییر"),
+
                           ///developer section
                           const CText(
                             "توسعه دهنده",
                             fontSize: 16,
                             color: Colors.white60,
                           ),
-                          ButtonTile(onPress: (){
-                            Navigator.pushNamed(context, BugListScreen.id);
-                          }, label: "error List", buttonLabel:"see"),
+                          ButtonTile(
+                              onPress: () {
+                                Navigator.pushNamed(context, BugListScreen.id);
+                              },
+                              label: "error List",
+                              buttonLabel: "see"),
                         ],
                       ),
                     ),
@@ -360,7 +416,8 @@ class _SettingScreenState extends State<SettingScreen> {
                               "برای استفاده از این بخش نسخه کامل برنامه را فعال کنید.",
                               textDirection: TextDirection.rtl,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontSize: 18),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                           ),
                           SizedBox(

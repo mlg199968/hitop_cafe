@@ -121,7 +121,7 @@ class _WareListScreenState extends State<WareListScreen> {
                       builder: (context, box, _) {
                         waresList = box.values.toList().cast<RawWare>();
                         List<RawWare> filteredList =
-                            WareTools.filterList(waresList, keyWord, sortItem);
+                            WareTools.filterList(waresList, keyWord, sortItem,selectedCategory);
 
                         if (filteredList.isEmpty) {
                           return const Expanded(
@@ -130,7 +130,6 @@ class _WareListScreenState extends State<WareListScreen> {
                         }
                         return ListPart(
                           key: widget.key,
-                          category: selectedCategory,
                           wareList: filteredList,
                         );
                       }),
@@ -145,11 +144,8 @@ class _WareListScreenState extends State<WareListScreen> {
 }
 
 class ListPart extends StatefulWidget {
-  const ListPart({super.key, required this.wareList, required this.category});
-
+  const ListPart({super.key, required this.wareList});
   final List<RawWare> wareList;
-  final String category;
-
   @override
   State<ListPart> createState() => _ListPartState();
 }
@@ -198,9 +194,6 @@ class _ListPartState extends State<ListPart> {
                           itemCount: widget.wareList.length,
                           itemBuilder: (context, index) {
                             RawWare ware = widget.wareList[index];
-                            if (widget.category ==
-                                    widget.wareList[index].category ||
-                                widget.category == "همه") {
                               return InkWell(
                                 onLongPress: () {
                                   if (!selectedItems.contains(index)) {
@@ -253,8 +246,7 @@ class _ListPartState extends State<ListPart> {
                                   trailing: addSeparator(ware.cost),
                                 ),
                               );
-                            }
-                            return const SizedBox();
+
                           }),
                     ),
 

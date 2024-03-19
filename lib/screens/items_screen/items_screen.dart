@@ -91,13 +91,13 @@ class _WareListScreenState extends State<ItemsScreen> {
               body: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  ///get ware list
+                  ///get item list
                   ValueListenableBuilder<Box<Item>>(
                       valueListenable: HiveBoxes.getItem().listenable(),
                       builder: (context, box, _) {
                         waresList = box.values.toList().cast<Item>();
                         List<Item> filteredList =
-                            ItemTools.filterList(waresList, keyWord, sortItem);
+                            ItemTools.filterList(waresList, keyWord, sortItem,selectedCategory);
 
                         if (filteredList.isEmpty) {
                           return const Expanded(
@@ -106,7 +106,6 @@ class _WareListScreenState extends State<ItemsScreen> {
                         }
                         return ListPart(
                           key: widget.key,
-                          category: selectedCategory,
                           wareList: filteredList,
                         );
                       }),
@@ -121,10 +120,10 @@ class _WareListScreenState extends State<ItemsScreen> {
 }
 
 class ListPart extends StatefulWidget {
-  const ListPart({super.key, required this.wareList, required this.category});
+  const ListPart({super.key, required this.wareList});
 
   final List<Item> wareList;
-  final String category;
+
 
   @override
   State<ListPart> createState() => _ListPartState();
@@ -175,9 +174,7 @@ class _ListPartState extends State<ListPart> {
                           itemCount: widget.wareList.length,
                           itemBuilder: (context, index) {
                             Item ware = widget.wareList[index];
-                            if (widget.category ==
-                                    widget.wareList[index].category ||
-                                widget.category == "همه") {
+
                               return InkWell(
                                 onLongPress: () {
                                   if (!selectedItems.contains(index)) {
@@ -226,8 +223,6 @@ class _ListPartState extends State<ListPart> {
                                   topTrailing: '',
                                 ),
                               );
-                            }
-                            return const SizedBox();
                           }),
                     ),
 

@@ -8,8 +8,10 @@ class ItemTools {
 
   /// search and sort the ware List
   static List<Item> filterList(
-      List<Item> list, String? keyWord, String sort) {
-
+      List<Item> list, String? keyWord, String sort,String category) {
+    list=list.where((ware) => category ==
+        ware.category ||
+        category == "همه").toList() ;
     if (keyWord != null && keyWord != "") {
       list = list.where((element) {
         String itemName = element.itemName.toLowerCase().replaceAll(" ", "");
@@ -50,5 +52,17 @@ class ItemTools {
   static Item copyToNewItem(Item i){
     Item newItem=Item().fromMap(i.toMap());
     return newItem;
+  }
+
+  ///just for debug
+  static List<Item> createFakeItems() {
+    return List.generate(
+        1000000,
+            (index) => Item()
+          ..itemName = "item number $index"
+          ..category = "fake item"
+          ..unit="عدد"
+          ..createDate=DateTime.now()
+          ..quantity = index * 2);
   }
 }

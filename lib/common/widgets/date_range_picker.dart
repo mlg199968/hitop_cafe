@@ -7,16 +7,16 @@ class CustomDateRangePicker extends StatelessWidget {
   const CustomDateRangePicker(
       {super.key,
       required this.title,
-      required this.startDate,
-      required this.endDate,
+      this.startDate,
+      this.endDate,
       required this.onPress,
       this.enable = true,
-      required this.onSwitch});
+      this.onSwitch});
   final String title;
-  final DateTime startDate;
-  final DateTime endDate;
+  final DateTime? startDate;
+  final DateTime? endDate;
   final Function onPress;
-  final Function onSwitch;
+  final Function(bool? val)? onSwitch;
   final bool enable;
   @override
   Widget build(BuildContext context) {
@@ -41,58 +41,65 @@ class CustomDateRangePicker extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10).copyWith(top: 25),
             alignment: Alignment.center,
-            decoration: kBoxDecoration.copyWith(color: Colors.transparent),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+              border: Border.all(color: kMainColor),
+              borderRadius: BorderRadius.circular(10)
+            ),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          " تا تاریخ",
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        Text(
-                          Jalali.fromDateTime(endDate)
-                              .formatCompactDate()
-                              .toPersianDigit(),
-                          style: const TextStyle(color: Colors.blue),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "از تاریخ",
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        Text(
-                          Jalali.fromDateTime(startDate)
-                              .formatCompactDate()
-                              .toPersianDigit(),
-                          style: const TextStyle(color: Colors.blue),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                 Text(
+                if (startDate != null && endDate != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            " تا تاریخ",
+                            //style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                          Text(
+                            Jalali.fromDateTime(endDate!)
+                                .formatCompactDate()
+                                .toPersianDigit(),
+                            style: const TextStyle(color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "از تاریخ",
+                            // style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                          Text(
+                            Jalali.fromDateTime(startDate!)
+                                .formatCompactDate()
+                                .toPersianDigit(),
+                            style: const TextStyle(color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                else
+                  const Icon(Icons.date_range_rounded),
+                Text(
                   title,
-                  style: const TextStyle(color: Colors.white70,fontSize: 12),
+                  style: const TextStyle(color: Colors.black87, fontSize: 12),
                 ),
               ],
             ),
           ),
         ),
       ),
-      Switch(
+      if (onSwitch != null)
+        Switch(
           value: enable,
-          onChanged: (val) {
-            onSwitch(val);
-          }),
+          onChanged: onSwitch!,
+        )
     ]);
   }
 }

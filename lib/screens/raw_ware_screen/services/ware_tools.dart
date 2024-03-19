@@ -1,19 +1,18 @@
-
-
 import 'package:hitop_cafe/models/raw_ware.dart';
 
 class WareTools {
-
   ///create new Ware form Raw Ware (to prevent from interfere)
-  static RawWare copyToNewWare(RawWare ware){
-    RawWare newWare=RawWare().fromMap(ware.toMap());
+  static RawWare copyToNewWare(RawWare ware) {
+    RawWare newWare = RawWare().fromMap(ware.toMap());
     return newWare;
   }
 
   /// search and sort the ware List
   static List<RawWare> filterList(
-      List<RawWare> list, String? keyWord, String sort) {
-
+      List<RawWare> list, String? keyWord, String sort,String category) {
+   list=list.where((ware) => category ==
+       ware.category ||
+       category == "همه").toList() ;
     if (keyWord != null && keyWord != "") {
       list = list.where((element) {
         String wareName = element.wareName.toLowerCase().replaceAll(" ", "");
@@ -27,12 +26,9 @@ class WareTools {
       }).toList();
     }
 
-
     switch (sort) {
-
       case "حروف الفبا":
         list.sort((a, b) {
-
           return a.wareName.compareTo(b.wareName);
         });
         break;
@@ -54,5 +50,17 @@ class WareTools {
         break;
     }
     return list;
+  }
+
+  ///just for debug
+  static List<RawWare> createFakeWares() {
+    return List.generate(
+        1000000,
+        (index) => RawWare()
+          ..wareName = "ware number $index"
+          ..category = "fake ware"
+          ..unit="عدد"
+          ..createDate=DateTime.now()
+          ..quantity = index * 2);
   }
 }

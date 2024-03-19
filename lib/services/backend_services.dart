@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
@@ -10,10 +9,8 @@ import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/server_models/device.dart';
-import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/services/HttpUtil.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -32,7 +29,6 @@ class BackendServices {
         if (backData["success"] == true) {
           showSnackBar(context, backData["message"] ?? "success",
               type: SnackType.success);
-          print(backData);
           return true;
         } else {
           showSnackBar(context, backData["message"] ?? "not success",
