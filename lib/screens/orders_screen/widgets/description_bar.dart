@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';

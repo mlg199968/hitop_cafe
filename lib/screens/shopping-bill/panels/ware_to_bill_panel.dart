@@ -10,7 +10,6 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/purchase.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/raw_ware_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';

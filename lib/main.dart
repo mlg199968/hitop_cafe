@@ -1,9 +1,6 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
-import 'package:hitop_cafe/constants/extensions.dart';
 import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:hitop_cafe/models/database.dart';

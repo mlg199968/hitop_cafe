@@ -4,7 +4,6 @@ import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
-import 'package:hitop_cafe/constants/constants.dart';
 customAlert(
     {required BuildContext context,
     VoidCallback? onYes,
@@ -146,7 +145,7 @@ class CustomAlert extends StatelessWidget {
               textDirection: TextDirection.rtl,
               child: Container(
                 alignment: Alignment.bottomLeft,
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 height: 70,
                   width: 300,
                   child: Row(

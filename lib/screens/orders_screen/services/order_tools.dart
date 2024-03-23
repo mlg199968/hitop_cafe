@@ -77,9 +77,9 @@ if(orders.isNotEmpty){
       list= list.where((element){
         String table=element.tableNumber.toString();
         String bill=element.billNumber.toString();
-
+        final String itemsName=element.items.map((e) => e.itemName).toString().toLowerCase().replaceAll(" ", "");
         String key=keyWord.toLowerCase().replaceAll(" ", "");
-        if((table).contains(key) || (bill).contains(key) ) {
+        if((table).contains(key) || (bill).contains(key) || (itemsName).contains(key) ) {
           return true;
         }else {
           return false;
@@ -87,11 +87,6 @@ if(orders.isNotEmpty){
       }).toList();
     }
       switch(sort){
-        // case "حروف الفبا":
-        //   list.sort((a,b){
-        //     return a.customer.lastName.compareTo(b.customer.lastName);
-        //   });
-        //   break;
         case "تاریخ ثبت" :
           list.sort((b,a){
             return a.orderDate.compareTo(b.orderDate);

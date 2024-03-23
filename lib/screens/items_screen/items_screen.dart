@@ -88,28 +88,31 @@ class _WareListScreenState extends State<ItemsScreen> {
                   ),
                 ],
               ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  ///get item list
-                  ValueListenableBuilder<Box<Item>>(
-                      valueListenable: HiveBoxes.getItem().listenable(),
-                      builder: (context, box, _) {
-                        waresList = box.values.toList().cast<Item>();
-                        List<Item> filteredList =
-                            ItemTools.filterList(waresList, keyWord, sortItem,selectedCategory);
+              body: Container(
+                alignment: Alignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    ///get item list
+                    ValueListenableBuilder<Box<Item>>(
+                        valueListenable: HiveBoxes.getItem().listenable(),
+                        builder: (context, box, _) {
+                          waresList = box.values.toList().cast<Item>();
+                          List<Item> filteredList =
+                              ItemTools.filterList(waresList, keyWord, sortItem,selectedCategory);
 
-                        if (filteredList.isEmpty) {
-                          return const Expanded(
-                            child: EmptyHolder(text: "آیتمی یافت نشد!", icon: Icons.fastfood_rounded)
+                          if (filteredList.isEmpty) {
+                            return const Expanded(
+                              child: EmptyHolder(text: "آیتمی یافت نشد!", icon: Icons.fastfood_rounded)
+                            );
+                          }
+                          return ListPart(
+                            key: widget.key,
+                            wareList: filteredList,
                           );
-                        }
-                        return ListPart(
-                          key: widget.key,
-                          wareList: filteredList,
-                        );
-                      }),
-                ],
+                        }),
+                  ],
+                ),
               ),
             ),
           );
@@ -154,7 +157,6 @@ class _ListPartState extends State<ListPart> {
               if(widthCondition)
                 Flexible(
                       child: SizedBox(
-                        width: 400,
                         child: selectedWare == null
                             ? null
                             : ItemInfoPanelDesktop(item: selectedWare!,onDelete:() {
@@ -165,147 +167,150 @@ class _ListPartState extends State<ListPart> {
                     ),
 
               ///list part
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          controller: ScrollController(),
-                          itemCount: widget.wareList.length,
-                          itemBuilder: (context, index) {
-                            Item ware = widget.wareList[index];
+              Flexible(
+                child: SizedBox(
+                  width: 550,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                            controller: ScrollController(),
+                            itemCount: widget.wareList.length,
+                            itemBuilder: (context, index) {
+                              Item ware = widget.wareList[index];
 
-                              return InkWell(
-                                onLongPress: () {
-                                  if (!selectedItems.contains(index)) {
-                                    selectedItems.add(index);
-                                    setState(() {});
-                                  }
-                                },
-                                onTap: () {
-                                  if (selectedItems.isEmpty) {
-                                    if (widget.key != null) {
-                                      Navigator.pop(context, ware);
-                                    } else {
-                                      selectedWare = ware;
-                                      setState(() {});
-                                      widthCondition
-                                          ? null
-                                          : showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  ItemInfoPanel(item: ware));
-                                    }
-                                  } else {
-                                    if (selectedItems.contains(index)) {
-                                      selectedItems.remove(index);
-                                    } else {
+                                return InkWell(
+                                  onLongPress: () {
+                                    if (!selectedItems.contains(index)) {
                                       selectedItems.add(index);
+                                      setState(() {});
                                     }
-                                    setState(() {});
-                                  }
-                                },
-                                child: CustomTile(
-                                  selected: selectedItems.contains(index),
-                                  enable: false,
-                                  onDelete: () {},
-                                  height: 50,
-                                  color: selectedItems.contains(index)
-                                      ? Colors.blue
-                                      : kMainColor,
-                                  surfaceColor: selectedWare == widget.wareList[index]?kMainColor:null,
-                                  leadingIcon:
-                                      Icons.emoji_food_beverage_rounded,
-                                  subTitle: ware.category,
-                                  type: (index + 1).toString().toPersianDigit(),
-                                  title: ware.itemName,
-                                  trailing: addSeparator(ware.sale),
-                                  topTrailing: '',
-                                ),
-                              );
-                          }),
-                    ),
+                                  },
+                                  onTap: () {
+                                    if (selectedItems.isEmpty) {
+                                      if (widget.key != null) {
+                                        Navigator.pop(context, ware);
+                                      } else {
+                                        selectedWare = ware;
+                                        setState(() {});
+                                        widthCondition
+                                            ? null
+                                            : showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    ItemInfoPanel(item: ware));
+                                      }
+                                    } else {
+                                      if (selectedItems.contains(index)) {
+                                        selectedItems.remove(index);
+                                      } else {
+                                        selectedItems.add(index);
+                                      }
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: CustomTile(
+                                    selected: selectedItems.contains(index),
+                                    enable: false,
+                                    onDelete: () {},
+                                    height: 50,
+                                    color: selectedItems.contains(index)
+                                        ? Colors.blue
+                                        : kMainColor,
+                                    surfaceColor: selectedWare == widget.wareList[index]?kMainColor:null,
+                                    leadingIcon:
+                                        Icons.emoji_food_beverage_rounded,
+                                    subTitle: ware.category,
+                                    type: (index + 1).toString().toPersianDigit(),
+                                    title: ware.itemName,
+                                    trailing: addSeparator(ware.sale),
+                                    topTrailing: '',
+                                  ),
+                                );
+                            }),
+                      ),
 
-                    ///selected items action bottom bar
-                    Opacity(
-                      opacity: selectedItems.isNotEmpty ? 1 : 0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            border:
-                                Border(top: BorderSide(color: Colors.black87))),
-                        height: selectedItems.isNotEmpty ? 50 : 0,
-                        width: double.maxFinite,
-                        child: Row(
-                          children: [
-                            ///delete icon
-                            IconButton(
-                                onPressed: () {
-                                  showDialog(context: context, builder: (context)=>CustomAlert(
-                                      title:
-                                      "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
-                                      onYes: () {
-                                        for (int item in selectedItems) {
-                                          widget.wareList[item].delete();
-                                        }
-                                        showSnackBar(context,
-                                            " ${selectedItems.length} کالا حذف شد!  ",
-                                            type: SnackType.success);
-                                        selectedItems.clear();
-                                        popFunction(context);
-                                      },
-                                      onNo: () {
-                                        popFunction(context);
-                                      }));
+                      ///selected items action bottom bar
+                      Opacity(
+                        opacity: selectedItems.isNotEmpty ? 1 : 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              border:
+                                  Border(top: BorderSide(color: Colors.black87))),
+                          height: selectedItems.isNotEmpty ? 50 : 0,
+                          width: double.maxFinite,
+                          child: Row(
+                            children: [
+                              ///delete icon
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(context: context, builder: (context)=>CustomAlert(
+                                        title:
+                                        "آیا از حذف موارد انتخاب شده مطمئن هستید؟",
+                                        onYes: () {
+                                          for (int item in selectedItems) {
+                                            widget.wareList[item].delete();
+                                          }
+                                          showSnackBar(context,
+                                              " ${selectedItems.length} کالا حذف شد!  ",
+                                              type: SnackType.success);
+                                          selectedItems.clear();
+                                          popFunction(context);
+                                        },
+                                        onNo: () {
+                                          popFunction(context);
+                                        }));
 
-                                },
-                                icon: const Icon(
-                                  Icons.delete_forever,
-                                  size: 35,
-                                  color: Colors.red,
-                                )),
-                            const VerticalDivider(),
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete_forever,
+                                    size: 35,
+                                    color: Colors.red,
+                                  )),
+                              const VerticalDivider(),
 
-                            ///print icon
-                            IconButton(
-                                onPressed: () async {
-                                  // List<Item> selectedList = [];
-                                  // for (int item in selectedItems) {
-                                  //   selectedList.add(widget.wareList[item]);
-                                  // }
-                                  // final file = await PdfWareListApi.generate(
-                                  //     selectedList, context);
-                                  // PdfApi.openFile(file);
-                                },
-                                icon: const Icon(
-                                  CupertinoIcons.printer_fill,
-                                  size: 30,
-                                  color: Colors.black87,
-                                )),
-                            const VerticalDivider(),
+                              ///print icon
+                              IconButton(
+                                  onPressed: () async {
+                                    // List<Item> selectedList = [];
+                                    // for (int item in selectedItems) {
+                                    //   selectedList.add(widget.wareList[item]);
+                                    // }
+                                    // final file = await PdfWareListApi.generate(
+                                    //     selectedList, context);
+                                    // PdfApi.openFile(file);
+                                  },
+                                  icon: const Icon(
+                                    CupertinoIcons.printer_fill,
+                                    size: 30,
+                                    color: Colors.black87,
+                                  )),
+                              const VerticalDivider(),
 
-                            ///edit selected icon
-                            IconButton(
-                                onPressed: () {
-                                  // List<Item> selectedList = [];
-                                  // for (int item in selectedItems) {
-                                  //   selectedList.add(widget.wareList[item]);
-                                  // }
-                                  // showDialog(
-                                  //     context: context,
-                                  //     builder: (context) =>
-                                  //         SelectedWareActionPanel(
-                                  //             wares: selectedList));
-                                },
-                                icon: const Icon(
-                                  FontAwesomeIcons.filePen,
-                                  size: 30,
-                                  color: Colors.black87,
-                                )),
-                          ],
+                              ///edit selected icon
+                              IconButton(
+                                  onPressed: () {
+                                    // List<Item> selectedList = [];
+                                    // for (int item in selectedItems) {
+                                    //   selectedList.add(widget.wareList[item]);
+                                    // }
+                                    // showDialog(
+                                    //     context: context,
+                                    //     builder: (context) =>
+                                    //         SelectedWareActionPanel(
+                                    //             wares: selectedList));
+                                  },
+                                  icon: const Icon(
+                                    FontAwesomeIcons.filePen,
+                                    size: 30,
+                                    color: Colors.black87,
+                                  )),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

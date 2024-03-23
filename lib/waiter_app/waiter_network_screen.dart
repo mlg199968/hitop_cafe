@@ -97,7 +97,6 @@ class _WaiterNetworkScreenState extends State<WaiterNetworkScreen> {
                                   clientProvider.getIpAddress(subnet:subnetController.text,
                                       port:int.parse(portController.text));
                                   if (clientProvider.address != null) {
-                                    print(clientProvider.address!.ip);
                                     ipController.text =
                                         clientProvider.address!.ip;
                                     setState(() {});

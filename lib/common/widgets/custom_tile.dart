@@ -20,9 +20,14 @@ class CustomTile extends StatelessWidget {
       this.topTrailingLabel,
       this.onInfo,
       this.type,
-      this.enable = true, this.selected=false, this.middleWidget, this.surfaceColor});
+      this.enable = true,
+      this.selected = false,
+      this.middleWidget,
+      this.surfaceColor,
+      this.width});
   final VoidCallback onDelete;
   final double height;
+  final double? width;
   final Color color;
   final Color? surfaceColor;
   final String? subTitle;
@@ -72,15 +77,16 @@ class CustomTile extends StatelessWidget {
                 children: [
                   SlidableAction(
                     label: "جزئیات",
-                    borderRadius:const BorderRadius.horizontal(left: Radius.circular(10)),
+                    borderRadius: const BorderRadius.horizontal(
+                        left: Radius.circular(10)),
                     onPressed: (context) => {onInfo!()},
                     icon: FontAwesomeIcons.pencil,
                     backgroundColor: Colors.blueAccent,
                   ),
                   SlidableAction(
                     label: "حذف",
-
-                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
+                    borderRadius: const BorderRadius.horizontal(
+                        right: Radius.circular(10)),
                     onPressed: (context) => {onDelete()},
                     icon: FontAwesomeIcons.trashCan,
                     backgroundColor: Colors.red,
@@ -89,10 +95,10 @@ class CustomTile extends StatelessWidget {
               ),
         child: Builder(builder: (context) {
           return SizedBox(
-            width: 450,
+            width: width,
             child: Card(
-             surfaceTintColor: surfaceColor ?? Colors.white,
-              margin: selected ?const EdgeInsets.only(right: 20):null,
+              surfaceTintColor: surfaceColor ?? Colors.white,
+              margin: selected ? const EdgeInsets.only(right: 20) : null,
               child: BackgroundShape1(
                 color: color,
                 height: height,
@@ -117,7 +123,7 @@ class CustomTile extends StatelessWidget {
 }
 
 class MyListTile extends StatelessWidget {
-   MyListTile({
+  MyListTile({
     super.key,
     required this.enable,
     required this.title,
@@ -126,7 +132,9 @@ class MyListTile extends StatelessWidget {
     this.subTitle,
     this.topTrailingLabel,
     required this.topTrailing,
-    required this.trailing, this.selected=false, this.middleWidget,
+    required this.trailing,
+    this.selected = false,
+    this.middleWidget,
   });
 
   final bool enable;
@@ -138,13 +146,12 @@ class MyListTile extends StatelessWidget {
   final String? topTrailingLabel;
   final String topTrailing;
   final String trailing;
-  final tileGlobalKey=GlobalKey();
-   final Widget? middleWidget;
+  final tileGlobalKey = GlobalKey();
+  final Widget? middleWidget;
   @override
   Widget build(BuildContext context) {
     //TODO: order tile responsive added
-    return LayoutBuilder(
-      builder: (context,constraint){
+    return LayoutBuilder(builder: (context, constraint) {
       return ListTile(
         selected: selected,
         onTap: !enable
@@ -169,8 +176,9 @@ class MyListTile extends StatelessWidget {
           textAlign: TextAlign.right,
           maxLines: 2,
         ),
-        leading: leadingIcon == null || constraint.maxWidth<200
-            ? null:SizedBox(
+        leading: leadingIcon == null || constraint.maxWidth < 200
+            ? null
+            : SizedBox(
                 child: Column(
                   children: [
                     Expanded(
@@ -189,13 +197,11 @@ class MyListTile extends StatelessWidget {
                     )
                   ],
                 ),
-              )
-            ,
+              ),
         subtitle: Row(
           children: [
-            CText(subTitle ?? "",fontSize: 11,color: Colors.black45),
-            if(middleWidget!=null)
-              middleWidget!
+            CText(subTitle ?? "", fontSize: 11, color: Colors.black45),
+            if (middleWidget != null) middleWidget!
           ],
         ),
         trailing: constraint.maxWidth < 300
@@ -226,7 +232,7 @@ class MyListTile extends StatelessWidget {
                     textAlign: TextAlign.left,
                     textDirection: TextDirection.ltr,
                     maxLines: 2,
-                   // style: kCellStyle,
+                    // style: kCellStyle,
                     minFontSize: 9,
                     maxFontSize: 12,
                   ),
@@ -236,5 +242,3 @@ class MyListTile extends StatelessWidget {
     });
   }
 }
-
-

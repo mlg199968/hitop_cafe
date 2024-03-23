@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,8 +12,6 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
-import 'package:hitop_cafe/screens/note_list_screen/note_list_screen.dart';
-import 'package:hitop_cafe/screens/note_list_screen/services/todo_tools.dart';
 import 'package:hitop_cafe/screens/note_list_screen/widgets/note_carousel.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
 import 'package:hitop_cafe/screens/present_orders/present_order_screen.dart';
@@ -159,13 +156,14 @@ bool showAlertNotice=true;
                   children: [
                     ///home screen header
                     Align(
-                      alignment: Alignment.topCenter,
+                      alignment: Alignment.topRight,
                       child: Container(
-                        alignment: Alignment.center,
+                        width: 500,
+                        alignment: Alignment.centerRight,
                         padding: const EdgeInsets.all(10),
                         decoration:  BoxDecoration(
                           gradient: kMainGradiant,
-                          borderRadius:screenType(context) != ScreenType.desktop?null:const BorderRadius.horizontal(left: Radius.circular(20)),
+                          borderRadius:screenType(context) != ScreenType.mobile?const BorderRadius.horizontal(left: Radius.circular(20)):null,
                         ),
                         child: Center(
                           child: Column(

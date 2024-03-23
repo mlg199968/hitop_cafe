@@ -45,7 +45,7 @@ class SmallCardButton extends StatelessWidget {
               ),
               alignment: Alignment.bottomRight,
             ),
-            SizedBox(height: 5,),
+            const SizedBox(height: 5,),
             SizedBox(child: Text(
               label,
               style:

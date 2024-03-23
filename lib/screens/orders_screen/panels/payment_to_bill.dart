@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_toggle_button.dart';
-import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';

@@ -33,7 +33,9 @@ class RawWare extends HiveObject {
   @HiveField(12)
   String? color;
   @HiveField(13)
+  double? warningQuantity;
   num get sum =>quantity * cost;
+  bool get isLess=>quantity<(warningQuantity ?? 0);
 
 
 
@@ -53,6 +55,7 @@ class RawWare extends HiveObject {
       'isChecked': isChecked,
       'imagePath': imagePath,
       'color': color,
+      'warningQuantity': warningQuantity,
     };
   }
 
@@ -70,7 +73,8 @@ class RawWare extends HiveObject {
      ..wareId= map['wareId'] ??""
      ..isChecked= map['isChecked'] ==1 ? true :false
      ..imagePath= map['imagePath'] =""
-     ..color= map['color'] ?? "" ;
+     ..color= map['color'] ?? ""
+     ..warningQuantity= map['warningQuantity'] ?? "" ;
      return rawWare;
   }
 

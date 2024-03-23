@@ -21,38 +21,45 @@ class QuickAddScreen extends StatefulWidget {
 }
 
 class _QuickAddScreenState extends State<QuickAddScreen> {
-  final searchGroupController=TextEditingController();
-  final searchItemController=TextEditingController();
+  final searchGroupController = TextEditingController();
+  final searchItemController = TextEditingController();
   String selectedGroup = "همه";
-  String searchGroupWord="";
-  String searchItemWord="";
+  String searchGroupWord = "";
+  String searchItemWord = "";
   List<Item> selectedItems = [];
-
 
   ///call message on pop to previous page function
   Future<bool> willPop() async {
-    return await showDialog(context: context, builder: (context)=>CustomAlert(
-        title: "آیتم های انتخاب شده به فاکتور افزوده شود؟",
-        onYes: () {
-          Navigator.pop(context,false);
-          Navigator.pop(context, selectedItems.map((e) => ItemTools.copyToNewItem(e)).toList());
-        },
-        onNo: () {
-          Navigator.pop(context,false);
-          Navigator.pop(context);
-        }));
+    return await showDialog(
+        context: context,
+        builder: (context) => CustomAlert(
+            title: "آیتم های انتخاب شده به فاکتور افزوده شود؟",
+            onYes: () {
+              Navigator.pop(context, false);
+              Navigator.pop(
+                  context,
+                  selectedItems
+                      .map((e) => ItemTools.copyToNewItem(e))
+                      .toList());
+            },
+            onNo: () {
+              Navigator.pop(context, false);
+              Navigator.pop(context);
+            }));
   }
 
   @override
   void dispose() {
-    for (var element in selectedItems) {element.quantity=1;}
+    for (var element in selectedItems) {
+      element.quantity = 1;
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop:selectedItems.isNotEmpty?willPop:null ,
+      onWillPop: selectedItems.isNotEmpty ? willPop : null,
       child: HideKeyboard(
         child: Scaffold(
           floatingActionButton: CustomFloatActionButton(
@@ -62,7 +69,11 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
               onPressed: () {
                 //Because the models in the list are selected directly from the box,
                 //so that the imported models do not interfere, we will replace them with the new model.
-                Navigator.pop(context,selectedItems.map((e) => ItemTools.copyToNewItem(e)).toList());
+                Navigator.pop(
+                    context,
+                    selectedItems
+                        .map((e) => ItemTools.copyToNewItem(e))
+                        .toList());
               }),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
@@ -83,26 +94,29 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Padding(
+                        Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
                                 "انتخاب گروه:",
-                                style: TextStyle(color: Colors.white70, fontSize: 17),
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 17),
                               ),
+
                               ///search group textField
                               CustomTextField(
                                 hint: "جست و جو گروه",
                                 height: 30,
-                                  borderRadius: 20,
-                                  controller: searchGroupController,
-                              suffixIcon:const Icon(Icons.search),
-                              onChange: (val){
-                                searchGroupWord=val;
-                                setState(() {});
-                              },),
+                                borderRadius: 20,
+                                controller: searchGroupController,
+                                suffixIcon: const Icon(Icons.search),
+                                onChange: (val) {
+                                  searchGroupWord = val;
+                                  setState(() {});
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -122,12 +136,13 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                                 direction: Axis.horizontal,
                                 children: [
                                   "همه",
-                                  ...context.watch<WareProvider>().itemCategories
-                                ]
-                                    .map(
-                                      (group) {
-                                        if(group.toString().contains(searchGroupWord))
-                                        {
+                                  ...context
+                                      .watch<WareProvider>()
+                                      .itemCategories
+                                ].map((group) {
+                                  if (group
+                                      .toString()
+                                      .contains(searchGroupWord)) {
                                     return LabelTile(
                                       activeColor: Colors.teal,
                                       disableColor: Colors.blueGrey,
@@ -138,36 +153,37 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                                         setState(() {});
                                       },
                                     );
-                                  }else{
-                                          return const SizedBox();
-                                        }
-                                }
-                                    )
-                                    .toList(),
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                }).toList(),
                               ),
                             ),
                           ),
                         ),
-                         Padding(
+                        Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment:MainAxisAlignment.spaceBetween ,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
                                 "انتخاب آیتم:",
-                                style: TextStyle(color: Colors.white70, fontSize: 17),
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 17),
                               ),
+
                               ///search group textField
                               CustomTextField(
                                 hint: "جست و جو آیتم",
                                 height: 30,
                                 borderRadius: 20,
                                 controller: searchItemController,
-                                suffixIcon:const Icon(Icons.search),
-                                onChange: (val){
-                                  searchItemWord=val;
+                                suffixIcon: const Icon(Icons.search),
+                                onChange: (val) {
+                                  searchItemWord = val;
                                   setState(() {});
-                                },),
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -188,22 +204,26 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                               padding: const EdgeInsets.all(10),
                               child: Wrap(
                                 direction: Axis.horizontal,
-                                children: HiveBoxes.getItem().values.map((item) {
+                                children:
+                                    HiveBoxes.getItem().values.map((item) {
                                   if ((selectedGroup == item.category ||
-                                      selectedGroup == "همه") && item.itemName.contains(searchItemWord)) {
+                                          selectedGroup == "همه") &&
+                                      item.itemName.contains(searchItemWord)) {
                                     return LabelTile(
                                       disable: !selectedItems.contains(item),
                                       count: !selectedItems.contains(item)
                                           ? 0
                                           : selectedItems
                                               .firstWhere((element) =>
-                                                  element.itemName == item.itemName)
+                                                  element.itemName ==
+                                                  item.itemName)
                                               .quantity,
                                       label: item.itemName,
                                       onTap: () {
                                         bool existedItem = false;
                                         for (var element in selectedItems) {
-                                          if (element.itemName == item.itemName) {
+                                          if (element.itemName ==
+                                              item.itemName) {
                                             element.quantity++;
                                             existedItem = true;
                                           }
@@ -214,16 +234,16 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
 
                                         setState(() {});
                                       },
-                                     onSecondaryTap: () {
-                                        bool existedItem = false;
-                                        for (int i=0;i<selectedItems.length;i++) {
-                                         Item element= selectedItems[i];
-                                          if (element.itemName == item.itemName) {
-                                            element.quantity>1
-                                                ?element.quantity--
-                                            :
-                                            selectedItems.removeAt(i);
-                                            existedItem = true;
+                                      onSecondaryTap: () {
+                                        for (int i = 0;
+                                            i < selectedItems.length;
+                                            i++) {
+                                          Item element = selectedItems[i];
+                                          if (element.itemName ==
+                                              item.itemName) {
+                                            element.quantity > 1
+                                                ? element.quantity--
+                                                : selectedItems.removeAt(i);
                                           }
                                         }
 
@@ -255,12 +275,12 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                                   (item) => QuickItemTile(
                                     label: item.itemName,
                                     count: item.quantity,
-                                    onChange: (val){
-                                      item.quantity=val;
-                                      if(item.quantity<1){
+                                    onChange: (val) {
+                                      item.quantity = val;
+                                      if (item.quantity < 1) {
                                         selectedItems.remove(item);
                                       }
-                                        setState(() {});
+                                      setState(() {});
                                     },
                                   ),
                                 )
@@ -315,7 +335,7 @@ class LabelTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
               color: disable ? disableColor : activeColor,
-              borderRadius: BorderRadius.circular(disable?5:10)),
+              borderRadius: BorderRadius.circular(disable ? 5 : 10)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -342,6 +362,7 @@ class LabelTile extends StatelessWidget {
     );
   }
 }
+
 ///quick item list tile
 class QuickItemTile extends StatelessWidget {
   const QuickItemTile({
@@ -351,8 +372,8 @@ class QuickItemTile extends StatelessWidget {
     this.onTap,
     this.disable = true,
     this.disableColor = Colors.white,
-    this.activeColor = kMainActiveColor, required this.onChange,
-
+    this.activeColor = kMainActiveColor,
+    required this.onChange,
   });
   final String label;
   final num count;
@@ -399,18 +420,23 @@ class QuickItemTile extends StatelessWidget {
             const Expanded(child: SizedBox()),
 
             ///add and remove button
-            AddOrSubtract(value:count,onChange:onChange ,)
+            AddOrSubtract(
+              value: count,
+              onChange: onChange,
+            )
           ],
         ),
       ),
     );
   }
 }
+
 /// add and subtract button
 class AddOrSubtract extends StatelessWidget {
   const AddOrSubtract({
     super.key,
-     required this.value, required this.onChange,
+    required this.value,
+    required this.onChange,
   });
 
   final num value;
@@ -425,8 +451,8 @@ class AddOrSubtract extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-              onTap: (){
-                    onChange(value-1);
+              onTap: () {
+                onChange(value - 1);
               },
               child: const Icon(
                 CupertinoIcons.minus_rectangle_fill,
@@ -437,8 +463,8 @@ class AddOrSubtract extends StatelessWidget {
             width: 3,
           ),
           InkWell(
-              onTap: (){
-                onChange(value+1);
+              onTap: () {
+                onChange(value + 1);
               },
               child: const Icon(
                 CupertinoIcons.plus_rectangle_fill,

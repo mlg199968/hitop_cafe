@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -22,6 +24,7 @@ class ItemInfoPanel extends StatelessWidget {
     InfoPanelRow(title: "نام کالا", infoList: item.itemName),
     InfoPanelRow(title: "سرگروه", infoList: item.category),
     InfoPanelRow(title: "قیمت فروش", infoList: addSeparator(item.sale)),
+    InfoPanelRow(title: "مواد تشکیل دهنده", infoList: item.ingredients.map((e) => e.wareName).toString()),
     InfoPanelRow(title: "توضیحات", infoList: item.description),
     InfoPanelRow(
         title: "تاریخ ثبت", infoList: item.createDate.toPersianDateStr()),
@@ -91,6 +94,7 @@ class ItemInfoPanelDesktop extends StatelessWidget {
     InfoPanelRow(title: "نام کالا", infoList: item.itemName),
     InfoPanelRow(title: "سرگروه", infoList: item.category),
     InfoPanelRow(title: "قیمت فروش", infoList: addSeparator(item.sale)),
+    InfoPanelRow(title: "مواد تشکیل دهنده", infoList: item.ingredients.map((e) => e.wareName).toString()),
     InfoPanelRow(title: "توضیحات", infoList: item.description),
     InfoPanelRow(
         title: "تاریخ ثبت", infoList: item.createDate.toPersianDateStr()),
@@ -104,21 +108,32 @@ class ItemInfoPanelDesktop extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
-        width: 300,
+        width: 550,
+        height: 700,
         margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            color: Colors.white, borderRadius: BorderRadius.circular(20),
+          boxShadow: const [kShadow]
+        ),
         child: Column(
           children: [
             if(item.imagePath!=null)
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: item.imagePath==null?null:DecorationImage(image: FileImage(File(item.imagePath!)),fit:BoxFit.cover,onError:(e,trace){
-                    ErrorHandler.errorManger(context, e,route: trace.toString(),title: "ItemImage InfoPanelDesktop show error",);
-                  } ),
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: SizedBox(
+                  height: 200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image(
+                      image: FileImage(File(item.imagePath!)),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context,error,trace){
+                        ErrorHandler.errorManger(context, error,route: trace.toString(),title: "ItemInfoPanelDesktop widget image load error");
+                        return const EmptyHolder(text: "بارگزاری تصویر با مشکل مواجه شده است", icon: Icons.image_not_supported_outlined);
+                      },
+                    ),
+                  ),
                 ),
               ),
             const Gap(20),

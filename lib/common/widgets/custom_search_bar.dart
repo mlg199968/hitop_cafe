@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/constants/constants.dart';
 class CustomSearchBar extends StatelessWidget {
   const CustomSearchBar(
       {super.key,
@@ -9,7 +10,7 @@ class CustomSearchBar extends StatelessWidget {
       required this.selectedSort,
       required this.sortList,
       required this.onSort,
-        this.iconColor= Colors.white70,
+        this.iconColor= Colors.white,
       this.focusNode
 
       });
@@ -31,7 +32,7 @@ class CustomSearchBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropListModel(
-            icon: Icon(Icons.sort,size: 30,color:iconColor,),
+            icon: Icon(Icons.sort,size: 30,color:iconColor,shadows: const [kShadow],),
               listItem: sortList,
               selectedValue: selectedSort,
               onChanged: (val) {

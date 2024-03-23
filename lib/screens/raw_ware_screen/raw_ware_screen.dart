@@ -233,7 +233,7 @@ class _ListPartState extends State<ListPart> {
                                   height: 50,
                                   color: selectedItems.contains(index)
                                       ? Theme.of(context).primaryColorLight
-                                      : Theme.of(context).primaryColor,
+                                      : ware.isLess?Colors.redAccent:Theme.of(context).primaryColor,
                                   surfaceColor: selectedWare==widget.wareList[index]?kMainColor:null,
                                   leadingIcon: CupertinoIcons.cube_box_fill,
                                   subTitle: ware.category,
@@ -280,7 +280,6 @@ class _ListPartState extends State<ListPart> {
                                       onNo: () {
                                         Navigator.pop(context);
                                       }));
-                                  ;
                                 },
                                 icon: const Icon(
                                   Icons.delete_forever,

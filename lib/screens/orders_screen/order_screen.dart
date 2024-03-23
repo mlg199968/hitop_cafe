@@ -22,10 +22,10 @@ class OrderScreen extends StatefulWidget {
   static const String id = "/order-screen";
   const OrderScreen({super.key});
   @override
-  State<OrderScreen> createState() => _CustomerListScreenState();
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
-class _CustomerListScreenState extends State<OrderScreen> {
+class _OrderScreenState extends State<OrderScreen> {
 
   FocusNode focusNode = FocusNode();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

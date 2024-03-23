@@ -7,7 +7,6 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
-import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
 class WareSuggestionTextField extends StatelessWidget {

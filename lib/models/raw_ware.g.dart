@@ -29,7 +29,8 @@ class RawWareAdapter extends TypeAdapter<RawWare> {
       ..wareId = fields[9] as String
       ..isChecked = fields[10] as bool
       ..imagePath = fields[11] as String?
-      ..color = fields[12] as String?;
+      ..color = fields[12] as String?
+      ..warningQuantity = fields[13] as double?;
   }
 
   @override
@@ -63,7 +64,7 @@ class RawWareAdapter extends TypeAdapter<RawWare> {
       ..writeByte(12)
       ..write(obj.color)
       ..writeByte(13)
-      ..write(obj.sum);
+      ..write(obj.warningQuantity);
   }
 
   @override

@@ -10,8 +10,6 @@ import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/server_models/device.dart';
-import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
@@ -21,7 +19,6 @@ import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
-import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 
 class SideBarPanel extends StatelessWidget {

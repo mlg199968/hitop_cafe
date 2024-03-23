@@ -54,7 +54,7 @@ class UserTile extends StatelessWidget {
                     width: 70,
                     decoration: BoxDecoration(
                         color: kMainColor,
-                        borderRadius: BorderRadius.horizontal(right:Radius.circular(radius),left:Radius.circular(5) ),
+                        borderRadius: BorderRadius.horizontal(right:Radius.circular(radius),left:const Radius.circular(5) ),
                         image: userDetail.image == null
                             ? null
                             : DecorationImage(
@@ -110,7 +110,7 @@ class UserTile extends StatelessWidget {
                   if (userProvider.activeUser?.userId ==
                       userDetail.userId)
                   Container(
-                    margin: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
                     width: 10,
                     height: 40,
                     decoration: BoxDecoration(
@@ -128,42 +128,30 @@ class UserTile extends StatelessWidget {
   }
 }
 
-// _CardListTile(
-// enable: true,
-// title:userDetail.name,
-// leadingIcon: FontAwesomeIcons.user,
-// type: userDetail.score.toString().toPersianDigit(),
-// subTitle: TimeTools.showHour(userDetail.createDate),
-// topTrailingLabel: "تاریخ ایجاد: ",
-// topTrailing: userDetail.modifiedDate.toPersianDateStr(),
-// trailing: "",
-// onTap: (){
-// Navigator.pushNamed(context, AddUserScreen.id,arguments:userDetail );
-// },
-// ),
 
-class _CardListTile extends StatelessWidget {
-  _CardListTile({
+
+class CardListTile extends StatelessWidget {
+  CardListTile({super.key,
     required this.enable,
     required this.title,
     required this.topTrailing,
     required this.trailing,
     required this.onTap,
     required this.selected,
-    this.leadingIcon,
-    this.type,
-    this.subTitle,
-    this.topTrailingLabel,
+    // this.leadingIcon,
+    // this.type,
+    // this.subTitle,
+    // this.topTrailingLabel,
     required this.bottomLeading,
   });
 
   final bool enable;
   final bool selected;
   final String title;
-  final IconData? leadingIcon;
-  final String? type;
-  final String? subTitle;
-  final String? topTrailingLabel;
+  // final IconData? leadingIcon;
+  // final String? type;
+  // final String? subTitle;
+  // final String? topTrailingLabel;
   final String topTrailing;
   final String trailing;
   final String bottomLeading;
@@ -184,10 +172,10 @@ class _CardListTile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(type ?? ""),
+                // Text(type ?? ""),
                 RichText(
                   text: TextSpan(
-                    text: topTrailingLabel ?? "",
+                    // text: topTrailingLabel ?? "",
                     style: TextStyle(
                         color: selected ? Colors.blue : Colors.black54,
                         fontSize: 11),

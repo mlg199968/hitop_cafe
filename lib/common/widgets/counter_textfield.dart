@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:persian_number_utility/persian_number_utility.dart';
 
 import '../../constants/constants.dart';
 class CounterTextfield extends StatelessWidget {
@@ -14,7 +13,7 @@ class CounterTextfield extends StatelessWidget {
     this.borderRadius = 20,
     this.step = 1,
     this.minNum = 0,
-    this.maxNum = 1000,
+    this.maxNum = 1000000,
   });
 
   final TextEditingController controller;
@@ -37,11 +36,11 @@ class CounterTextfield extends StatelessWidget {
         children: [
           Flexible(
             child: TextFormField(
+
               controller: controller,
               keyboardType: TextInputType.numberWithOptions(decimal: decimal),
               onTapOutside: (val){
                 num valNum=double.tryParse(controller.text )?? minNum;
-
                 controller.text = decimal?valNum.toDouble().toString():valNum.toInt().toString();
                 if (valNum < minNum) {
                   controller.text = minNum.toString();
@@ -162,11 +161,13 @@ class MiniButton extends StatelessWidget {
       width: 40,
       child: IconButton(
         onPressed: onPress,
+        isSelected: false,
         color: kMainColor,
         style: ButtonStyle(
           padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
         ),
-        icon: Icon(icon),
+        icon: Icon(icon,size: 18,),
+        enableFeedback: false,
       ),
     );
   }
