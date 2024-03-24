@@ -391,7 +391,7 @@ class QuickItemTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
             color: disable ? disableColor : activeColor,
-            borderRadius: BorderRadius.circular(30)),
+            borderRadius: BorderRadius.circular(5)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

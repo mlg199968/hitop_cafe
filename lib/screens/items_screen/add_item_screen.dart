@@ -120,10 +120,11 @@ class _AddWareScreenState extends State<AddItemScreen> {
 ///************************************ widget tree ***************************************
   @override
   Widget build(BuildContext context) {
+    final isMobile=screenType(context)==ScreenType.mobile;
     // To hide the keyboard
     return HideKeyboard(
       child: Scaffold(
-        floatingActionButtonLocation: screenType(context)==ScreenType.mobile?null:FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: isMobile?null:FloatingActionButtonLocation.centerFloat,
         floatingActionButton: CustomFloatActionButton(
           label: widget.oldItem == null
               ? "افزودن به لیست"
@@ -157,10 +158,9 @@ class _AddWareScreenState extends State<AddItemScreen> {
 
               setState(() {});
             }),
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(gradient: kMainGradiant),
-          ),
+          backgroundColor: Colors.transparent,
           title: Text(widget.oldItem == null ? "افزودن آیتم" : "اصلاح آیتم"),
         ),
         body: Container(
@@ -183,7 +183,7 @@ class _AddWareScreenState extends State<AddItemScreen> {
                     ),
                     width: 550,
                     padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.all(20),
+                    margin:isMobile?const EdgeInsets.all(5).copyWith(top: 80) : const EdgeInsets.all(20),
                     child: Form(
                       key: _formKey,
                       child: Column(

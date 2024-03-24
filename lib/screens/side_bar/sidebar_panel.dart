@@ -46,10 +46,8 @@ class SideBarPanel extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                  Expanded(
+                    child: ListView(
                       children: <Widget>[
                         ///top info part
                         Stack(children: [
@@ -124,19 +122,78 @@ class SideBarPanel extends StatelessWidget {
                                   Navigator.pushNamed(context, SettingScreen.id);}
                               },
                             ),
-                            BarButton(
-                              text: "ارتباط با ما",
-                              icon: Icons.support_agent_outlined,
-                              onPress: () {
-                                urlLauncher(
-                                    context: context, urlTarget: "http://mlggrand.ir");
-                              },
-
+                            /// contact us
+                            Container(
+                              margin: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10)
+                              ),
+                              child: Column(children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      CText(
+                                        "ارتباط با ما",
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
+                                      Icon(Icons.support_agent_outlined,color: Colors.white,)
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ///web site icon button
+                                      ActionButton(
+                                        onPress: () {
+                                          urlLauncher(
+                                              context: context,
+                                              urlTarget:
+                                              "http://mlggrand.ir");
+                                        },
+                                        icon:
+                                        Icons.web,
+                                        bgColor: Colors.teal,
+                                        borderRadius: 5,
+                                      ),
+                                      ///instagram icon button
+                                      ActionButton(
+                                        onPress: () {
+                                          urlLauncher(
+                                              context: context,
+                                              urlTarget:
+                                              'https://instagram.com/mlg_grand?igshid=YmMyMTA2M2Y=');
+                                        },
+                                        icon:
+                                        FontAwesomeIcons.instagram,
+                                        bgColor: Colors.pinkAccent,
+                                        borderRadius: 5,
+                                      ),
+                                      ///telegram
+                                      ActionButton(
+                                        onPress: () {
+                                          urlLauncher(
+                                              context: context,
+                                              urlTarget: "http://t.me/mlg_grand");
+                                        },
+                                        icon:
+                                        FontAwesomeIcons.telegram,
+                                        bgColor: Colors.lightBlueAccent,
+                                        borderRadius: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],),
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
 
+                            const Gap(20),
+                            ///Purchase Button when app is level=0
                             if(userProvider.userLevel == 0)
                                const PurchaseButton(),
 
@@ -161,40 +218,15 @@ class SideBarPanel extends StatelessWidget {
                       ],
                     ),
                   ),
-                  ///links
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Image.asset(
-                          'assets/images/mlggrand.png',
-                          width: 110,
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              urlLauncher(
-                                  context: context,
-                                  urlTarget:
-                                  'https://instagram.com/mlg_grand?igshid=YmMyMTA2M2Y=');
-                            },
-                            icon: const Icon(
-                              FontAwesomeIcons.instagram,
-                              color: Colors.white,
-                              size: 25,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              urlLauncher(
-                                  context: context,
-                                  urlTarget: "http://t.me/mlg_grand");
-                            },
-                            icon: const Icon(
-                              FontAwesomeIcons.telegram,
-                              color: Colors.white,
-                              size: 25,
-                            )),
-                      ],
+                  ///mlg grand logo
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0,bottom: 5),
+                      child: Image.asset(
+                        'assets/icons/mlggrand.png',
+                        width: 90,
+                      ),
                     ),
                   ),
                 ],
@@ -250,7 +282,7 @@ class PurchaseButton extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.pushNamed(context, AuthorityScreen.id);
       },
@@ -298,44 +330,56 @@ class BarButton extends StatelessWidget {
     Color textColor = Colors.black.withOpacity(.7);
     Color borderColor = kMainColor;
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(.7),
-          border: Border(
-            bottom: BorderSide(
-              width: 2,
-              color: borderColor,
+      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 1),
+      decoration: BoxDecoration(
+        borderRadius:BorderRadius.circular(10),
+        boxShadow: const [BoxShadow(color: Colors.black45,blurRadius: 3,offset: Offset(2, 3))]
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          // margin: EdgeInsets.symmetric(horizontal: 8,vertical: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              gradient: kBlackWhiteGradiant,
+              border: Border(
+                bottom: BorderSide(
+                  width: 2,
+                  color: borderColor,
+                ),
+                left: BorderSide(
+                  width: 10,
+                  color: textColor,
+                ),
+              ),
             ),
-            left: BorderSide(
-              width: 10,
-              color: textColor,
-            ),
-          ),
-        ),
-        child: TextButtonTheme(
-          data: const TextButtonThemeData(
-            style: ButtonStyle(
-              alignment: Alignment.centerRight,
-              padding: MaterialStatePropertyAll(EdgeInsets.all(5)),
-            ),
-          ),
-          child: TextButton(
-              onPressed:enable? onPress : (){},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CText(
-                    text,
-                    fontSize: 15, color: textColor,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  SizedBox(
-                      child:
-                      icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
-                ],
-              )),
-        ));
+            child: TextButtonTheme(
+              data: const TextButtonThemeData(
+                style: ButtonStyle(
+                  alignment: Alignment.centerRight,
+                  padding: MaterialStatePropertyAll(EdgeInsets.all(5)),
+                ),
+              ),
+              child: TextButton(
+                  onPressed:enable? onPress : (){},
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CText(
+                        text,
+                        fontSize: 15, color: textColor,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                          child:
+                          icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
+                    ],
+                  )),
+            )),
+      ),
+    );
   }
 }

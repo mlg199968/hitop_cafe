@@ -79,7 +79,6 @@ class _NoteListScreenState extends State<NoteListScreen> {
                   valueListenable: HiveBoxes.getNotes().listenable(),
                   builder: (context,valNote,child) {
                     List<Note> notes=valNote.values.toList();
-                    List all=[...notes,...wares];
                     return Column(
                       children: <Widget>[
                         ///Top part for backward or forward the date

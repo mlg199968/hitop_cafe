@@ -96,7 +96,7 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
             ),
             Expanded(
               flex: 1,
-              child: Image.asset('assets/images/mlggrand.png',width: 100,),
+              child: Image.asset('assets/icons/mlggrand.png',width: 100,),
             ),
             FutureBuilder(
                 future:PackageInfo.fromPlatform() ,

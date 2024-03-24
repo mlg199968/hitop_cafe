@@ -32,7 +32,6 @@ class NoteCarouselSlider extends StatelessWidget {
                     builder: (context, valNote, child) {
                       List<Note> notes = valNote.values.toList();
                       List<RawWare> wares = valWare.values.toList();
-                      List all = [...notes, ...wares];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

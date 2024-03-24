@@ -15,7 +15,7 @@ class CustomIconButton extends StatelessWidget {
       this.iconColor,
       this.margin,
       this.padding,
-      this.borderRadius = 20, this.iconSize});
+      this.borderRadius = 20, this.iconSize, this.showShadow=false});
 
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
@@ -30,6 +30,7 @@ class CustomIconButton extends StatelessWidget {
   final TextDirection direction;
   final EdgeInsets? margin;
   final EdgeInsets? padding;
+  final bool showShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +55,9 @@ class CustomIconButton extends StatelessWidget {
                 semanticLabel: label,
                 color: iconColor ?? kSecondaryColor,
                 size: iconSize,
+                shadows:showShadow?
+                    [const BoxShadow(color: Colors.black,blurRadius: 2,offset: Offset(.2, .5))]
+                    : null,
               ),
             ),
           ),

@@ -28,6 +28,7 @@ class ImagePickerHolder extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: Colors.white54,
+                borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.black26)),
             width: width,
             height: height,

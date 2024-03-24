@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "ir.mlggrand" "\0"
-            VALUE "FileDescription", "hitop_cafe" "\0"
+            VALUE "FileDescription", "Hitop Cafe" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "hitop_cafe" "\0"
+            VALUE "InternalName", "Hitop Cafe" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 ir.mlggrand. All rights reserved." "\0"
-            VALUE "OriginalFilename", "hitop_cafe.exe" "\0"
-            VALUE "ProductName", "hitop_cafe" "\0"
+            VALUE "OriginalFilename", "hitop cafe.exe" "\0"
+            VALUE "ProductName", "Hitop Cafe" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
