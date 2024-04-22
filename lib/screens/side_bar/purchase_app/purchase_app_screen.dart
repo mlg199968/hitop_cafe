@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -48,26 +48,25 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
     setState(() {});
     try {
       Device? device = await getDeviceInfo();
-        Subscription subs = Subscription()
-          ..phone = widget.phone
-          ..name = userFullNameController.text
-          ..level = 0
-          ..amount = price
-          ..device = device
-          ..fetchDate = DateTime.now()
-          ..platform = device.platform
-          ..email = emailController.text
-          ..id = widget.subsId;
+      Subscription subs = Subscription()
+        ..phone = widget.phone
+        ..name = userFullNameController.text
+        ..level = 0
+        ..amount = price
+        ..device = device
+        ..appName=kAppName
+        ..fetchDate = DateTime.now()
+        ..platform = device.platform
+        ..email = emailController.text
+        ..id = widget.subsId;
 
-        bool created = await BackendServices.createSubs(context, subs: subs);
-        if (created) {
-          Provider.of<UserProvider>(context, listen: false)
-              .setSubscription(subs);
-          await ZarinpalApi.payment(context,
-              amount: subs.amount!, phone: subs.phone);
-          Navigator.pushReplacementNamed(context, HomeScreen.id);
-        }
-
+      bool created = await BackendServices.createSubs(context, subs: subs);
+      if (created) {
+        Provider.of<UserProvider>(context, listen: false).setSubscription(subs);
+        await ZarinpalApi.payment(context,
+            amount: subs.amount!, phone: subs.phone);
+        Navigator.pushReplacementNamed(context, HomeScreen.id);
+      }
     } catch (error) {
       ErrorHandler.errorManger(context, error,
           title: "خطا در ایجاد و ورود به فرایند خرید",
@@ -163,35 +162,39 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const SizedBox(height: 50),
+                                const Gap(50),
+
+                                /// app price
                                 PriceHolder(price: price),
-                                const SizedBox(height: 20),
+                                const Gap(20),
                                 const Center(
                                     child: Text(
-                                  "ویژگی های نسخه کامل برنامه :",
+                                  "نکات مهم قبل و بعد از خرید:",
                                   style: TextStyle(
-                                      color: Colors.amber, fontSize: 17),
+                                      color: Colors.red, fontSize: 17),
                                 )),
-                                const SizedBox(height: 20),
+                                const Gap(20),
                                 const TextWithIcon(
-                                    text: " افزودن نامحدود سفارش "),
+                                    text:
+                                        "اگر شرایط پرداخت آنلاین را ندارید با پشتیبانی تماس بگیرید"),
                                 const TextWithIcon(
-                                    text: "افزودن نامحدود کالا به لیست"),
+                                    text:
+                                        " در فرایند خرید حتما از اینترنت پایدار استفاده کنید تا مشکلی رخ ندهد"),
                                 const TextWithIcon(
-                                    text: "امکان گرفتن فایل پشتیبان"),
+                                    text:
+                                        "بعد از خرید موفق و دیدن صفحه پرداخت موفق جهت فعال سازی از برنامه خارج شده و در حینی که به اینترنت متصل هستید وارد برنامه شوید تا برنامه فعال شود"),
                                 const TextWithIcon(
-                                    text: "دسترسی به بخش تنظیمات"),
-                                const TextWithIcon(text: "صدور نامحدود فاکتور"),
-                                const SizedBox(
-                                  height: 25,
-                                ),
+                                    text:
+                                        "برنامه روی شماره تلفن و دستگاه شما فعال می شود و فقط در این دستگاه و شماره تلفن قابل اجرا هست و اگر قصد تغییر دستگاه را دارید با پشتیبانی هماهنگ کنید"),
+                                const TextWithIcon(
+                                    text:
+                                        "اگر در حین مراحل خرید و فعال سازی مشکلی رخ داد بلافاصله به پشتیبانی اطلاع دهید"),
+                                const Gap(25),
                               ],
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          const Gap(20),
                           Form(
                             key: _formKey,
                             child: Column(
@@ -210,9 +213,7 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                                     label: "ایمیل",
                                     controller: emailController),
 
-                                const SizedBox(
-                                  height: 20,
-                                ),
+                                const Gap(20),
 
                                 CustomButton(
                                     loading: loading,
@@ -257,7 +258,7 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
     );
   }
 }
-
+///
 class PriceHolder extends StatelessWidget {
   const PriceHolder({
     super.key,
@@ -317,7 +318,7 @@ class PriceHolder extends StatelessWidget {
     );
   }
 }
-
+///
 class TextWithIcon extends StatelessWidget {
   const TextWithIcon({
     super.key,
@@ -336,8 +337,8 @@ class TextWithIcon extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           const Icon(
-            FontAwesomeIcons.circleCheck,
-            color: Colors.amberAccent,
+            Icons.info,
+            color: Colors.redAccent,
             size: 17,
           ),
           const SizedBox(
@@ -346,8 +347,8 @@ class TextWithIcon extends StatelessWidget {
           Flexible(
             child: Text(
               text,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-              maxLines: 3,
+              style: const TextStyle(fontSize: 12, color: Colors.black87),
+              maxLines: 4,
             ),
           ),
         ],

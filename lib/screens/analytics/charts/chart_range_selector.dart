@@ -44,7 +44,7 @@ class RangeSelectorLabelCustomization extends StatefulWidget {
   State<RangeSelectorLabelCustomization> createState() =>
       _RangeSelectorLabelCustomizationState();
 }
-
+///****
 class _RangeSelectorLabelCustomizationState
     extends State<RangeSelectorLabelCustomization>
     with SingleTickerProviderStateMixin {
@@ -357,7 +357,7 @@ legend: const Legend(
     );
   }
 }
-
+///
 class ChartData {
   final num value;
   final DateTime date;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -32,7 +33,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   List<ChartData> paysData = [];
   List<ChartData> atmData = [];
   List<ChartData> cashData = [];
-  DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime startDate = DateTime.now().subtract(const Duration(days: 5000));
   DateTime endDate = DateTime.now();
   num saleSum = 0;
   num costSum = 0;
@@ -44,6 +45,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   bool dateCondition(date) {
     return date.isAfter(startDate.subtract(const Duration(hours: 1))) &&
         date.isBefore(endDate.add(const Duration(hours: 1)));}
+  ///
   void getData(List<Bill> billList, List<Order> orderList) {
     saleData = [];
     costData = [];
@@ -177,23 +179,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             const SizedBox(height: 60,),
                             ///show when we have more than 2 data
                             if (chartCondition)
-                              const SizedBox(
+                              const EmptyHolder(
                                 height: 400,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      Icon(Icons.analytics_outlined),
-                                      Gap(5),
-                                      Text(
-                                        "برای نمایش نمودار نیاز به داده بیشتری است ! ",
-                                        style: TextStyle(color: Colors.white),
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                icon:Icons.analytics_outlined,
+                                text: "برای نمایش نمودار نیاز به داده بیشتری است ! ",
+                                color: Colors.white60,
                               )
                               ///line chart
                             else

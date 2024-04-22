@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -24,7 +24,7 @@ class WaiterOrderInfoPanel extends StatelessWidget {
     InfoPanelRow(title: "میز", infoList: order.tableNumber.toString().toPersianDigit()),
     InfoPanelRow(title: "نام کاربر", infoList: order.user!=null?order.user!.name:"نامشخص"),
 
-    InfoPanelRow(title: "توضیحات", infoList: order.description),
+    InfoPanelRow(title: "توضیحات", infoList: order.description ?? ""),
     InfoPanelRow(
         title: "تاریخ ثبت", infoList: order.orderDate.toPersianDateStr()),
     InfoPanelRow(
@@ -44,10 +44,7 @@ class WaiterOrderInfoPanel extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return CustomDialog(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * .5,
+      height: 500,
       title: "مشخصات سفارش",
       child: Column(
         children: [
@@ -60,7 +57,7 @@ class WaiterOrderInfoPanel extends StatelessWidget {
             height: 20,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
 
               ///delete button

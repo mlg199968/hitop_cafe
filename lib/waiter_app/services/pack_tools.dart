@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
@@ -11,9 +12,16 @@ class PackTools{
 
   ///get order Number
   static int getOrderNumber() {
-    List<Order> orders=HiveBoxes.getOrders().values.toList();
-    if(orders.isNotEmpty){
-      int maxNum=orders.map((e) => e.billNumber ?? 0).cast<int>().reduce(max);
+    List<Pack> packs=HiveBoxes.getPack().values.toList();
+    if(packs.isNotEmpty){
+      int maxNum=packs.map((e) {
+          if(e.type==PackType.order.value && e.object!=null) {
+            return Order().fromJson(e.object!.single).billNumber ?? 0;
+          }
+        else{
+          return 0;
+          }
+      }).cast<int>().reduce(max);
       return maxNum+1;
     }else{
       return 1;

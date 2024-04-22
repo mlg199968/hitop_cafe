@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';

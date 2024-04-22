@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hitop_cafe/common/widgets/card_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/small_card_button.dart';
@@ -63,9 +64,7 @@ bool showAlertNotice=true;
   @override
   void initState() {
     super.initState();
-
-    ///get start up data
-    // GlobalTask.getInitData(context);
+   Provider.of<UserProvider>(context, listen: false).deviceAuthority;
   }
 
   @override
@@ -97,18 +96,8 @@ bool showAlertNotice=true;
                     color: Colors.orangeAccent,
                   )
                 : const SizedBox(),
-            const SizedBox(
-              width: 5,
-            ),
-            const Flexible(
-              child: Text(
-                "HITOP Cafe ",
-                style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
+            const Gap(5),
+            Flexible(child: Text("HITOP CAFE ",style: GoogleFonts.aBeeZee(fontSize: 23,color: Colors.black),)),
           ],
         ),
         actions: [

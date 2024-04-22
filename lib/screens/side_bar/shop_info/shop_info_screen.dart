@@ -42,7 +42,7 @@ void storeInfoShop(){
       ..phoneNumber=phoneNumberController.text
       ..phoneNumber2=phoneNumberController2.text
       ..description=descriptionController.text
-      ..logoImage=logoImage==null?null:logoImage!.path;
+      ..logoImage=logoImage?.path;
   }else {
     shop=Shop()
       ..shopName=shopNameController.text
@@ -51,9 +51,9 @@ void storeInfoShop(){
       ..phoneNumber=phoneNumberController.text
       ..phoneNumber2=phoneNumberController2.text
       ..description=descriptionController.text
-      ..signatureImage=signatureImage==null?null:signatureImage!.path
-      ..stampImage=stampImage==null?null:stampImage!.path
-      ..logoImage=logoImage==null?null:logoImage!.path;
+      ..signatureImage=signatureImage?.path
+      ..stampImage=stampImage?.path
+      ..logoImage=logoImage?.path;
   }
   Provider.of<UserProvider>(context,listen: false).getData(shop);
        HiveBoxes.getShopInfo().put(0,shop);
@@ -63,7 +63,7 @@ void getData(){
   Shop? shopInfo=HiveBoxes.getShopInfo().get(0);
   if(shopInfo!=null){
    shopNameController.text= shopInfo.shopName;
-   shopNameController.text= shopInfo.shopCode;
+   shopCodeController.text= shopInfo.shopCode;
     addressController.text=shopInfo.address;
     phoneNumberController.text=shopInfo.phoneNumber;
     phoneNumberController2.text=shopInfo.phoneNumber2;

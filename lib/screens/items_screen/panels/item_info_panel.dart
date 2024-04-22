@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';

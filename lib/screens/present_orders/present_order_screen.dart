@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
@@ -83,12 +84,11 @@ class _PresentOrderScreenState extends State<PresentOrderScreen> {
               ),
               title: Container(
                 padding: const EdgeInsets.only(right: 5),
-                child: const Flexible(
-                    child: CText(
-                      "سفارشات حاضر",
-                      fontSize: 18,
-                      color: Colors.black87,
-                    )),
+                child: const CText(
+                  "سفارشات حاضر",
+                  fontSize: 18,
+                  color: Colors.black87,
+                ),
               ),
               elevation: 0,
               automaticallyImplyLeading: true,
@@ -193,11 +193,12 @@ class _CreditListPartState extends State<CreditListPart> {
               child: CardTile(
                 color: order.isChecked ? Colors.teal : kMainColor,
                 orderDetail: order,
-                button: ActionButton(
-                  label: "تسویه",
-                  icon: Icons.credit_score,
-                  bgColor: Colors.deepOrangeAccent,
-                  onPress: () {
+                button: CustomButton(
+                  width: 90,
+                  text: "تسویه",
+                  icon: const Icon(Icons.credit_score),
+                  color: Colors.deepOrangeAccent,
+                  onPressed: () {
                     Navigator.of(context)
                         .pushNamed(AddOrderScreen.id, arguments: order);
                   },

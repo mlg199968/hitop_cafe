@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/models/user.dart';
@@ -14,11 +16,23 @@ class UserProvider extends ChangeNotifier {
   int get userLevel =>_subscription!=null?_subscription!.level: _userLevel;
   Subscription? _subscription;
   Subscription? get subscription=>_subscription;
+  ///
+  Future<bool> get deviceAuthority async{
+    Device currentDevice=await getDeviceInfo();
+    if(_subscription != null && _subscription!.device?.id==currentDevice.id){
+      return true;
+    }else{
 
+      _subscription?.level=0;
+      _userLevel=0;
+      return false;
+    }
+
+  }
   //ceil count is for how many item you can add to list
-  int get ceilCount => _userLevel == 0 ? 10 : 1000;
+  int get ceilCount => _userLevel == 0 ? 20 : 99999999;
   String ceilCountMessage =
-      "این نسخه از برنامه دارای محدودیت حداکثر ده آیتم است ";
+      "این نسخه از برنامه دارای محدودیت حداکثر 20 آیتم است ";
   User? _user;
   User? get activeUser => _user;
   String? _appType;

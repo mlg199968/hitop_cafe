@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/shop.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
@@ -11,6 +13,7 @@ import 'package:hitop_cafe/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class GlobalTask {
+  static final GlobalKey<NavigatorState> navigatorState = GlobalKey<NavigatorState>();
   static late StorageService storageService;
   static Future init() async {
     storageService = await StorageService().init();
@@ -34,9 +37,11 @@ class GlobalTask {
         connectivityResult == ConnectivityResult.vpn) {
 
       /// fetch subscription data
-      BackendServices().fetchSubscription(context);
+      if(Provider.of<UserProvider>(context, listen: false).appType!=AppType.waiter.value) {
+        BackendServices().fetchSubscription(navigatorState.currentContext);
+      }
       ///get notifications
-      runZonedGuarded(() => NoticeTools.readNotifications(context,timeout: 5),(e,trace){});
+      runZonedGuarded(() => NoticeTools.readNotifications(navigatorState.currentContext,timeout: 5),(e,trace){});
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
@@ -21,7 +21,7 @@ class OrderInfoPanel extends StatelessWidget {
         InfoPanelRow(
             title: "نام کاربر",
             infoList: infoData.user != null ? infoData.user!.name : "نامشخص"),
-        InfoPanelRow(title: "توضیحات:", infoList: infoData.description),
+        InfoPanelRow(title: "توضیحات:", infoList: infoData.description ?? ""),
         InfoPanelRow(
             title: "تاریخ تغییر:",
             infoList: infoData.orderDate.toPersianDateStr()),
@@ -95,7 +95,7 @@ class OrderInfoPanelDesktop extends StatelessWidget {
     InfoPanelRow(
         title: "نام کاربر",
         infoList: infoData.user != null ? infoData.user!.name : "نامشخص"),
-    InfoPanelRow(title: "توضیحات:", infoList: infoData.description),
+    InfoPanelRow(title: "توضیحات:", infoList: infoData.description ?? ""),
     InfoPanelRow(
         title: "تاریخ تغییر:",
         infoList: infoData.orderDate.toPersianDateStr()),

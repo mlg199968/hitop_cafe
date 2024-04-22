@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/ware_suggestion_textfield.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -109,9 +109,7 @@ class _AddIngredientPanelState extends State<AddIngredientPanel> {
 
                             setState(() {});
                           },
-                          symbol: selectedRawWare != null
-                              ? selectedRawWare!.unit
-                              : null,
+                          symbol: selectedRawWare?.unit,
                         ),
                       ]),
                 ),

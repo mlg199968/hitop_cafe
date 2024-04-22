@@ -20,29 +20,36 @@ final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-        ClipPath(
-          clipper: Shape1(),
-          child: Container(
-            color: color.withOpacity(.5),
-            width:MediaQuery.of(context).size.width,
-            height: height,
-          ),
-        ),
-        ClipPath(
-          clipper: Shape1(),
-          child: Container(
-            color: color.withOpacity(.7),
-            width: MediaQuery.of(context).size.width*.3,
-            height: height*.35,
-          ),
-        ),
-        child
-      ],),
+    return LayoutBuilder(
+      builder: (context,constraint) {
+        double maxWidth=constraint.maxWidth;
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+            ClipPath(
+              clipper: Shape1(),
+              child: Container(
+                decoration:  BoxDecoration(gradient: LinearGradient(colors: [color.withOpacity(.1),color.withOpacity(.5)])),
+                // color: color.withOpacity(.5),
+                width:maxWidth*.8,
+                height: height,
+              ),
+            ),
+            ClipPath(
+              clipper: Shape1(),
+              child: Container(
+                decoration:  BoxDecoration(gradient: LinearGradient(colors: [color.withOpacity(.8),color.withBlue(150).withOpacity(.3)])),
+                // color: color.withOpacity(.7),
+                width: maxWidth*.6,
+                height: height*.35,
+              ),
+            ),
+            child
+          ],),
+        );
+      }
     );
   }
 

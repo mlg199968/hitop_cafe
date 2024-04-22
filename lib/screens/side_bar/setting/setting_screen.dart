@@ -5,6 +5,7 @@ import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/dynamic_button.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -41,7 +42,6 @@ class _SettingScreenState extends State<SettingScreen> {
   String selectedFont = kFonts[0];
   late UserProvider provider;
   String? backupDirectory;
-  bool isBackupLoading = false;
 
   ///printer
   Printer? selectedPrinter;
@@ -57,8 +57,8 @@ class _SettingScreenState extends State<SettingScreen> {
       ..fontFamily = selectedFont
       ..preTax = stringToDouble(taxController.text)
       ..preBillNumber = stringToDouble(billNumberController.text).toInt()
-      ..printer = selectedPrinter == null ? null : selectedPrinter!.toMap()
-      ..printer2 = selectedPrinter2 == null ? null : selectedPrinter2!.toMap()
+      ..printer = selectedPrinter?.toMap()
+      ..printer2 = selectedPrinter2?.toMap()
       ..printerIp =
           printerIpController.text == "" ? null : printerIpController.text
       ..printerIp2 =
@@ -136,7 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Flexible(
-                                  child: ActionButton(
+                                  child: DynamicButton(
                                     label: "پشتیبان گیری",
                                     icon: Icons.backup,
                                     bgColor: Colors.red.withRed(250),
@@ -154,8 +154,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   ),
                                 ),
                                 Flexible(
-                                  child: ActionButton(
-                                    loading: isBackupLoading,
+                                  child: DynamicButton(
                                     label: "بارگیری فایل پشتیبان",
                                     icon: Icons.settings_backup_restore,
                                     bgColor: Colors.teal,
@@ -166,13 +165,9 @@ class _SettingScreenState extends State<SettingScreen> {
                                         await storagePermission(
                                             context, Allow.externalStorage);
                                       }
-                                      isBackupLoading = true;
-                                      setState(() {});
                                       if (context.mounted) {
                                         await BackupTools.readZipFile(context);
                                       }
-                                      isBackupLoading = false;
-                                      setState(() {});
                                     },
                                   ),
                                 ),
@@ -583,7 +578,7 @@ class ButtonTile extends StatelessWidget {
             SizedBox(
               child: extra,
             ),
-            ElevatedButton(
+            OutlinedButton(
               onPressed: onPress,
               child: Text(buttonLabel),
             ),

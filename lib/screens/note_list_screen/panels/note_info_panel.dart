@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/models/note.dart';
 import 'package:hitop_cafe/screens/raw_ware_screen/widgets/info_panel_row.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';

@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/time/time.dart';
+import 'package:hitop_cafe/common/widgets/check_button.dart';
 import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
-import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
@@ -16,7 +16,6 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/user.dart';
-import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/payment_to_bill.dart';
@@ -27,7 +26,7 @@ import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
-import 'package:hitop_cafe/screens/orders_screen/widgets/description_bar.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/description_textfield.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
@@ -52,7 +51,6 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen>
     with SingleTickerProviderStateMixin {
   late UserProvider userProvider;
-  late PrinterProvider printerProvider;
   final tableNumberController = TextEditingController();
   Function eq = const ListEquality().equals;
   TextEditingController descriptionController = TextEditingController();
@@ -66,6 +64,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   DateTime modifiedDate = DateTime.now();
   User? user;
   bool showDescription = false;
+  bool takeaway = false;
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
   ///logic for add selected items to the list
@@ -85,20 +84,16 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 
   ///calculate payable amount
-  num get payable {
-    num payable = 0;
-    payable +=
-        items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
-    payable -= payments.isEmpty
-        ? 0
-        : payments.map((e) => e.amount).reduce((a, b) => a + b);
-    payable -= discount;
-    return payable;
-  }
+  num get payable => itemsSum - paymentSum - itemsDiscount;
 
   ///calculate items amount
   num get itemsSum =>
       items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
+
+  ///calculate all payment amount
+  num get paymentSum => payments.isEmpty
+      ? 0
+      : payments.map((e) => e.amount).reduce((a, b) => a + b);
 
   ///calculate atm amount
   num get atmSum => payments.isEmpty
@@ -114,8 +109,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
           .map((e) => e.method == PayMethod.cash ? e.amount : 0)
           .reduce((a, b) => a + b);
 
-  ///calculate discount amount
-  num get discount => items.isEmpty
+  ///calculate items discount amount
+  num get itemsDiscount => items.isEmpty
       ? 0
       : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
 
@@ -126,20 +121,22 @@ class _AddOrderScreenState extends State<AddOrderScreen>
           .map((e) => e.method == PayMethod.discount ? e.amount : 0)
           .reduce((a, b) => a + b);
 
+  ///calculate all discount
+  num get discount => paymentDiscount + itemsDiscount;
+
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
     Order orderBill = Order()
       ..user = user
       ..items = items
       ..payments = payments
-      ..discount = discount + paymentDiscount
-      ..payable = payable
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
       ..tableNumber = int.parse(tableNumberController.text)
       ..billNumber = billNumber
       ..dueDate = dueDate
       ..modifiedDate = DateTime.now()
       ..orderId = id ?? const Uuid().v1()
+      ..takeaway=takeaway
       ..description = descriptionController.text;
     return orderBill;
   }
@@ -172,7 +169,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
     dueDate = oldOrder.dueDate!;
     tableNumberController.text = oldOrder.tableNumber!.toString();
     user = oldOrder.user;
-    descriptionController.text = oldOrder.description;
+    descriptionController.text = oldOrder.description ?? "";
+    takeaway=oldOrder.takeaway ?? false;
     if (oldOrder.description != "") {
       showDescription = true;
     }
@@ -181,7 +179,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   @override
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
-    printerProvider = Provider.of<PrinterProvider>(context, listen: false);
     if (widget.oldOrder != null) {
       oldOrderReplace(widget.oldOrder!);
     } else {
@@ -200,7 +197,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
       Order oldOrder = widget.oldOrder!;
       if (!eq(items, oldOrder.items) ||
           !eq(payments, oldOrder.payments) ||
-          discount != oldOrder.discount ||
           date != Jalali.fromDateTime(oldOrder.orderDate) ||
           tableNumberController.text != oldOrder.tableNumber!.toString()) {
         return true;
@@ -220,10 +216,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
         builder: (context) => CustomAlert(
             title: "تغییرات داده شده ذخیره شود؟",
             onYes: () {
-              saveBillOnLocalStorage(
-                  id: widget.oldOrder == null
-                      ? null
-                      : widget.oldOrder!.orderId);
+              saveBillOnLocalStorage(id: widget.oldOrder?.orderId);
 
               Navigator.pop(context, false);
             },
@@ -254,7 +247,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
               icon: Icons.save_outlined,
               onPressed: () {
                 saveBillOnLocalStorage(
-                  id: widget.oldOrder == null ? null : widget.oldOrder!.orderId,
+                  id: widget.oldOrder?.orderId,
                 );
               }),
           appBar: AppBar(
@@ -293,187 +286,200 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                 children: [
                   ///*****side bar panel in tablet snd desktop mode************
                   if (screenType(context) != ScreenType.mobile)
-                    SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
+                    Container(
+                      alignment: Alignment.topCenter,
+                      height: MediaQuery.of(context).size.height,
+                      width: screenType(context) != ScreenType.desktop
+                          ? 200
+                          : 300,
+                      decoration:
+                          const BoxDecoration(gradient: kBlackWhiteGradiant),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding:const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 20),
-                        width: 200,
-                        decoration:
-                            const BoxDecoration(gradient: kBlackWhiteGradiant),
-                        child: Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          spacing: 10,
-                          runSpacing: 5,
-                          children: [
-                            const SizedBox(
-                              height: 30,
-                            ),
+                          child: Wrap(
 
-                            ///orderBill date and orderBill number section
-                            SizedBox(
-                              height: 220,
-                              child: Column(
-                                children: [
-                                  const Gap(20),
-                                  //user name
-                                  Wrap(
-                                    children: [
-                                      const CText(
-                                        "کاربر:",
-                                      ),
-                                      CText(
-                                        user?.name ?? "نامشخص",
-                                        fontSize: 15,
-                                      ),
-                                    ],
-                                  ),
-                                  const Gap(10),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      const Text("شماره میز:"),
-                                      SizedBox(
-                                        width: 100,
-                                        child: CounterTextfield(
-                                          decimal: false,
-                                          controller: tableNumberController,
+                            alignment: WrapAlignment.spaceBetween,
+                            spacing: 10,
+                            runSpacing: 5,
+                            children: [
+                              const Gap(30,),
+
+                              ///orderBill date and orderBill number section
+                              SizedBox(
+                                height: 220,
+                                child: Column(
+                                  children: [
+                                    const Gap(20),
+                                    ///user name
+                                    Wrap(
+                                      children: [
+                                        const CText(
+                                          "کاربر:",
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
+                                        CText(
+                                          user?.name ?? "نامشخص",
+                                          fontSize: 15,
+                                        ),
+                                      ],
+                                    ),
+                                    const Gap(10),
+                                    ///order details info desktop
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text("شماره میز:"),
+                                        SizedBox(
+                                          width: 100,
+                                          child: CounterTextfield(
+                                            decimal: false,
+                                            controller: tableNumberController,
+                                          ),
+                                        ),
+                                        const Gap(10 ),
 
-                                      ///invoice number
-                                      TitleButton(
-                                        title: "شماره فاکتور:",
-                                        value: billNumber.toString(),
-                                        onPress: () {
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      const BillNumber())
-                                              .then((value) {
-                                            if (value != null) {
-                                              billNumber = value.round();
+                                        ///invoice number
+                                        TitleButton(
+                                          title: "شماره فاکتور:",
+                                          value: billNumber.toString(),
+                                          onPress: () {
+                                            showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        const DialogTextField())
+                                                .then((value) {
+                                              if (value != null) {
+                                                billNumber = value.round();
+                                              }
+                                              setState(() {});
+                                            });
+                                          },
+                                        ),
+                                        const Divider(
+                                          thickness: 1,
+                                          height: 5,
+                                        ),
+                                        ///choose orderBill date desktop
+                                        TitleButton(
+                                          title: "تاریخ فاکتور:",
+                                          value: date.formatCompactDate(),
+                                          onPress: () async {
+                                            Jalali? picked =
+                                                await TimeTools.chooseDate(
+                                                    context);
+                                            if (picked != null) {
+                                              setState(() {
+                                                date = picked;
+                                              });
                                             }
-                                            setState(() {});
-                                          });
-                                        },
-                                      ),
-                                      const Divider(
-                                        thickness: 1,
-                                        height: 5,
-                                      ),
-
-                                      ///choose orderBill date
-                                      TitleButton(
-                                        title: "تاریخ فاکتور:",
-                                        value: date.formatCompactDate(),
-                                        onPress: () async {
-                                          Jalali? picked =
-                                              await TimeTools.chooseDate(context);
-                                          if (picked != null) {
-                                            setState(() {
-                                              date = picked;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                      const Divider(
-                                        thickness: 1,
-                                        height: 5,
-                                      ),
-                                      TitleButton(
-                                        title: "تاریخ تسویه:",
-                                        value: dueDate.toPersianDate(),
-                                        onPress: () async {
-                                          Jalali? picked =
-                                              await TimeTools.chooseDate(context);
-                                          if (picked != null) {
-                                            setState(() {
-                                              dueDate = picked.toDateTime();
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                          },
+                                        ),
+                                        const Divider(
+                                          thickness: 1,
+                                          height: 5,
+                                        ),
+                                        ///choose due date desktop
+                                        TitleButton(
+                                          title: "تاریخ تسویه:",
+                                          value: dueDate.toPersianDate(),
+                                          onPress: () async {
+                                            Jalali? picked =
+                                                await TimeTools.chooseDate(
+                                                    context);
+                                            if (picked != null) {
+                                              setState(() {
+                                                dueDate = picked.toDateTime();
+                                              });
+                                            }
+                                          },
+                                        ),
+                                        ///takeaway check box
+                                        CheckButton(
+                                          label:"بیرون بر",
+                                          icon: Icons.delivery_dining_rounded,
+                                          value:takeaway,
+                                          onChange:(val){
+                                            takeaway=val!;
+                                            setState(() {});},
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            ActionButton(
-                              width: 200,
-                              label: "افزودن آیتم",
-                              icon: CupertinoIcons.cart_badge_plus,
-                              bgColor: Colors.blueGrey,
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const ItemToBillPanel()).then((value) {
-                                  if (value != null) {
-                                    items.add(value);
-                                  }
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                            ActionButton(
-                              label: "افزودن سریع",
-                              width: 200,
-                              icon: CupertinoIcons.cart_badge_plus,
-                              bgColor: Colors.deepOrangeAccent,
-                              onPress: () {
-                                Navigator.pushNamed(context, QuickAddScreen.id)
-                                    .then((value) {
-                                  if (value != null) {
-                                    value as List<Item>;
-                                    addToItemList(value);
+                              const Gap(40),
+                              ActionButton(
+                                width: 200,
+                                label: "افزودن آیتم",
+                                icon: CupertinoIcons.cart_badge_plus,
+                                bgColor: Colors.blueGrey,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const ItemToBillPanel()).then((value) {
+                                    if (value != null) {
+                                      items.add(value);
+                                    }
                                     setState(() {});
-                                  }
-                                });
-                              },
-                            ),
-                            ActionButton(
-                              width: 200,
-                              label: "پرداخت جدید",
-                              icon: Icons.add_card_rounded,
-                              bgColor: Colors.teal,
-                              onPress: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        PaymentToBill(payable)).then((value) {
-                                  if (value != null) {
-                                    payments.add(value);
-                                  }
-                                  setState(() {});
-                                });
-                              },
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                                  });
+                                },
+                              ),
+                              ActionButton(
+                                label: "افزودن سریع",
+                                width: 200,
+                                icon: CupertinoIcons.cart_badge_plus,
+                                bgColor: Colors.deepOrangeAccent,
+                                onPress: () {
+                                  Navigator.pushNamed(context, QuickAddScreen.id)
+                                      .then((value) {
+                                    if (value != null) {
+                                      value as List<Item>;
+                                      addToItemList(value);
+                                      setState(() {});
+                                    }
+                                  });
+                                },
+                              ),
+                              ActionButton(
+                                width: 200,
+                                label: "پرداخت جدید",
+                                icon: Icons.add_card_rounded,
+                                bgColor: Colors.teal,
+                                onPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          PaymentToBill(payable)).then((value) {
+                                    if (value != null) {
+                                      payments.add(value);
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
 
-                            ///sidebar desktop description textField
-                            if (screenType(context) != ScreenType.mobile)
-                              DescriptionField(
-                                  controller: descriptionController,
-                                  show: showDescription,
-                                  onPress: () {
-                                    showDescription=!showDescription;
-                                    setState(() {});
-                                  }),
-                            const SizedBox(
-                              height: 70,
-                            ),
-                          ],
+                              ///sidebar desktop description textField
+                              if (screenType(context) != ScreenType.mobile)
+                                DescriptionField(
+                                    controller: descriptionController,
+                                    show: showDescription,
+                                    onPress: () {
+                                      showDescription = !showDescription;
+                                      setState(() {});
+                                    }),
+                              const SizedBox(
+                                height: 70,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -531,8 +537,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(width: 10),
-
+                                      const Gap(10),
                                       ///top left
                                       SizedBox(
                                         width: 150,
@@ -548,10 +553,12 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                               value: billNumber.toString(),
                                               onPress: () {
                                                 showDialog(
-                                                        context: context,
-                                                        builder: (context) =>
-                                                            const BillNumber())
-                                                    .then((value) {
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        DialogTextField(
+                                                          oldValue: billNumber
+                                                              .toString(),
+                                                        )).then((value) {
                                                   if (value != null) {
                                                     billNumber = value.round();
                                                   }
@@ -563,7 +570,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                               thickness: 1,
                                               height: 5,
                                             ),
-
                                             ///choose orderBill date
                                             TitleButton(
                                               title: "تاریخ فاکتور:",
@@ -579,6 +585,14 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                                 }
                                               },
                                             ),
+                                            CheckButton(
+                                                label:"بیرون بر",
+                                                icon: Icons.delivery_dining_rounded,
+                                                value:takeaway,
+                                                onChange:(val){
+                                              takeaway=val!;
+                                              setState(() {});},
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -592,7 +606,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                     controller: descriptionController,
                                     show: showDescription,
                                     onPress: () {
-                                      showDescription=!showDescription;
+                                      showDescription = !showDescription;
                                       setState(() {});
                                     }),
 
@@ -753,49 +767,3 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 }
 
-class DescriptionField extends StatelessWidget {
-  const DescriptionField(
-      {super.key,
-      required this.controller,
-      required this.show,
-      required this.onPress});
-  final TextEditingController controller;
-  final bool show;
-  final VoidCallback onPress;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: TextButton.icon(
-              onPressed: onPress,
-              icon: Icon(
-                show ? CupertinoIcons.minus_square : CupertinoIcons.plus_square,
-                color: Colors.teal,
-                size: 20,
-              ),
-              label: const CText(
-                "توضیحات",
-                color: Colors.teal,
-              )),
-        ),
-        if (show)
-          DescriptionBar(
-              controller: controller,
-              id: "order",
-              onChange: (val) {
-                controller.text = val ?? "";
-              }),
-        if (show)
-          CustomTextField(
-            controller: controller,
-            label: "توضیحات سفارش",
-            width: double.maxFinite,
-            maxLine: 3,
-            maxLength: 300,
-          ),
-      ],
-    );
-  }
-}

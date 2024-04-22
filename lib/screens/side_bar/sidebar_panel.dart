@@ -204,7 +204,9 @@ class SideBarPanel extends StatelessWidget {
                               icon: Icons.account_balance_outlined,
                               onPress: () async{
                                 Navigator.pushNamed(context, PurchaseAppScreen.id,
-                                    arguments: {"phone": "9910606073","subsId":770});
+                                    // arguments: {"phone": "9910606073","subsId":868}
+                                    arguments: {"phone": "9152361766"}
+                                );
                                 // List<Subscription>? subs= await BackendServices.readSubscription(context, "9152361766");
                                 // print(subs?.map((e) => e.toMap()));
                                 // Device testDevice=await getDeviceInfo();
@@ -214,7 +216,6 @@ class SideBarPanel extends StatelessWidget {
                             ),
                           ],
                         ),
-
                       ],
                     ),
                   ),
@@ -238,7 +239,7 @@ class SideBarPanel extends StatelessWidget {
     );
   }
 }
-
+///
 class AvatarHolder extends StatelessWidget {
   const AvatarHolder({
     super.key,
@@ -275,7 +276,7 @@ class AvatarHolder extends StatelessWidget {
     );
   }
 }
-
+///
 class PurchaseButton extends StatelessWidget {
   const PurchaseButton({
     super.key,
@@ -316,7 +317,7 @@ class PurchaseButton extends StatelessWidget {
     );
   }
 }
-
+///
 class BarButton extends StatelessWidget {
   const BarButton(
       {super.key, required this.text, required this.onPress, this.icon, this.enable=true});
@@ -330,7 +331,7 @@ class BarButton extends StatelessWidget {
     Color textColor = Colors.black.withOpacity(.7);
     Color borderColor = kMainColor;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 1),
+      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
       decoration: BoxDecoration(
         borderRadius:BorderRadius.circular(10),
         boxShadow: const [BoxShadow(color: Colors.black45,blurRadius: 3,offset: Offset(2, 3))]
@@ -347,10 +348,6 @@ class BarButton extends StatelessWidget {
                 bottom: BorderSide(
                   width: 2,
                   color: borderColor,
-                ),
-                left: BorderSide(
-                  width: 10,
-                  color: textColor,
                 ),
               ),
             ),
@@ -375,7 +372,7 @@ class BarButton extends StatelessWidget {
                       ),
                       SizedBox(
                           child:
-                          icon == null ? null : Icon(icon, color: textColor.withOpacity(.5))),
+                          icon == null ? null : Icon(icon, color: kMainColor)),
                     ],
                   )),
             )),

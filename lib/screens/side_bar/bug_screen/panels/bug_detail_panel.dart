@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/models/bug.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 

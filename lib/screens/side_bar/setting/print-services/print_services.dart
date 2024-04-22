@@ -2,12 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
-import 'package:flutter_simple_bluetooth_printer/flutter_simple_bluetooth_printer.dart';
-
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-// import 'package:image/image.dart' as img;
 // import 'package:pdfx/pdfx.dart' as pdfx;
 import 'package:printing/printing.dart' as printing;
 import 'package:provider/provider.dart';
@@ -54,47 +51,6 @@ class PrintServices {
     }
   }
 
-  // static List devices = [];
-  // _scan(PrinterType type, {bool isBle = false}) {
-  //   // Find printers
-  //   PrinterManager.instance
-  //       .discovery(type: type, isBle: isBle)
-  //       .listen((device) {
-  //     devices.add(device);
-  //   });
-  // }
-
-  // _connectDevice(PrinterDevice selectedPrinter, PrinterType type,
-  //     {bool reconnect = false, bool isBle = false, String? ipAddress}) async {
-  //   switch (type) {
-  //     // only windows and android
-  //     case PrinterType.usb:
-  //       await PrinterManager.instance.connect(
-  //           type: type,
-  //           model: UsbPrinterInput(
-  //               name: selectedPrinter.name,
-  //               productId: selectedPrinter.productId,
-  //               vendorId: selectedPrinter.vendorId));
-  //       break;
-  //     // only iOS and android
-  //     case PrinterType.bluetooth:
-  //       await PrinterManager.instance.connect(
-  //           type: type,
-  //           model: BluetoothPrinterInput(
-  //               name: selectedPrinter.name,
-  //               address: selectedPrinter.address!,
-  //               isBle: isBle,
-  //               autoConnect: reconnect));
-  //       break;
-  //     case PrinterType.network:
-  //       await PrinterManager.instance.connect(
-  //           type: type,
-  //           model: TcpPrinterInput(
-  //               ipAddress: ipAddress ?? selectedPrinter.address!));
-  //       break;
-  //     default:
-  //   }
-  // }
 
   ///escPos printer
   Future<void> escPosPrint(
@@ -116,8 +72,8 @@ class PrintServices {
       // bytes += generator.image(image);
       // bytes += generator.feed(2);
       // bytes += generator.cut();
-      // // _scan(PrinterType.network);
-      // //await PrinterManager.instance.connect(type: PrinterType.network, model: TcpPrinterInput(ipAddress: ip));
+      // _scan(PrinterType.network);
+      //await PrinterManager.instance.connect(type: PrinterType.network, model: TcpPrinterInput(ipAddress: ip));
       // await PrinterManager.instance.tcpPrinterConnector
       //     .connect(TcpPrinterInput(ipAddress: ip))
       //     .catchError((error, stackTrace) => ErrorHandler.errorManger(
@@ -150,28 +106,52 @@ class PrintServices {
     }
   }
 
-  ///scan the bluetooth devices from simpleBluetoothPrinter package
-  static Future<void> scanSimpleBluetoothDevices(bool isOnBT,
-      {required Function(List<BluetoothDevice>? btList, bool? isScaning)
-          onChange}) async {
-    final bluetoothManager = FlutterSimpleBluetoothPrinter.instance;
-    List<BluetoothDevice> devices = [];
-    devices.clear();
-    try {
-      if (isOnBT) {
-        final results =
-            await bluetoothManager.scan(timeout: const Duration(seconds: 10));
-        devices.addAll(results);
-        onChange(devices, false);
-      } else {
-        final bondedDevices = await bluetoothManager.getAndroidPairedDevices();
-        devices.addAll(bondedDevices);
-        onChange(devices, false);
-      }
-    } on BTException catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      onChange(null, false);
-    }
-  }
+
+
+
+
+  ///
+  // static List devices = [];
+  // _scan(PrinterType type, {bool isBle = false}) {
+  //   // Find printers
+  //   PrinterManager.instance
+  //       .discovery(type: type, isBle: isBle)
+  //       .listen((device) {
+  //     devices.add(device);
+  //   });
+  // }
+  // ///
+  // _connectDevice(PrinterDevice selectedPrinter, PrinterType type,
+  //     {bool reconnect = false, bool isBle = false, String? ipAddress}) async {
+  //   switch (type) {
+  //   // only windows and android
+  //     case PrinterType.usb:
+  //       await PrinterManager.instance.connect(
+  //           type: type,
+  //           model: UsbPrinterInput(
+  //               name: selectedPrinter.name,
+  //               productId: selectedPrinter.productId,
+  //               vendorId: selectedPrinter.vendorId));
+  //       break;
+  //   // only iOS and android
+  //     case PrinterType.bluetooth:
+  //       await PrinterManager.instance.connect(
+  //           type: type,
+  //           model: BluetoothPrinterInput(
+  //               name: selectedPrinter.name,
+  //               address: selectedPrinter.address!,
+  //               isBle: isBle,
+  //               autoConnect: reconnect));
+  //       break;
+  //     case PrinterType.network:
+  //       await PrinterManager.instance.connect(
+  //           type: type,
+  //           model: TcpPrinterInput(
+  //               ipAddress: ipAddress ?? selectedPrinter.address!));
+  //       break;
+  //     default:
+  //   }
+  // }
+
+
 }

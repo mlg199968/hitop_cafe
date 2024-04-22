@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';

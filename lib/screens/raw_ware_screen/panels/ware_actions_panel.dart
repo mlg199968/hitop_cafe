@@ -8,7 +8,7 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:provider/provider.dart';
 
 import '../../../common/pdf/pdf_api.dart';
-import '../../../common/widgets/custom_alert_dialog.dart';
+import '../../../common/widgets/custom_dialog.dart';
 import '../../../common/widgets/drop_list_model.dart';
 import '../../../providers/ware_provider.dart';
 import '../../../services/hive_boxes.dart';

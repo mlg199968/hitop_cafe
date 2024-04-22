@@ -21,7 +21,6 @@ import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
-import 'package:hitop_cafe/screens/side_bar/setting/print_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/storage_manger/storage_manage_screen.dart';
@@ -130,10 +129,6 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case ChooseUserScreen.id:
       return MaterialPageRoute(builder: (_) => const ChooseUserScreen());
-
-    case PrinterPage.id:
-      Key? key = routeSetting.arguments as Key?;
-      return MaterialPageRoute(builder: (_) => PrinterPage(key: key));
 
     case LocalServerScreen.id:
       return MaterialPageRoute(builder: (_) => const LocalServerScreen());

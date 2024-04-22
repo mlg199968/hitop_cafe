@@ -68,7 +68,7 @@ class Bill extends HiveObject {
       'billDate': billDate.toIso8601String(),
       'billId': billId,
       'modifiedDate': modifiedDate.toIso8601String(),
-      'dueDate': dueDate!=null? dueDate!.toIso8601String():null,
+      'dueDate': dueDate?.toIso8601String(),
       'isChecked': isChecked?1:0,
       'isDone': isDone?1:0,
       'description': description,

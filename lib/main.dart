@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     return MaterialApp(
+      navigatorKey: GlobalTask.navigatorState,
       title: 'Hitop Cafe',
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),

@@ -13,6 +13,7 @@ import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:http/http.dart' as http;
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 
 class BackendServices {
@@ -34,8 +35,8 @@ class BackendServices {
           showSnackBar(context, backData["message"] ?? "not success",
               type: SnackType.warning);
           if(backData["error"]!=null) {
-            ErrorHandler.errorManger(context, backData["error"],
-              title: backData["message"] ?? "backData success is false" , showSnackbar: true);
+            ErrorHandler.errorManger(null, backData["error"],
+              title: backData["message"] ?? "backData success is false",);
           }
           return false;
         }
@@ -112,7 +113,7 @@ class BackendServices {
         }
       }
     } catch (e) {
-      ErrorHandler.errorManger(context, e,
+      ErrorHandler.errorManger(null, e,
           title: "BackendServices-readSubscription error",);
     }
     return null;
@@ -146,8 +147,9 @@ class BackendServices {
         if (readSubs != null && readSubs.isNotEmpty) {
           for (Subscription subs in readSubs) {
             if(subs.device?.id==storedSubs.device?.id && subs.appName==kAppName){
+
               Provider.of<UserProvider>(context,listen:false)..setSubscription(subs)..setUserLevel(subs.level);
-              updateFetchDate(context, subs);
+              await updateFetchDate(context, subs);
               break;
             }
             else{
@@ -158,23 +160,34 @@ class BackendServices {
         }
       }
     }catch(e) {
-      ErrorHandler.errorManger(context, e,title: "BackendServices fetchSubscription function error");
+      ErrorHandler.errorManger(null, e,title: "BackendServices fetchSubscription function error");
     }
   }
   ///
-  static void updateFetchDate(context ,Subscription subs){
-    //we save the date of this fetch
-    subs.fetchDate=DateTime.now();
-    subs.startDate ??= DateTime.now();
-    BackendServices.createSubs(context, subs: subs).then((isCreated) {
-      if(isCreated==true){
-        debugPrint("fetch date has been updated after fetch subscription");
+  static Future<void> updateFetchDate(context ,Subscription subs) async{
+    DateTime startDate = DateTime.now();
+    try {
+      //get online date with ntp package
+      int offset =await NTP.getNtpOffset(lookUpAddress: 'time.cloudflare.com').timeout(const Duration(seconds: 5));
+      print('NTP DateTime offset align: ${startDate.add(
+          Duration(milliseconds: offset))}');
+      //we save the date of this fetch
+      subs.fetchDate = startDate.add(Duration(milliseconds: offset));
+      subs.startDate ??= startDate.add(Duration(milliseconds: offset));
 
-      }else{
-        debugPrint("fetch date has not been updated after fetch subscription");
-      }
-    });
-
+      BackendServices.createSubs(context, subs: subs).then((isCreated) {
+        if (isCreated == true) {
+          debugPrint("fetch date has been updated after fetch subscription");
+        } else {
+          debugPrint(
+              "fetch date has not been updated after fetch subscription");
+        }
+      });
+    }catch(e){
+      subs.fetchDate = startDate;
+      subs.startDate ??= startDate;
+      ErrorHandler.errorManger(null, e,title: "backendServices updateFetchDate error");
+    }
   }
 
 }

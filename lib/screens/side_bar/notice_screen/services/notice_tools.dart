@@ -10,9 +10,9 @@ class NoticeTools {
   static readNotifications(context,{int timeout=10}) async {
     try {
       List<Notice?>? onlineNotices =
-          await BackendServices().readNotice(context,timeout: timeout );
+      await BackendServices().readNotice(context,timeout: timeout );
       List<Notice> hiveNotices = HiveBoxes.getNotice().values.toList();
-      if (onlineNotices != null) {
+      if (onlineNotices != null && onlineNotices.isNotEmpty) {
         ///check if server Notice has not being cache in the hive ,then we added to the hive
         for (var onNotice in onlineNotices) {
           if (hiveNotices.isNotEmpty) {
@@ -44,12 +44,15 @@ class NoticeTools {
           }
         }
       }
+      else if (onlineNotices == null || onlineNotices.isEmpty){
+        HiveBoxes.getNotice().clear();
+      }
     } catch (e) {
       ErrorHandler.errorManger(context, e,
-          title: "NoticeTools-readNotifications error",);
+          title: "NoticeTools-readNotifications error", showSnackbar: true);
     }
   }
-
+///
   static bool checkNewNotifications(){
     List<bool> seeList=HiveBoxes.getNotice().values.map((e) => e.seen).toList();
     if(seeList.contains(false)){

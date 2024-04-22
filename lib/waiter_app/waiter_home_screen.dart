@@ -4,6 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
+import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/order.dart';
@@ -61,6 +63,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
             title: const CText(
               "Hitop Waiter",
               fontSize: 18,
+              color: Colors.black87,
             ),
             leading: IconButton(
               color: Colors.white54,
@@ -88,13 +91,13 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
               const Gap(5),
             ],
           ),
-          body: SingleChildScrollView(
+          body: HideKeyboard(
             child: Container(
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    ///search bar and bg
                     Container(
                       alignment: Alignment.center,
                       height: 80,
@@ -119,37 +122,40 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                             setState(() {});
                           }),
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: ValueListenableBuilder<Box<Pack>>(
-                          valueListenable: HiveBoxes.getPack().listenable(),
-                          builder: (context, box, _) {
-                            List<Pack> packList =[];
-                              for (var e in box.values) {
-                                  if(e.type==PackType.order.value) {
-                                    packList.add(e);
-                                  }
-                            }
-                            //filter the list in order to the search results
-                            List<Pack> filteredList = PackTools.filterList(packList, keyWord, sortItem);
-                            if (filteredList.isNotEmpty) {
-                              return WaiterHomeScreenListPart(
-                                packList: filteredList,
-                                key: widget.key,
-                              );
+                    ///main part list
+                    Expanded(
+                      child: Container(
+                        width: 500,
+                        padding: const EdgeInsets.only(top: 10),
+                        child: ValueListenableBuilder<Box<Pack>>(
+                            valueListenable: HiveBoxes.getPack().listenable(),
+                            builder: (context, box, _) {
+                              List<Pack> packList =[];
 
+                                for (var e in box.values) {
+                                    if(e.type==PackType.order.value) {
+                                      packList.add(e);
+                                    }
+                              }
+                              //filter the list in order to the search results
+                              List<Pack> filteredList = PackTools.filterList(packList, keyWord, sortItem);
+                              if (filteredList.isNotEmpty) {
+                                return WaiterHomeScreenListPart(
+                                  packList: filteredList,
+                                  key: widget.key,
+                                );
+
+
+                              }
                               ///empty screen show
-                            } else {
-                              return Container(
-                                height: 400,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "سفارش حاضری یافت نشد!",
-                                  textDirection: TextDirection.rtl,
-                                ),
-                              );
-                            }
-                          }),
+                              else {
+                                return const EmptyHolder(
+                                  text: "سفارشی یافت نشد!",
+                                  icon: FontAwesomeIcons.beerMugEmpty,
+                                );
+                              }
+                            }),
+                      ),
                     ),
                   ],
                 )),
@@ -172,43 +178,42 @@ class WaiterHomeScreenListPart extends StatefulWidget {
 }
 
 class _CreditListPartState extends State<WaiterHomeScreenListPart> {
+  
   Order? selectedOrder;
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraint) {
-      return Wrap(
-        runSpacing: 10,
-        spacing: 10,
-        alignment: WrapAlignment.center,
-        children: List.generate(widget.orderList.length, (index) {
-          Order order=widget.orderList[index];
-          if (Provider.of<FilterProvider>(context, listen: false).compareData(
-              order.dueDate,
-              order.payable,
-              order.orderDate)) {
-            return InkWell(
-              onTap: (){
-                showDialog(context: context, builder: (context)=>WaiterOrderInfoPanel( pack: widget.packList[index]));
-              },
-              child: CardTile(
-                color: order.isChecked?Colors.teal:kMainColor,
-                orderDetail: widget.orderList[index],
-                button: ActionButton(
-                  label: "ویرایش",
-                  icon: Icons.mode_edit_outline_rounded,
-                  bgColor: Colors.deepOrangeAccent,
-                  onPress:() {
-                    Navigator.pushNamed(context, WaiterAddOrderScreen.id,
-                        arguments: order);
-                  },
-                ),
+    return ListView.builder(
+      itemCount:widget.orderList.length ,
+        itemBuilder: (context,index) {
+      Order order=widget.orderList[index];
+      if (Provider.of<FilterProvider>(context, listen: false).compareData(
+          order.dueDate,
+          order.payable,
+          order.orderDate)) {
+        return InkWell(
+          onTap: (){
+            showDialog(context: context, builder: (context)=>WaiterOrderInfoPanel( pack: widget.packList[index]));
+          },
+          child: SizedBox(
+            height: 200,
+            child: CardTile(
+              color: order.isChecked?Colors.teal:kMainColor,
+              orderDetail: order,
+              button: ActionButton(
+                label: "ویرایش",
+                icon: Icons.mode_edit_outline_rounded,
+                bgColor: Colors.deepOrangeAccent,
+                onPress:() {
+                  Navigator.pushNamed(context, WaiterAddOrderScreen.id,
+                      arguments: order);
+                },
               ),
-            );
-          } else {
-            return const SizedBox();
-          }
-        }),
-      );
+            ),
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
     });
   }
 }

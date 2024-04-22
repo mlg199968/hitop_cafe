@@ -17,7 +17,7 @@ class PdfInvoiceApi {
 
   static _customTheme() async {
     return ThemeData.withFont(
-        base: Font.ttf(await rootBundle.load("assets/fonts/koodak.ttf")),
+        base: Font.ttf(await rootBundle.load("assets/fonts/mitra.ttf")),
         bold: Font.ttf(await rootBundle.load("assets/fonts/titr.ttf")),
         italic: Font.ttf(await rootBundle.load("assets/fonts/ariali.ttf")),
         boldItalic: Font.ttf(await rootBundle.load("assets/fonts/arialbi.ttf")),
@@ -74,7 +74,7 @@ class PdfInvoiceApi {
       build: (context) => pw.Column(children: [
         titlePart,
         buildHeader(bill),
-        SizedBox(height: 1 * PdfPageFormat.cm),
+        SizedBox(height: 1 * PdfPageFormat.mm),
         invoicePart,
         Divider(),
         totalPart,
@@ -162,7 +162,7 @@ class PdfInvoiceApi {
       textDirection: TextDirection.rtl,
       pageFormat: PdfPageFormat.roll80.copyWith(marginLeft: 5, marginRight: 5),
       build: (context) => pw.Column(children: [
-        buildInvoiceInfo(bill,scale: scale,reOrder: reOrder),
+        buildInvoiceInfo(bill,scale: scale,reOrder: reOrder,showTakeaway:true),
         SizedBox(height: 1 * PdfPageFormat.mm),
         invoicePart,
         Divider(),
@@ -181,6 +181,7 @@ class PdfInvoiceApi {
 
 
   ///********* widgets part *************
+  ///
   static Widget buildHeader(Order bill, {double scale = 1}) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -188,48 +189,107 @@ class PdfInvoiceApi {
           buildInvoiceInfo(bill, scale: scale),
         ],
       );
-
-  static Widget buildInvoiceInfo(Order bill, {required double scale,bool reOrder=false}) {
-    //final paymentTerms = '${info.dueDate.difference(info.date).inDays} days';
-    final titles = <String>[
-      'شماره میز:',
-      'شماره فاکتور:',
-      'تاریخ فاکتور:',
-      'تاریخ تسویه:',
+///
+  static Widget buildInvoiceInfo(Order bill, {required double scale,bool reOrder=false,bool showTakeaway=false}) {
+    final data = [
+      [
+        buildText(
+            title: 'شماره میز:',
+            value: bill.tableNumber.toString().toPersianDigit(),
+            scale: scale*.8),
+        buildText(
+            title: 'تاریخ فاکتور:',
+            value: bill.orderDate.toPersianDate(showTime: true),
+            scale: scale*.8),
+      ],
+      [
+        buildText(
+            title: 'شماره فاکتور:',
+            value: bill.billNumber.toString().toPersianDigit(),
+            scale: scale*.8),
+        buildText(
+            title: 'تاریخ تسویه:',
+            value: bill.dueDate == null
+                ? "مشخص نشده"
+                : bill.dueDate!.toPersianDate(),
+            scale: scale*.8),
+      ],
     ];
-    final data = <String>[
-      bill.tableNumber.toString().toPersianDigit(),
-      bill.billNumber.toString().toPersianDigit(),
-      bill.orderDate.toPersianDate(showTime: true),
-      bill.dueDate == null
-          ? "مشخص نشده"
-          : bill.dueDate!.toPersianDate(), //paymentTerms
-    ];
-
     return Column(
       children: [
+        ///if  reorder the order
         if(reOrder)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(color: PdfColors.black,borderRadius: BorderRadius.circular(7)),
-            child: Text("سفارش ویرایش شده",style: TextStyle(color: PdfColors.white,fontSize: 13*scale)),),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(titles.length, (index) {
-            final title = titles[index];
-            final value = data[index];
-
-            return buildText(
-                title: title,
-                value: value,
-                width: 50 * PdfPageFormat.mm,
-                scale: scale);
-          }),
+            child: Text("سفارش ویرایش شده",style: TextStyle(color: PdfColors.white,fontSize: 12*scale)),),
+         ///if is takeaway delivery
+         if(bill.takeaway==true && showTakeaway)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(color: PdfColors.black,borderRadius: BorderRadius.circular(7)),
+            child: Text("سفارش بیرون بر",style: TextStyle(color: PdfColors.white,fontSize: 10*scale)),),
+        TableHelper.fromTextArray(
+          data: data,
+          border: null,
+          headerDecoration: const BoxDecoration(
+            color: PdfColors.grey300,
+          ),
+          cellHeight: 20,
+          cellAlignments: {
+            0: Alignment.centerLeft,
+            1: Alignment.centerRight,
+          },
+          // oddCellStyle: const TextStyle(),
         )
+
       ]
     );
   }
+///
+  static Widget buildInvoiceInfo2(Order bill, {required double scale,bool reOrder=false,bool showTakeaway=false}) {
 
+    final data = [
+        [
+          buildText(
+              title: 'شماره میز:',
+              value: bill.tableNumber.toString().toPersianDigit(),
+              scale: scale*.8),
+          buildText(
+              title: 'تاریخ فاکتور:',
+              value: bill.orderDate.toPersianDate(showTime: true),
+              scale: scale*.8),
+        ],
+        [
+          buildText(
+              title: 'شماره فاکتور:',
+              value: bill.billNumber.toString().toPersianDigit(),
+              scale: scale*.8),
+          buildText(
+              title: 'تاریخ تسویه:',
+              value: bill.dueDate == null
+                  ? "مشخص نشده"
+                  : bill.dueDate!.toPersianDate(),
+              scale: scale*.8),
+        ],
+      ];
+
+    return pw.TableHelper.fromTextArray(
+      data: data,
+      border: null,
+      headerDecoration: const BoxDecoration(
+        color: PdfColors.grey300,
+      ),
+      cellHeight: 20,
+
+      cellAlignments: {
+        0: Alignment.centerLeft,
+        1: Alignment.centerRight,
+      },
+      // oddCellStyle: const TextStyle(),
+    );
+  }
+///
   static Future<Widget> buildTitle(Order bill, UserProvider shopData,
       {double scale = 1}) async {
     File? logoImageFile = shopData.logoImage != null
@@ -273,7 +333,7 @@ class PdfInvoiceApi {
                   fit: BoxFit.fill)),
     ]);
   }
-
+///
   static Future<Widget> buildTitle80(Order bill, UserProvider shopData,
       {double scale = 1}) async {
     File? logoImageFile = shopData.logoImage != null
@@ -282,29 +342,17 @@ class PdfInvoiceApi {
             : null)
         : null;
 
-    return Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        ///barcode
-        Container(
-          height: 50,
-          width: 50,
-          child: BarcodeWidget(
-            barcode: Barcode.qrCode(),
-            data:
-                " شماره فاکتور: ${bill.billNumber}, قابل پرداخت: ${addSeparator(bill.payable)},",
-          ),
-        ),
-
-        ///shop logo
-        Container(
-            height: 50,
-            width: 50,
-            child: logoImageFile == null
-                ? SizedBox()
-                : Image(pw.MemoryImage(logoImageFile.readAsBytesSync()),
-                    fit: BoxFit.fill)),
-      ]),
-
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ///barcode
+      // Container(
+      //   height: 50,
+      //   width: 50,
+      //   child: BarcodeWidget(
+      //     barcode: Barcode.qrCode(),
+      //     data:
+      //         " شماره فاکتور: ${bill.billNumber}, قابل پرداخت: ${addSeparator(bill.payable)},",
+      //   ),
+      // ),
       ///shop name
       Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -316,6 +364,14 @@ class PdfInvoiceApi {
           SizedBox(height: 0.8 * PdfPageFormat.cm),
         ],
       ),
+      ///shop logo
+      if(logoImageFile != null)
+      Container(
+          height: 50,
+          width: 50,
+          child: Image(pw.MemoryImage(logoImageFile.readAsBytesSync()),
+                  fit: BoxFit.fill)),
+
     ]);
   }
 
@@ -387,7 +443,8 @@ class PdfInvoiceApi {
       headerDecoration: const BoxDecoration(
         color: PdfColors.black,
       ),
-      cellHeight: 25,
+      cellPadding: const EdgeInsets.all(2),
+      cellHeight: 20,
       cellStyle:  TextStyle(fontSize: 11*scale),
       cellAlignments: {
         0: Alignment.centerLeft,
@@ -426,6 +483,7 @@ class PdfInvoiceApi {
         color: PdfColors.black,
       ),
       cellHeight: 20,
+      cellPadding: const EdgeInsets.all(2),
       cellStyle:  TextStyle(fontSize: 11*scale),
       cellAlignments: {
         0: Alignment.centerRight,
@@ -442,11 +500,11 @@ class PdfInvoiceApi {
     ),
         Divider(),
         Text("توضیحات کلی سفارش:",style: TextStyle(fontSize: 12*scale),maxLines: 3),
-        Text(bill.description,style: TextStyle(fontSize: 11*scale),maxLines: 20),
+        Text(bill.description ?? "",style: TextStyle(fontSize: 11*scale),maxLines: 20),
       ]
     );
   }
-
+  ///
   static Future<Widget> buildTotal(Order bill, UserProvider shopData,
       {double scale = 1}) async {
     String currency = shopData.currency;
@@ -543,7 +601,7 @@ class PdfInvoiceApi {
       ),
     );
   }
-
+///
   static Future<Widget> buildTotal80(Order bill, UserProvider shopData,
       {double scale = 1}) async {
     String currency = shopData.currency;
@@ -601,17 +659,17 @@ class PdfInvoiceApi {
       ),
     );
   }
-
+///Footer
   static Widget buildFooter(UserProvider shop, {double scale = 1}) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Divider(),
           SizedBox(height: 2 * PdfPageFormat.mm),
-          buildSimpleText(title: 'آدرس:', value: shop.address,scale: scale),
+          buildSimpleText(title: 'آدرس:', value: shop.address,scale: scale*.8),
           SizedBox(height: 1 * PdfPageFormat.mm),
           buildSimpleText(
               title: 'شماره تماس:',
-              value: "${shop.phoneNumber} - ${shop.phoneNumber2}",scale: scale),
+              value: "${shop.phoneNumber} - ${shop.phoneNumber2}",scale: scale*.8),
         ],
       );
 
@@ -657,12 +715,14 @@ class PdfInvoiceApi {
         width: width,
         child: Expanded(
           child: Row(
-            mainAxisAlignment: axisAlignment,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title.toPersianDigit(), style: style, maxLines: 3),
               SizedBox(width: 5),
-              Text(value.toPersianDigit(),
-                  style: unite ? style : valueStyle ?? valStyle, maxLines: 3),
+              Flexible(child: Text(value.toPersianDigit(),
+                  style: unite ? style : valueStyle ?? valStyle, maxLines: 3),)
             ],
           ),
         ));

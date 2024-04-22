@@ -8,7 +8,6 @@ import 'package:hitop_cafe/common/widgets/counter_textfield.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
-import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
@@ -23,14 +22,16 @@ import 'package:hitop_cafe/providers/printer_provider.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/item_to_bill_panel.dart';
 import 'package:hitop_cafe/screens/orders_screen/panels/bill_number.dart';
+import 'package:hitop_cafe/screens/orders_screen/parts/item_selection_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
-import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/description_textfield.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/print-services/print_services.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
+import 'package:hitop_cafe/waiter_app/services/pack_tools.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     with SingleTickerProviderStateMixin {
   late UserProvider userProvider;
   late PrinterProvider printerProvider;
-  final tableNumberController = TextEditingController();
+  final tableNumberController = TextEditingController(text: "1");
   Function eq = const ListEquality().equals;
   TextEditingController descriptionController = TextEditingController();
   List<Item> items = [];
@@ -92,23 +93,16 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   ///calculate items amount
   num get itemsSum =>
       items.isEmpty ? 0 : items.map((e) => e.sum).reduce((a, b) => a + b);
-
-
   ///calculate discount amount
   num get discount => items.isEmpty
       ? 0
       : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);
-
-
-
   ///create orderBill object with given data
   Order createBillObject({String? id}) {
     Order orderBill = Order()
       ..user = user
       ..items = items
       ..payments = []
-      ..discount = 0
-      ..payable = payable
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
       ..tableNumber = int.parse(tableNumberController.text)
       ..billNumber = billNumber
@@ -120,7 +114,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   }
 
   ///Hive Database Save function
-  Future<void> saveBillOnLocalStorage({String? id}) async {
+  Future<void> saveBillOnLocalStorage(context,{String? id}) async {
 
       if (items.isNotEmpty) {
         Order orderBill = createBillObject(id: id);
@@ -159,7 +153,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     dueDate = oldOrder.dueDate!;
     tableNumberController.text = oldOrder.tableNumber!.toString();
     user = oldOrder.user ?? userProvider.activeUser;
-    descriptionController.text = oldOrder.description;
+    descriptionController.text = oldOrder.description ?? "";
     if (oldOrder.description != "") {
       showDescription = true;
     }
@@ -172,8 +166,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     if (widget.oldOrder != null) {
       oldOrderReplace(widget.oldOrder!);
     } else {
-      billNumber = OrderTools.getOrderNumber();
-      tableNumberController.text = 1.toString();
+      billNumber = PackTools.getOrderNumber();
       user = userProvider.activeUser;
     }
 
@@ -182,7 +175,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   }
 
   ///export pdf function
-  void printPdf() async {
+  void printPdf(context) async {
     try {
       Order orderBill = createBillObject();
       final file = await PdfInvoiceApi(context,bill: orderBill).generateOrderPdf();
@@ -221,10 +214,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
         builder: (context) => CustomAlert(
             title: "تغییرات داده شده ذخیره شود؟",
             onYes: () {
-              saveBillOnLocalStorage(
-                  id: widget.oldOrder == null
-                      ? null
-                      : widget.oldOrder!.orderId);
+              saveBillOnLocalStorage(context,
+                  id: widget.oldOrder?.orderId);
 
               Navigator.pop(context, false);
             },
@@ -254,7 +245,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
               icon: Icons.check_rounded,
               onPressed: () async{
                 await saveBillOnLocalStorage(
-                  id: widget.oldOrder == null ? null : widget.oldOrder!.orderId,
+                  context,
+                  id: widget.oldOrder?.orderId,
                 );
               }),
           appBar: AppBar(
@@ -268,7 +260,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                 margin: const EdgeInsets.symmetric(horizontal: 7),
                 label: "چاپ",
                 onPress: () {
-                  printPdf();
+                  printPdf(context);
                 },
                 bgColor: Colors.red,
                 icon: Icons.local_printshop_outlined,
@@ -288,7 +280,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                           height: double.maxFinite,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
-                          width: 200,
+                          width:screenType(context) != ScreenType.desktop? 200:300,
                           decoration: const BoxDecoration(
                               gradient: kBlackWhiteGradiant),
                           child: Wrap(
@@ -345,7 +337,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                             showDialog(
                                                     context: context,
                                                     builder: (context) =>
-                                                        const BillNumber())
+                                                        const DialogTextField())
                                                 .then((value) {
                                               if (value != null) {
                                                 billNumber = value.round();
@@ -441,33 +433,13 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
 
                               ///sidebar desktop description textField
                               if (screenType(context) != ScreenType.mobile)
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: TextButton.icon(
-                                      onPressed: () {
-                                        showDescription = !showDescription;
-                                        setState(() {});
-                                      },
-                                      icon: Icon(
-                                        showDescription
-                                            ? CupertinoIcons.minus_square
-                                            : CupertinoIcons.plus_square,
-                                        color: Colors.teal,
-                                        size: 20,
-                                      ),
-                                      label: const CText(
-                                        "توضیحات",
-                                        color: Colors.teal,
-                                      )),
-                                ),
-                              if (showDescription)
-                                CustomTextField(
-                                  controller: descriptionController,
-                                  label: "توضیحات سفارش",
-                                  width: double.maxFinite,
-                                  maxLine: 3,
-                                  maxLength: 300,
-                                ),
+                                DescriptionField(
+                                    controller: descriptionController,
+                                    show: showDescription,
+                                    onPress: () {
+                                      showDescription=!showDescription;
+                                      setState(() {});
+                                    }),
                               const SizedBox(
                                 height: 70,
                               ),
@@ -477,234 +449,228 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
 
                   ///main part like items list
                   Flexible(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 50),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 50),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          children: [
-                            ///top Order data part on mobile screen
-                            if (screenType(context) == ScreenType.mobile)
-                              Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white.withOpacity(.8)),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ///top right
-                                    Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            const CText(
-                                              "کاربر:",
-                                              textDirection: TextDirection.rtl,
-                                            ),
-                                            CText(
-                                              user?.name ?? "نامشخص",
-                                              fontSize: 15,
-                                            ),
-                                          ],
-                                        ),
-                                        const Gap(5),
-                                        SizedBox(
-                                          width: 100,
-                                          child: CounterTextfield(
-                                            label: "میز:",
-                                            decimal: false,
-                                            controller: tableNumberController,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 10),
-
-                                    ///top left
-                                    SizedBox(
-                                      width: 150,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                    child: SafeArea(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          alignment: Alignment.topCenter,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: screenType(context) == ScreenType.mobile
+                                  ? 90
+                                  : 10),
+                          child: Wrap(
+                            direction: Axis.horizontal,
+                            children: [
+                              ///top Order data part on mobile screen
+                              if (screenType(context) == ScreenType.mobile)
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white.withOpacity(.8)),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      ///top right
+                                      Column(
                                         children: [
-                                          ///invoice number
-                                          TitleButton(
-                                            title: "شماره فاکتور:",
-                                            value: billNumber.toString(),
-                                            onPress: () {
-                                              showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          const BillNumber())
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  billNumber = value.round();
-                                                }
-                                                setState(() {});
-                                              });
-                                            },
+                                          Wrap(
+                                            children: [
+                                              const CText(
+                                                "کاربر:",
+                                                textDirection: TextDirection.rtl,
+                                              ),
+                                              CText(
+                                                user?.name ?? "نامشخص",
+                                                fontSize: 15,
+                                              ),
+                                            ],
                                           ),
-                                          const Divider(
-                                            thickness: 1,
-                                            height: 5,
-                                          ),
-
-                                          ///choose orderBill date
-                                          TitleButton(
-                                            title: "تاریخ فاکتور:",
-                                            value: date.formatCompactDate(),
-                                            onPress: () async {
-                                              Jalali? picked =
-                                                  await TimeTools.chooseDate(
-                                                      context);
-                                              if (picked != null) {
-                                                setState(() {
-                                                  date = picked;
-                                                });
-                                              }
-                                            },
+                                          const Gap(5),
+                                          SizedBox(
+                                            width: 100,
+                                            child: CounterTextfield(
+                                              label: "میز:",
+                                              decimal: false,
+                                              controller: tableNumberController,
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                      const SizedBox(width: 10),
 
-                            ///description textField
-                            if (screenType(context) == ScreenType.mobile)
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: TextButton.icon(
-                                    onPressed: () {
-                                      showDescription = !showDescription;
+                                      ///top left
+                                      SizedBox(
+                                        width: 150,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ///invoice number
+                                            TitleButton(
+                                              title: "شماره فاکتور:",
+                                              value: billNumber.toString(),
+                                              onPress: () {
+                                                showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                             DialogTextField(oldValue: billNumber.toString(),))
+                                                    .then((value) {
+                                                  if (value != null) {
+                                                    billNumber = value.round();
+                                                  }
+                                                  setState(() {});
+                                                });
+                                              },
+                                            ),
+                                            const Divider(
+                                              thickness: 1,
+                                              height: 5,
+                                            ),
+
+                                            ///choose orderBill date
+                                            TitleButton(
+                                              title: "تاریخ فاکتور:",
+                                              value: date.formatCompactDate(),
+                                              onPress: () async {
+                                                Jalali? picked =
+                                                    await TimeTools.chooseDate(
+                                                        context);
+                                                if (picked != null) {
+                                                  setState(() {
+                                                    date = picked;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              ///description textField
+                              if (screenType(context) == ScreenType.mobile)
+                                DescriptionField(
+                                    controller: descriptionController,
+                                    show: showDescription,
+                                    onPress: () {
+                                      showDescription=!showDescription;
                                       setState(() {});
-                                    },
-                                    icon: Icon(
-                                      showDescription
-                                          ? CupertinoIcons.minus_square
-                                          : CupertinoIcons.plus_square,
-                                      color: Colors.teal,
-                                      size: 20,
-                                    ),
-                                    label: const CText(
-                                      "توضیحات",
-                                      color: Colors.teal,
-                                    )),
-                              ),
-                            if (showDescription &&
-                                screenType(context) == ScreenType.mobile)
-                              CustomTextField(
-                                controller: descriptionController,
-                                label: "توضیحات سفارش",
-                                width: double.maxFinite,
-                                maxLine: 3,
-                                maxLength: 300,
-                              ),
-
-                            ///quick action button like add items and add payments
-                            if (screenType(context) == ScreenType.mobile)
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Flexible(
-                                      child: ActionButton(
-                                        label: "افزودن آیتم",
-                                        icon: CupertinoIcons.cart_badge_plus,
-                                        bgColor: Colors.blueGrey,
-                                        onPress: () {
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      const ItemToBillPanel())
-                                              .then((value) {
-                                            if (value != null) {
-                                              items.add(value);
-                                            }
-                                            setState(() {});
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: ActionButton(
-                                        label: "افزودن سریع",
-                                        icon: CupertinoIcons.cart_badge_plus,
-                                        bgColor: Colors.deepOrangeAccent,
-                                        onPress: () {
-                                          Navigator.pushNamed(
-                                                  context, QuickAddScreen.id)
-                                              .then((value) {
-                                            if (value != null) {
-                                              value as List<Item>;
-                                              addToItemList(value);
+                                    }),
+                              ///quick action button like add items and add payments
+                              if (screenType(context) == ScreenType.mobile)
+                                Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      /// add item button mobile screen
+                                      Flexible(
+                                        child: ActionButton(
+                                          label: "افزودن آیتم",
+                                          icon: CupertinoIcons.cart_badge_plus,
+                                          bgColor: Colors.blueGrey,
+                                          onPress: () {
+                                            showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        const ItemToBillPanel())
+                                                .then((value) {
+                                              if (value != null) {
+                                                items.add(value);
+                                              }
                                               setState(() {});
-                                            }
-                                          });
-                                        },
+                                            });
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      ///quick add item button mobile screen
+                                      Flexible(
+                                        child: ActionButton(
+                                          label: "افزودن سریع",
+                                          icon: CupertinoIcons.cart_badge_plus,
+                                          bgColor: Colors.deepOrangeAccent,
+                                          onPress: () {
+                                            Navigator.pushNamed(
+                                                    context, QuickAddScreen.id)
+                                                .then((value) {
+                                              if (value != null) {
+                                                value as List<Item>;
+                                                addToItemList(value);
+                                                setState(() {});
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                            ///final data of orderBill like sale total
-                            Container(
-                              width: 450,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: kBoxDecoration,
-                              child: Column(
-                                children: [
-                                  TextDataField(
-                                      title: "جمع خرید", value: itemsSum),
-                                  TextDataField(
-                                      title: "تخفیف", value: discount),
-                                ],
-                              ),
-                            ),
-
-                            ///total payment
-                            Container(
+                              ///final data of orderBill like sale total
+                              Container(
+                                margin: const EdgeInsets.all(10),
                                 width: 450,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
-                                decoration: kBoxDecoration.copyWith(
-                                  color: payable == 0
-                                      ? Colors.green
-                                      : (payable < 0
-                                          ? Colors.blue
-                                          : Colors.red),
+                                decoration: kBoxDecoration,
+                                child: Column(
+                                  children: [
+                                    TextDataField(
+                                        title: "جمع خرید", value: itemsSum),
+                                    TextDataField(
+                                        title: "تخفیف", value: discount),
+                                    ///total payment
+                                    Container(
+                                        width: 450,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: payable == 0
+                                              ? Colors.teal
+                                              : (payable < 0
+                                              ? Colors.indigoAccent
+                                              : Colors.redAccent),
+                                        ),
+                                        child: TextDataField(
+                                          title: "قابل پرداخت",
+                                          showCurrency: true,
+                                          value: payable,
+                                          color: Colors.white,
+                                        )),
+                                  ],
                                 ),
-                                child: TextDataField(
-                                  title: "قابل پرداخت",
-                                  showCurrency: true,
-                                  value: payable,
-                                  color: Colors.white,
-                                )),
+                              ),
 
-                            ///sale item List Part
-                            ShoppingList(
-                              items: items,
-                              onChange: () {
-                                setState(() {});
-                              },
-                            ),
+                              ///**** item selection part in desktop ****
+                              if (screenType(context) != ScreenType.mobile)
+                                ItemSelectionPart(
+                                  selectedItems: items,
+                                  onChange: () {
+                                    setState(() {});
+                                  },
+                                ),
 
-                            const SizedBox(height: 90),
-                          ],
+                              ///sale item List Part
+                              ShoppingList(
+                                items: items,
+                                onChange: () {
+                                  setState(() {});
+                                },
+                              ),
+                              const SizedBox(height: 90),
+                            ],
+                          ),
                         ),
                       ),
                     ),

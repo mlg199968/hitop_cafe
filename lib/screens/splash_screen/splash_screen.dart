@@ -27,10 +27,10 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late UserProvider userProvider;
+  late Future globalTask;
   @override
   void initState() {
 userProvider=Provider.of<UserProvider>(context,listen: false);
-
     super.initState();
   }
 
@@ -39,13 +39,19 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
     Provider.of<WareProvider>(context, listen: false).loadCategories();
     super.didChangeDependencies();
   }
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   Widget build(context) {
     ///conditions for next screen and time to  part
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       ///get start up data
-      await GlobalTask.getInitData(context);
-      Timer(const Duration(milliseconds:900 ), () async{
+      globalTask= GlobalTask.getInitData(context);
+      await globalTask;
+      Timer(const Duration(milliseconds:1100), () async{
 
         // Shop shop = HiveBoxes.getShopInfo().getAt(0)!;
         // userProvider.getData(shop);
@@ -56,7 +62,7 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
       List<User?> users = HiveBoxes.getUsers().values.toList();
       if(appType==AppType.main.value) {
         if (currentUser != null || users.isEmpty) {
-            Navigator.pushNamedAndRemoveUntil(context, HomeScreen.id,(context)=>false);
+            Navigator.pushReplacementNamed(context, HomeScreen.id);
         }
         else {
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -67,7 +73,7 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
         Navigator.pushReplacementNamed(context, WaiterHomeScreen.id);
       }
       else{
-        Navigator.pushReplacementNamed(context, AppTypeScreen.id);
+        Navigator.pushNamedAndRemoveUntil(context, AppTypeScreen.id,(context)=>false);
       }
       });
     });

@@ -7,7 +7,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../common/widgets/custom_alert_dialog.dart';
+import '../../../common/widgets/custom_dialog.dart';
 import '../../../common/widgets/custom_textfield.dart';
 
 class AddTaskPanel extends StatefulWidget {

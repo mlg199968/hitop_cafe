@@ -65,3 +65,8 @@ Future<void> storagePermission(BuildContext context,Enum permission) async {
 
   // code to execute if access is granted
 }
+
+bool userPermission(context){
+
+  return true;
+}

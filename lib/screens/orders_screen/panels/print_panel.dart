@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/pdf/pdf_api.dart';
 import 'package:hitop_cafe/common/pdf/pdf_invoice_api.dart';
-import 'package:hitop_cafe/common/widgets/action_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_alert_dialog.dart';
+import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/drop_list_model.dart';
+import 'package:hitop_cafe/common/widgets/dynamic_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
@@ -32,7 +32,7 @@ class _PrintPanelState extends State<PrintPanel> {
   String printTemplate = PrintType.p80mm.value;
 
   ///print pdf function and view pdf function
-  Future<void> printPdf(String printType, {bool isView = false}) async {
+  Future<void> printPdf(context,String printType, {bool isView = false}) async {
     try {
       PdfInvoiceApi pdfInvoice = PdfInvoiceApi(context, bill: widget.order);
       Uint8List file = await pdfInvoice.generatePdf80();
@@ -61,7 +61,7 @@ class _PrintPanelState extends State<PrintPanel> {
   }
 
   ///print pdf function for kitchen orders
-  Future<void> printPdf2({bool isView = false}) async {
+  Future<void> printPdf2(context,{bool isView = false}) async {
     try {
       PdfInvoiceApi pdfInvoice = PdfInvoiceApi(context, bill: widget.order);
       Uint8List file =
@@ -93,8 +93,9 @@ class _PrintPanelState extends State<PrintPanel> {
   @override
   Widget build(BuildContext context) {
     return CustomDialog(
-        height: 300,
+        height: 400,
         title: "نمایش و چاپ",
+        contentPadding: EdgeInsets.zero,
         topTrail: CustomButton(
           margin: const EdgeInsets.only(left: 10),
           width: 100,
@@ -106,86 +107,98 @@ class _PrintPanelState extends State<PrintPanel> {
           },
           radius: 20,
         ),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CText(
-                      "قالب چاپ :",
-                      fontSize: 14,
-                    ),
-                    Flexible(
-                      child: DropListModel(
-                          height: 35,
-                          listItem: kPrintTemplateList,
-                          selectedValue: printTemplate,
-                          onChanged: (val) {
-                            printTemplate = val;
-                            setState(() {});
-                          }),
-                    ),
-                  ],
-                ),
-                const Gap(10),
-                const CText(
-                  "چاپ و نمایش نهایی:",
-                  fontSize: 15,
-                ),
-                const Gap(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ///print button
-                    ActionButton(
-                      label: "چاپ نهایی",
-                      onPress: () async {
-                        await printPdf(printTemplate);
-                      },
-                      bgColor: Colors.indigoAccent,
-                      icon: Icons.local_printshop_outlined,
-                    ),
+        child: SingleChildScrollView(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CText(
+                        "قالب چاپ :",
+                        fontSize: 14,
+                      ),
+                      Flexible(
+                        child: DropListModel(
+                            height: 35,
+                            listItem: kPrintTemplateList,
+                            selectedValue: printTemplate,
+                            onChanged: (val) {
+                              printTemplate = val;
+                              setState(() {});
+                            }),
+                      ),
+                    ],
+                  ),
+                  const Gap(10),
+                  const CText(
+                    "چاپ و نمایش نهایی:",
+                    fontSize: 15,
+                  ),
+                  const Gap(10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ///print button
+                      DynamicButton(
+                        label: "چاپ نهایی",
+                        onPress: () async {
+                          await printPdf(context,printTemplate);
+                        },
+                        bgColor: Colors.indigoAccent,
+                        icon: Icons.local_printshop_outlined,
+                      ),
 
-                    ///view button action
-                    ActionButton(
-                      label: "نمایش",
-                      onPress: () async {
-                        await printPdf(printTemplate, isView: true);
-                      },
-                      bgColor: Colors.red,
-                      icon: Icons.picture_as_pdf_outlined,
-                    ),
-                  ],
-                ),
-                const Divider(
-                  thickness: 1,
-                  color: kMainColor,
-                  height: 40,
-                ),
-                const CText(
-                  "چاپ آماده سازی سفارش:",
-                  fontSize: 15,
-                ),
-                const Gap(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ///print button
-                    ActionButton(
-                      label: "چاپ سفارش",
-                      onPress: () {
-                        printPdf2();
-                      },
-                      bgColor: Colors.deepOrange,
-                      icon: Icons.local_printshop_outlined,
-                    ),
-                  ],
-                ),
-              ],
+                      ///view button action
+                      DynamicButton(
+                        label: "نمایش",
+                        onPress: () async {
+                          await printPdf(context,printTemplate, isView: true);
+                        },
+                        bgColor: Colors.red,
+                        icon: Icons.picture_as_pdf_outlined,
+                      ),
+                    ],
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    color: kMainColor,
+                    height: 40,
+                  ),
+                  const CText(
+                    "چاپ آماده سازی سفارش:",
+                    fontSize: 15,
+                  ),
+                  const Gap(10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ///print button
+                      DynamicButton(
+                        label: "چاپ سفارش",
+                        onPress: ()async {
+                         await printPdf2(context);
+                        },
+                        bgColor: Colors.deepOrange,
+                        icon: Icons.local_printshop_outlined,
+                      ),
+                     ///print button
+                      DynamicButton(
+                        label: "نمایش سفارش",
+                        onPress: ()async {
+                         await printPdf2(context,isView: true);
+                        },
+                        bgColor: Colors.red,
+                        icon: Icons.picture_as_pdf_outlined,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ));
