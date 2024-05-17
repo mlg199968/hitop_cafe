@@ -305,6 +305,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
   }
 }
 
+///LabelTile
 class LabelTile extends StatelessWidget {
   const LabelTile({
     super.key,
@@ -315,9 +316,12 @@ class LabelTile extends StatelessWidget {
     this.disable = true,
     this.disableColor = kMainDisableColor,
     this.activeColor = kMainActiveColor,
+    this.fontSize,this.elevation=.4,
   });
   final String label;
   final num count;
+  final double? fontSize;
+  final double elevation;
   final VoidCallback? onTap;
   final VoidCallback? onSecondaryTap;
   final bool disable;
@@ -334,8 +338,10 @@ class LabelTile extends StatelessWidget {
           margin: const EdgeInsets.all(2),
           padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-              color: disable ? disableColor : activeColor,
-              borderRadius: BorderRadius.circular(disable ? 5 : 10)),
+            color: disable ? disableColor : activeColor,
+            borderRadius: BorderRadius.circular(disable ? 5 : 10),
+            boxShadow: [BoxShadow(blurRadius: 2, offset: const Offset(.5, .9), color: Colors.black54.withOpacity(elevation))],
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -343,10 +349,11 @@ class LabelTile extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                 child: Text(
                   label,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white,fontSize: fontSize),
                 ),
               ),
-              const VerticalDivider(
+              if (count != 0)
+              const SizedBox(
                 width: 5,
               ),
               if (count != 0)

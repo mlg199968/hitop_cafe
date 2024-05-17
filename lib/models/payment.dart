@@ -17,12 +17,15 @@ class Payment extends HiveObject{
   late DateTime deliveryDate;
   @HiveField(4)
   bool isChecked=false;
+  @HiveField(5)
+  String? description;
 
 
   Map<String, dynamic> toMap() {
     return {
       'amount': amount,
       'method': method,
+      'description': description,
       'paymentId': paymentId,
       'deliveryDate': deliveryDate.toIso8601String(),
       'isChecked': isChecked?1:0,
@@ -33,6 +36,7 @@ class Payment extends HiveObject{
     Payment payment= Payment()
      ..amount= map['amount'] ?? 0
      ..method= map['method'] ?? ""
+     ..description= map['description']
      ..paymentId= map['paymentId'] ?? "0"
      ..deliveryDate=map['deliveryDate']==null?DateTime.now(): DateTime.parse(map['deliveryDate'])
      ..isChecked= map['isChecked']==1?true:false;

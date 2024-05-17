@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_tile.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
@@ -34,9 +35,10 @@ class _ShoppingListState extends State<ShoppingList> {
       width: 450,
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          gradient: kBlackWhiteGradiant,
+          // gradient: kBlackWhiteGradiant,
+        color: Colors.white70,
       borderRadius: BorderRadius.circular(5),
-        boxShadow: const [BoxShadow(offset: Offset(1, 3),blurRadius: 5,color: Colors.black54)]
+        // boxShadow: const [BoxShadow(offset: Offset(1, 3),blurRadius: 5,color: Colors.black54)]
       ),
       child: Column(
         children: [
@@ -55,6 +57,16 @@ class _ShoppingListState extends State<ShoppingList> {
                   const CText(
                     "لیست خرید",
                     fontSize: 17,
+                  ),
+                  const Gap(4),
+                  CText(
+                    addSeparator(widget.items.isEmpty?0:widget.items.map((e) => e.sum).reduce((a, b) => a+b)),
+                    fontSize: 13,
+                  ),
+                  const Expanded(child: SizedBox()),
+                  CText(
+                    widget.items.length.toString().toPersianDigit(),
+                    fontSize: 13,
                   ),
                   Icon(isCollapse
                           ? Icons.keyboard_arrow_down_rounded

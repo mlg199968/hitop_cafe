@@ -12,6 +12,8 @@ class PayMethod{
   static const atmPersian="کارتخوان";
   static const discount="discount";
   static const discountPersian="تخفیف";
+  static const card="card";
+  static const cardPersian="به کارت";
 
   String persianToEnglish(String persian){
     switch(persian){
@@ -21,12 +23,14 @@ class PayMethod{
         return atm;
       case discountPersian:
         return discount;
+      case cardPersian:
+        return card;
     }
     return "";
   }
 }
 
-///payment methods
+///user types
 class UserType{
   static const admin="admin";
   static const adminPersian="ادمین";
@@ -36,6 +40,10 @@ class UserType{
   static const accountantPersian="حسابدار";
   static const waiter="waiter";
   static const waiterPersian="سفارشگیر";
+  static const customer="customer";
+  static const customerPersian="مشتری";
+  static const seller ="seller";
+  static const sellerPersian="فروشنده";
 
   String persianToEnglish(String persian){
     switch(persian){
@@ -47,10 +55,14 @@ class UserType{
         return waiter;
       case adminPersian:
         return admin;
+      case customerPersian:
+        return customer;
+      case sellerPersian:
+        return seller;
     }
     return "";
   }
- String englishToPersian(String english){
+  String englishToPersian(String english){
     switch(english){
       case manager:
         return managerPersian;
@@ -60,12 +72,16 @@ class UserType{
         return waiterPersian;
       case admin:
         return adminPersian;
+      case customer:
+        return customerPersian;
+      case seller:
+        return sellerPersian;
     }
     return "";
   }
   //get values list
   List getList(){
-   return [managerPersian,accountantPersian,waiterPersian];
+    return [managerPersian,accountantPersian,waiterPersian];
 
 
   }
@@ -73,7 +89,7 @@ class UserType{
 ///documents directory to save and get data
 class Address{
 
-  //data base directory directory
+  ///data base directory directory
   static Future<String> hiveDirectory()async{
     final Directory directory = await getApplicationDocumentsDirectory();
     final newDirectory = Directory("${directory.path}/hitop_cafe/db");
@@ -82,7 +98,7 @@ class Address{
     }
     return newDirectory.path;
   }
-  //items image directory
+  ///items image directory
   static Future<String> itemsImage()async{
     final Directory directory = await getApplicationDocumentsDirectory();
     final newDirectory = Directory("${directory.path}/hitop_cafe/items/images");
@@ -91,7 +107,16 @@ class Address{
     }
     return newDirectory.path;
   }
-  //items  directory
+  ///customer image directory
+  static Future<String> customersImage()async{
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final newDirectory = Directory("${directory.path}/hitop_cafe/customers/images");
+    if (!await newDirectory.exists()) {
+      newDirectory.create(recursive: true);
+    }
+    return newDirectory.path;
+  }
+  ///items  directory
   static Future<String> itemsDirectory()async{
     final Directory directory = await getApplicationDocumentsDirectory();
     Directory newDirectory = Directory("${directory.path}/hitop_cafe/items");

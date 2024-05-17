@@ -49,7 +49,9 @@ static Box<User> getUsers(){
 static Box<Notice> getNotice(){
     return Hive.box<Notice>("notice_db");
   }
-
+  static Box<User> getCustomers() {
+    return Hive.box<User>("customer_db");
+  }
 static Box<Pack> getPack(){
     return Hive.box<Pack>("pack_db");
   }

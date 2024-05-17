@@ -9,13 +9,15 @@ import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:hitop_cafe/screens/analytics/charts/chart_range_selector.dart';
+import 'package:hitop_cafe/screens/analytics/charts/line_chart.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+import 'charts/chart_range_selector.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   static const String id = "/analytics-screen";
@@ -24,7 +26,6 @@ class AnalyticsScreen extends StatefulWidget {
   @override
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();
 }
-
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   bool payments = true;
   bool sales = true;
@@ -33,13 +34,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   List<ChartData> paysData = [];
   List<ChartData> atmData = [];
   List<ChartData> cashData = [];
-  DateTime startDate = DateTime.now().subtract(const Duration(days: 5000));
+  List<ChartData> cardData = [];
+  DateTime startDate = DateTime.now()..copyWith(hour: 00,minute: 0,second: 0);
   DateTime endDate = DateTime.now();
   num saleSum = 0;
   num costSum = 0;
   num income = 0;
   num atmIncome = 0;
   num cashIncome = 0;
+  num cardIncome = 0;
   List<_PieData> pieList = [];
 ///date condition
   bool dateCondition(date) {
@@ -47,42 +50,46 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         date.isBefore(endDate.add(const Duration(hours: 1)));}
   ///
   void getData(List<Bill> billList, List<Order> orderList) {
+
     saleData = [];
     costData = [];
     paysData = [];
     atmData = [];
     cashData = [];
+    cardData = [];
 
     ///and get all pays and sales from the order list and bill list
     ///get order data
     for (Order order in orderList) {
       /// get order all payments
+      ChartData paysOrder =
+      ChartData(value: order.paymentSum-order.paymentDiscount, date: order.orderDate);
+      paysData.add(paysOrder);
       for (Payment pay in order.payments) {
-        ChartData paysOrder =
-            ChartData(value: pay.amount, date: pay.deliveryDate);
-        paysData.add(paysOrder);
-
         ///get atm payments
         if (pay.method == PayMethod.atm) {
           ChartData atmPays =
               ChartData(value: pay.amount, date: pay.deliveryDate);
           atmData.add(atmPays);
         }
-
         ///get cash payments
         if (pay.method == PayMethod.cash) {
           ChartData cashPays =
               ChartData(value: pay.amount, date: pay.deliveryDate);
           cashData.add(cashPays);
         }
+        ///get card to card payments
+        if (pay.method == PayMethod.card) {
+          ChartData cardPays =
+              ChartData(value: pay.amount, date: pay.deliveryDate);
+          cardData.add(cardPays);
+        }
       }
-
       ///get order purchases sum
-      for (Item item in order.items) {
         ChartData purchaseData =
-            ChartData(value: item.sum, date: order.orderDate);
+            ChartData(value: order.itemsSum, date: order.orderDate);
         saleData.add(purchaseData);
-      }
+
     }
 
     /// get shopping bills data calculate costs
@@ -91,7 +98,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       costData.add(billSum);
     }
   }
-
   ///calculate sum of cheques,cashes,all pays and all sales between two date
   void calculateSum() {
     saleSum = 0;
@@ -99,6 +105,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     income = 0;
     atmIncome = 0;
     cashIncome = 0;
+    cardIncome = 0;
 
 
     for (ChartData sale in saleData) {
@@ -116,6 +123,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     for (ChartData cash in cashData) {
       dateCondition(cash.date) ? cashIncome += cash.value : null;
     }
+    for (ChartData card in cardData) {
+      dateCondition(card.date) ? cardIncome += card.value : null;
+    }
   }
   ///user sale data
   getUserSale(List<Order> orderList) {
@@ -128,6 +138,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         for (_PieData pie in pieList) {
           if(pie.text==order.user!.name) {
             pie.yData+=order.itemsSum;
+            pie.xData=addSeparator(pie.yData);
             exists=true;
           }
         }
@@ -136,6 +147,26 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         }
       }
     }
+  }
+  ///time line dates
+  startupTimeLine(){
+    List<DateTime> createDateList = [];
+   List<Order> orders=HiveBoxes.getOrders().values.toList();
+   List<Payment> payments=[];
+   List<Bill> bills=HiveBoxes.getBills().values.toList();
+   for(Order order in orders){
+     payments.addAll(order.payments);
+   }
+   createDateList.addAll(orders.map((e) => e.orderDate));
+   createDateList.addAll(payments.map((e) =>e.deliveryDate));
+   createDateList.addAll(bills.map((e) => e.billDate));
+    startDate = findMinDate(createDateList);
+    endDate = findMaxDate(createDateList);
+  }
+  @override
+  void initState() {
+    startupTimeLine();
+    super.initState();
   }
   ///box decoration
  final BoxDecoration decoration= BoxDecoration(
@@ -168,7 +199,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       List<Bill> billList = box.values.toList();
 
                       bool chartCondition =
-                          billList.length < 2 && orderList.length < 2;
+                         ( billList.length < 2 && orderList.length < 2);
                       getData(billList, orderList);
                       getUserSale(orderList);
                       calculateSum();
@@ -194,16 +225,33 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 width: 800,
                                 decoration: decoration,
                                 child: RangeSelectorLabelCustomization(
-                                  billList: billList,
-                                  orderList: orderList,
-                                  payments: payments,
-                                  sales: sales,
+                                  saleSum: saleData,
+                                  income: paysData,
+                                  startDate: startDate,
+                                  endDate: endDate,
                                   onChange: (val) {
                                     startDate = val.start;
                                     endDate = val.end;
                                     //calculateSum(val.start, val.end,false);
                                     setState(() {});
                                   },
+                                ),
+                              ),
+                            Container(
+                                margin: const EdgeInsets.all(15),
+                                alignment: Alignment.center,
+                                width: 800,
+                                decoration: decoration,
+                                child: CustomDateRangeSelector(
+                                  onChange: (val) {
+                                    startDate = val.start;
+                                    endDate = val.end;
+                                    //calculateSum(val.start, val.end,false);
+                                    setState(() {});
+                                  }, startDate: startDate,
+                                  endDate: endDate,
+                                  saleSum: saleData,
+                                  income: paysData,
                                 ),
                               ),
 
@@ -236,7 +284,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   margin: const EdgeInsets.all(5),
                                   padding: const EdgeInsets.all(5),
                                   width: 250,
-                                  height: 200,
                                   decoration: decoration,
                                   child: Directionality(
                                     textDirection: TextDirection.rtl,
@@ -258,6 +305,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                         BuildRowText(
                                             title: "درآمد نقدی:",
                                             value: addSeparator(cashIncome)),
+                                      BuildRowText(
+                                            title: "درآمد کارت به کارت:",
+                                            value: addSeparator(cardIncome)),
                                       ],
                                     ),
                                   ),
@@ -265,9 +315,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               ],
                             ),
 
-                            const SizedBox(
-                              height: 70,
-                            )
+                            const Gap(70)
                           ],
                         ),
                       );
@@ -279,6 +327,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 }
 
+
+///
 class BuildRowText extends StatelessWidget {
   const BuildRowText({
     super.key,
@@ -331,10 +381,10 @@ class BuildRowText extends StatelessWidget {
         ));
   }
 }
-
+///
 class _PieData {
   _PieData(this.xData, this.yData, [this.text]);
-  final String xData;
+  String xData;
   num yData;
   String? text;
 }

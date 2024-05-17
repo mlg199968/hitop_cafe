@@ -36,6 +36,22 @@ class User extends HiveObject {
   late String userId;
   @HiveField(14)
   String? userDevice;
+  @HiveField(15)
+  String? lastName;
+  @HiveField(16)
+  String? nickName;
+  @HiveField(17)
+  List<String>? phoneNumbers;
+  @HiveField(18)
+  double? preDiscount;
+  @HiveField(19)
+  String? address;
+  @HiveField(20)
+  bool? isChecked=false;
+
+  String get fullName=>"$name ${lastName ??""}";
+  String get phones=>(phoneNumbers!=null)?phoneNumbers.toString():"";
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -54,10 +70,16 @@ class User extends HiveObject {
       'modifiedDate': modifiedDate.toIso8601String(),
       'userId': userId ,
       'userDevice': userDevice,
+      'lastName': lastName,
+      'nickName': nickName,
+      'phoneNumbers': phoneNumbers,
+      'preDiscount': preDiscount,
+      'address': address,
+      'isChecked': isChecked! ? 1 : 0,
     };
   }
 
-   User fromMap(Map<String, dynamic> map) {
+  User fromMap(Map<String, dynamic> map) {
     User user= User()
       ..name= map['name'] ?? ""
       ..userName= map['userName']
@@ -73,11 +95,20 @@ class User extends HiveObject {
       ..createDate= DateTime.parse(map['createDate'])
       ..modifiedDate= DateTime.parse(map['modifiedDate'])
       ..userId= map['userId'] ?? "0"
-      ..userDevice= map['userDevice'];
+      ..userDevice= map['userDevice']
+      ..lastName= map['lastName']
+      ..nickName= map['nickName']
+      ..preDiscount= map['preDiscount'] ?? 0
+      ..phoneNumbers= map['phoneNumbers']
+      ..address= map['address']
+
+      ..isChecked= map['isChecked']==1?true:false
+
+    ;
     return user;
   }
 
-String toJson()=>jsonEncode(toMap());
+  String toJson()=>jsonEncode(toMap());
   User fromJson(String source)=>fromMap(jsonDecode(source));
 }
 

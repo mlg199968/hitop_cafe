@@ -65,7 +65,7 @@ class CardButton extends InkWell {
             child: Text(
               label,
               style:
-              const TextStyle(color: Colors.white, fontSize: 18),
+              const TextStyle(color: Colors.white, fontSize: 18,shadows: [kShadow]),
             ),
 
           ),]

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,6 +13,7 @@ import 'package:hitop_cafe/constants/user_permissions.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
+import 'package:hitop_cafe/screens/customer_screen/customer_list_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
 import 'package:hitop_cafe/screens/note_list_screen/widgets/note_carousel.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
@@ -267,29 +269,63 @@ bool showAlertNotice=true;
 
                           ///ware house button raw wares and main items
 
-                          CardButton(
-                              label: "لیست آیتم ها ",
-                              width: 400,
-                              height: 100,
-                              image: "items.jpg",
-                              verticalDirection: false,
-                              onTap: () {
-                                onTapFunction(2, () {
-                                  Navigator.pushNamed(context, ItemsScreen.id);
-                                });
-                              }),
-                          CardButton(
-                              label: "لیست مواد خام ",
-                              width: 400,
-                              height: 100,
-                              image: "raw-wares.jpg",
-                              verticalDirection: false,
-                              onTap: () {
-                                onTapFunction(3, () {
-                                  Navigator.pushNamed(
-                                      context, WareListScreen.id);
-                                });
-                              }),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: CardButton(
+                                  label: "مشتری ها",
+                                  width: 134,
+                                  height: 208,
+                                  image: "customers-v.jpg",
+                                  onTap: () {
+                                    onTapFunction(
+                                      3,
+                                          () {
+                                        Navigator.pushNamed(
+                                            context, CustomerListScreen.id);
+                                      },
+                                    );
+                                  },
+                                  verticalDirection: true,
+
+                                ),
+                              ),
+                              ///items and rows
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ///items
+                                    CardButton(
+                                        label: "لیست آیتم ها ",
+                                        width: 250,
+                                        height: 100,
+                                        image: "items.jpg",
+                                        verticalDirection: false,
+                                        onTap: () {
+                                          onTapFunction(2, () {
+                                            Navigator.pushNamed(context, ItemsScreen.id);
+                                          });
+                                        }),
+                                    ///raw wares
+                                    CardButton(
+                                        label: "لیست مواد خام ",
+                                        width: 250,
+                                        height: 100,
+                                        image: "raw-wares.jpg",
+                                        verticalDirection: false,
+                                        onTap: () {
+                                          onTapFunction(3, () {
+                                            Navigator.pushNamed(
+                                                context, WareListScreen.id);
+                                          });
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
 
                           Align(
                             alignment: Alignment.bottomCenter,

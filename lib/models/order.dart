@@ -39,7 +39,7 @@ class Order extends HiveObject {
  @HiveField(13)
   User? user;
  @HiveField(14)
-  Customer? customer;
+  User? customer;
  @HiveField(15)
   bool? takeaway;
 
@@ -102,7 +102,7 @@ class Order extends HiveObject {
       ..isDone= map['isDone']==1?true:false
       ..description= map['description'] ?? ""
       ..user= map['user']==null?null:User().fromMap(map['user'])
-      ..customer= map['customer']==null?null:Customer().fromMap(map['customer'])
+      ..customer= map['customer']==null?null:User().fromMap(map['customer'])
       ..tax= map['tax'] ?? 0
       ..billNumber= map['billNumber'] ?? 0;
 

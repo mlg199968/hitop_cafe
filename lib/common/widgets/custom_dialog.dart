@@ -14,7 +14,7 @@ class CustomDialog extends StatelessWidget {
     this.textDirection = TextDirection.rtl,
     this.opacity = .9,
     this.image,
-    this.borderRadius = 20,
+    this.borderRadius = 10,
     this.vip =false,
     this.contentPadding,
     this.topTrail, this.actions,
@@ -63,6 +63,7 @@ class CustomDialog extends StatelessWidget {
                 Stack(
                   children: [
                     ///image holder part with faded button,
+                    if(image != null && image != "")
                     Opacity(
                       opacity: .9,
                       child: Container(
@@ -78,6 +79,7 @@ class CustomDialog extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if(image != null && image != "")
                     Container(
                       width: width,
                       height: 250,
@@ -89,6 +91,7 @@ class CustomDialog extends StatelessWidget {
                               colors: [Colors.white, Colors.transparent],
                               stops: [.5, .9])),
                     ),
+                    ///
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -119,6 +122,7 @@ class CustomDialog extends StatelessWidget {
                             ),
                           ],
                         ),
+                        ///title
                         Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -135,6 +139,7 @@ class CustomDialog extends StatelessWidget {
                                   fontSize: 18,
                                   shadows: [kShadow]),
                             )),
+                        ///child
                         Directionality(
                           textDirection: textDirection,
                           child: Flexible(

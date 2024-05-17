@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_dialog.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -6,6 +8,7 @@ import 'package:hitop_cafe/common/widgets/custom_toggle_button.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/description_textfield.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
 
@@ -21,18 +24,20 @@ class _CashToBillState extends State<PaymentToBill> {
   final _formKey = GlobalKey<FormState>();
 
   final String date = Jalali.now().formatCompactDate();
-
   final DateTime originDate = DateTime.now();
-
+bool showDes=false;
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
 
   final List<String> payMethods = [
     PayMethod.atmPersian,
     PayMethod.cashPersian,
+    PayMethod.cardPersian,
     PayMethod.discountPersian,
   ];
    List<bool> payBool = [
     true,
+    false,
     false,
     false,
   ];
@@ -48,6 +53,25 @@ class _CashToBillState extends State<PaymentToBill> {
   @override
   Widget build(BuildContext context) {
     return CustomDialog(
+      actions: [
+        Flexible(
+          child: CustomButton(
+              width: 500,
+              text: "افزودن به فاکتور",
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Payment payment = Payment()
+                    ..   method= PayMethod().persianToEnglish(pMethod)
+                    ..   amount= stringToDouble(amountController.text)
+                    ..description=descriptionController.text
+                    ..   deliveryDate= DateTime.now()
+                    .. paymentId= const Uuid().v1()
+                  ;
+                  Navigator.pop(context, payment);
+                }
+              }),
+        ),
+      ],
         title: "پرداخت جدید",
         child: Form(
           key: _formKey,
@@ -65,7 +89,8 @@ class _CashToBillState extends State<PaymentToBill> {
                   },
                 ),
               ),
-              const SizedBox(height: 20,),
+              const Gap(20),
+              ///pay amount textfield
               CustomTextField(
                 label: "میزان پرداخت",
                 controller: amountController,
@@ -74,23 +99,20 @@ class _CashToBillState extends State<PaymentToBill> {
                 maxLength: 15,
                 validate: true,
               ),
-              const SizedBox(
-                height: 20,
+              const Gap(20),
+              ///pay amount textfield
+              DescriptionField(
+                label: "توضیحات پرداخت",
+                  controller: descriptionController,
+                  id: "payment",
+                  show: showDes,
+                soloDes: true,
+                onPress: (){
+                    showDes=!showDes;
+                    setState(() {});
+              },
               ),
-              CustomButton(
-                  width: MediaQuery.of(context).size.width,
-                  text: "افزودن به فاکتور",
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Payment payment = Payment()
-                      ..   method= PayMethod().persianToEnglish(pMethod)
-                      ..   amount= stringToDouble(amountController.text)
-                      ..   deliveryDate= DateTime.now()
-                      .. paymentId= const Uuid().v1()
-                      ;
-                      Navigator.pop(context, payment);
-                    }
-                  }),
+              const Gap(20),
             ],
           ),
         ));

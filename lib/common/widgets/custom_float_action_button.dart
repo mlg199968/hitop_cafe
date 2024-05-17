@@ -8,9 +8,10 @@ class CustomFloatActionButton extends StatelessWidget {
       this.icon,
       this.bgColor=kSecondaryColor,
       this.fgColor=Colors.white,
-      this.label});
+      this.label, this.iconSize});
 
   final IconData? icon;
+  final double? iconSize;
   final String? label;
   final Color? bgColor;
   final Color? fgColor;
@@ -25,7 +26,7 @@ class CustomFloatActionButton extends StatelessWidget {
         label:Text(label ?? "",style: const TextStyle(fontSize: 20),),
         icon:  Icon(
           icon ?? Icons.add_rounded,
-          size: 45,
+          size: iconSize ?? 45,
         ),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         isExtended: label==null?false:true,

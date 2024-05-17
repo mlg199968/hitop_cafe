@@ -6,13 +6,18 @@ import 'package:hitop_cafe/screens/orders_screen/widgets/description_bar.dart';
 
 ///
 class DescriptionField extends StatelessWidget {
-  const DescriptionField(
-      {super.key,
-        required this.controller,
-        required this.show,
-        required this.onPress});
+  const DescriptionField({
+    super.key,
+    required this.controller,
+    required this.show,
+    required this.onPress, this.label, this.id,
+    this.soloDes=false,
+  });
   final TextEditingController controller;
+  final String? label;
+  final String? id;
   final bool show;
+  final bool soloDes;
   final VoidCallback onPress;
   @override
   Widget build(BuildContext context) {
@@ -35,14 +40,15 @@ class DescriptionField extends StatelessWidget {
         if (show)
           DescriptionBar(
               controller: controller,
-              id: "order",
+              soloDes: soloDes,
+              id: id ?? "public",
               onChange: (val) {
                 controller.text = val ?? "";
               }),
         if (show)
           CustomTextField(
             controller: controller,
-            label: "توضیحات سفارش",
+            label: label ?? "توضیحات",
             width: double.maxFinite,
             maxLine: 3,
             maxLength: 300,

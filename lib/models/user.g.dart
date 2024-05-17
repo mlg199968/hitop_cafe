@@ -31,13 +31,19 @@ class UserAdapter extends TypeAdapter<User> {
       ..createDate = fields[11] as DateTime
       ..modifiedDate = fields[12] as DateTime
       ..userId = fields[13] as String
-      ..userDevice = fields[14] as String?;
+      ..userDevice = fields[14] as String?
+      ..lastName = fields[15] as String?
+      ..nickName = fields[16] as String?
+      ..phoneNumbers = (fields[17] as List?)?.cast<String>()
+      ..preDiscount = fields[18] as double?
+      ..address = fields[19] as String?
+      ..isChecked = fields[20] as bool?;
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -67,7 +73,19 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(13)
       ..write(obj.userId)
       ..writeByte(14)
-      ..write(obj.userDevice);
+      ..write(obj.userDevice)
+      ..writeByte(15)
+      ..write(obj.lastName)
+      ..writeByte(16)
+      ..write(obj.nickName)
+      ..writeByte(17)
+      ..write(obj.phoneNumbers)
+      ..writeByte(18)
+      ..write(obj.preDiscount)
+      ..writeByte(19)
+      ..write(obj.address)
+      ..writeByte(20)
+      ..write(obj.isChecked);
   }
 
   @override

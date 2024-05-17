@@ -5,6 +5,8 @@ import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/screens/analytics/analytics_screen.dart';
+import 'package:hitop_cafe/screens/customer_screen/add_customer_screen.dart';
+import 'package:hitop_cafe/screens/customer_screen/customer_list_screen.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
@@ -132,6 +134,16 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case LocalServerScreen.id:
       return MaterialPageRoute(builder: (_) => const LocalServerScreen());
+
+    case AddCustomerScreen.id:
+      User? customerHive = routeSetting.arguments as User?;
+      return MaterialPageRoute(
+          builder: (_) => AddCustomerScreen(oldCustomer: customerHive));
+
+    case CustomerListScreen.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => CustomerListScreen(key: key));
+
 
     ///waiter app screens
     case AppTypeScreen.id:

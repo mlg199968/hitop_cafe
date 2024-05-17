@@ -31,7 +31,7 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..billNumber = fields[11] as int?
       ..tax = fields[12] as int?
       ..user = fields[13] as User?
-      ..customer = fields[14] as Customer?
+      ..customer = fields[14] as User?
       ..takeaway = fields[15] as bool?;
   }
 

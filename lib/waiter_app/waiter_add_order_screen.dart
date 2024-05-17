@@ -434,6 +434,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                               ///sidebar desktop description textField
                               if (screenType(context) != ScreenType.mobile)
                                 DescriptionField(
+                                    label: "توضیحات سفارش",
+                                    id: "order",
                                     controller: descriptionController,
                                     show: showDescription,
                                     onPress: () {
@@ -558,6 +560,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                               ///description textField
                               if (screenType(context) == ScreenType.mobile)
                                 DescriptionField(
+                                    label: "توضیحات سفارش",
+                                    id: "order",
                                     controller: descriptionController,
                                     show: showDescription,
                                     onPress: () {

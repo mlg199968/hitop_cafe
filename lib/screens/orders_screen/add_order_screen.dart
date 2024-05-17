@@ -26,6 +26,7 @@ import 'package:hitop_cafe/screens/orders_screen/parts/payments_part.dart';
 import 'package:hitop_cafe/screens/orders_screen/parts/shopping_list.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/services/order_tools.dart';
+import 'package:hitop_cafe/screens/orders_screen/widgets/customer_holder.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/description_textfield.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/text_data_field.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/title_button.dart';
@@ -63,14 +64,16 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   DateTime dueDate = DateTime.now();
   DateTime modifiedDate = DateTime.now();
   User? user;
+  User? customer;
   bool showDescription = false;
   bool takeaway = false;
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
   ///logic for add selected items to the list
   addToItemList(List<Item> iList) {
-    bool existedItem = false;
+
     for (var i in iList) {
+      bool existedItem = false;
       for (var element in items) {
         if (element.itemName == i.itemName) {
           element.quantity += i.quantity;
@@ -102,6 +105,13 @@ class _AddOrderScreenState extends State<AddOrderScreen>
           .map((e) => e.method == PayMethod.atm ? e.amount : 0)
           .reduce((a, b) => a + b);
 
+  ///calculate card to card amount
+  num get cardSum => payments.isEmpty
+      ? 0
+      : payments
+          .map((e) => e.method == PayMethod.card ? e.amount : 0)
+          .reduce((a, b) => a + b);
+
   ///calculate cash amount
   num get cashSum => payments.isEmpty
       ? 0
@@ -128,6 +138,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   Order createBillObject({String? id}) {
     Order orderBill = Order()
       ..user = user
+      ..customer = customer
       ..items = items
       ..payments = payments
       ..orderDate = id != null ? widget.oldOrder!.orderDate : DateTime.now()
@@ -169,6 +180,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
     dueDate = oldOrder.dueDate!;
     tableNumberController.text = oldOrder.tableNumber!.toString();
     user = oldOrder.user;
+    customer = oldOrder.customer;
     descriptionController.text = oldOrder.description ?? "";
     takeaway=oldOrder.takeaway ?? false;
     if (oldOrder.description != "") {
@@ -308,7 +320,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
 
                               ///orderBill date and orderBill number section
                               SizedBox(
-                                height: 220,
+
                                 child: Column(
                                   children: [
                                     const Gap(20),
@@ -324,6 +336,13 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                         ),
                                       ],
                                     ),
+                                    const Gap(10),
+                                    CustomerInfoHolder(
+                                      customer: customer,
+                                        onChange: (val){
+                                      customer=val;
+                                      setState(() {});
+                                    }),
                                     const Gap(10),
                                     ///order details info desktop
                                     Column(
@@ -469,6 +488,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               ///sidebar desktop description textField
                               if (screenType(context) != ScreenType.mobile)
                                 DescriptionField(
+                                  label: "توضیحات سفارش",
+                                    id: "order",
                                     controller: descriptionController,
                                     show: showDescription,
                                     onPress: () {
@@ -498,6 +519,16 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                           child: Wrap(
                             direction: Axis.horizontal,
                             children: [
+                              ///top Order data part on mobile screen
+                              if (screenType(context) == ScreenType.mobile)
+                                CustomerInfoHolder(
+                                    customer: customer,
+                                    showBg: true,
+                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                    onChange: (val){
+                                      customer=val;
+                                      setState(() {});
+                                    }),
                               ///top Order data part on mobile screen
                               if (screenType(context) == ScreenType.mobile)
                                 Container(
@@ -603,6 +634,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               ///description textField
                               if (screenType(context) == ScreenType.mobile)
                                 DescriptionField(
+                                  label: "توضیحات سفارش",
+                                    id: "order",
                                     controller: descriptionController,
                                     show: showDescription,
                                     onPress: () {
@@ -698,7 +731,9 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                     TextDataField(
                                         title: "پرداخت نقد", value: cashSum),
                                     TextDataField(
-                                        title: "پرداخت با کارت", value: atmSum),
+                                        title: "پرداخت با کارتخوان", value: atmSum),
+                                    TextDataField(
+                                        title: "پرداخت کارت به کارت", value: cardSum),
                                     TextDataField(
                                         title: "تخفیف", value: discount),
 
@@ -727,7 +762,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                               ),
 
                               ///**** item selection part in desktop ****
-                              if (screenType(context) == ScreenType.desktop)
+                              if (screenType(context) != ScreenType.mobile)
                                 ItemSelectionPart(
                                   selectedItems: items,
                                   onChange: () {
@@ -750,7 +785,6 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   setState(() {});
                                 },
                               ),
-                              const SizedBox(height: 40),
                             ],
                           ),
                         ),
