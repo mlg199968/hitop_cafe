@@ -6,6 +6,7 @@ import 'package:hitop_cafe/models/note.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/pack.dart';
+import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/shop.dart';
@@ -24,6 +25,9 @@ class HiveBoxes{
 
  static Box<Order> getOrders(){
     return Hive.box<Order>("order_db");
+  }
+ static Box<Payment> getExpenses(){
+    return Hive.box<Payment>("expense_db");
   }
 
 static Box<Bill> getBills(){

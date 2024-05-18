@@ -14,6 +14,8 @@ class PayMethod{
   static const discountPersian="تخفیف";
   static const card="card";
   static const cardPersian="به کارت";
+  static const other="other";
+  static const otherPersian="متفرقه";
 
   String persianToEnglish(String persian){
     switch(persian){
@@ -25,6 +27,8 @@ class PayMethod{
         return discount;
       case cardPersian:
         return card;
+      case otherPersian:
+        return other;
     }
     return "";
   }

@@ -30,6 +30,8 @@ import 'package:lottie/lottie.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
+import '../other_expenses_screen/other_expenses_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   static const String id = "/home-screen";
   const HomeScreen({super.key});
@@ -48,6 +50,7 @@ bool showAlertNotice=true;
     const WareListScreen(),
     const ShoppingBillScreen(),
     const AnalyticsScreen(),
+    const OtherExpensesScreen(),
   ];
   int screenIndex = 0;
 
@@ -334,6 +337,15 @@ bool showAlertNotice=true;
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
+                                  SmallCardButton(
+                                      label: "هزینه و درآمد فرعی",
+                                      image: "expense.png",
+                                      onTap: () {
+                                        onTapFunction(6, () {
+                                            Navigator.pushNamed(
+                                              context, OtherExpensesScreen.id);
+                                        },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
+                                      }),
                                   SmallCardButton(
                                       label: "فاکتور خرید",
                                       image: "bill.png",

@@ -40,7 +40,7 @@ class OrderInfoPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomDialog(
       height: MediaQuery.of(context).size.height * .6,
-      title: "مشخصات مشتری",
+      title: "مشخصات سفارش",
       child: SafeArea(
         child: Column(
           children: [

@@ -31,6 +31,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   bool sales = true;
   List<ChartData> saleData = [];
   List<ChartData> costData = [];
+  List<ChartData> expenseData = [];
   List<ChartData> paysData = [];
   List<ChartData> atmData = [];
   List<ChartData> cashData = [];
@@ -39,6 +40,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   DateTime endDate = DateTime.now();
   num saleSum = 0;
   num costSum = 0;
+  num benefitOrLoss=0;
+  num expenseSum = 0;
   num income = 0;
   num atmIncome = 0;
   num cashIncome = 0;
@@ -46,20 +49,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   List<_PieData> pieList = [];
 ///date condition
   bool dateCondition(date) {
-    return date.isAfter(startDate.subtract(const Duration(hours: 1))) &&
-        date.isBefore(endDate.add(const Duration(hours: 1)));}
+    return date.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
+        date.isBefore(endDate.add(const Duration(seconds: 1)));}
   ///
-  void getData(List<Bill> billList, List<Order> orderList) {
+  void getData(List<Bill> billList, List<Order> orderList, List<Payment> expenseList) {
 
     saleData = [];
     costData = [];
+    expenseData = [];
     paysData = [];
     atmData = [];
     cashData = [];
     cardData = [];
 
-    ///and get all pays and sales from the order list and bill list
-    ///get order data
+    //and get all pays and sales from the order list and bill list
+    //get order data
     for (Order order in orderList) {
       /// get order all payments
       ChartData paysOrder =
@@ -91,12 +95,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         saleData.add(purchaseData);
 
     }
-
-    /// get shopping bills data calculate costs
+    // get shopping bills data calculate costs
     for (Bill bill in billList) {
       ChartData billSum = ChartData(value: bill.waresSum, date: bill.billDate);
       costData.add(billSum);
     }
+    //other expense list
+    expenseData.addAll(expenseList.map((e) => ChartData(value: e.amount, date: e.deliveryDate)));
   }
   ///calculate sum of cheques,cashes,all pays and all sales between two date
   void calculateSum() {
@@ -106,13 +111,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     atmIncome = 0;
     cashIncome = 0;
     cardIncome = 0;
-
+    expenseSum = 0;
+    benefitOrLoss=0;
 
     for (ChartData sale in saleData) {
       dateCondition(sale.date) ? saleSum += sale.value : null;
     }
     for (ChartData cost in costData) {
       dateCondition(cost.date) ? costSum += cost.value : null;
+    }
+    for (ChartData expense in expenseData) {
+      dateCondition(expense.date) ? expenseSum += expense.value : null;
     }
     for (ChartData pays in paysData) {
       dateCondition(pays.date) ? income += pays.value : null;
@@ -126,6 +135,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     for (ChartData card in cardData) {
       dateCondition(card.date) ? cardIncome += card.value : null;
     }
+
+    benefitOrLoss=saleSum-costSum-expenseSum;
+
   }
   ///user sale data
   getUserSale(List<Order> orderList) {
@@ -189,138 +201,168 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(gradient: kMainGradiant),
-          child: ValueListenableBuilder<Box<Order>>(
-              valueListenable: HiveBoxes.getOrders().listenable(),
-              builder: (context, box, _) {
-                List<Order> orderList = box.values.toList();
-                return ValueListenableBuilder<Box<Bill>>(
-                    valueListenable: HiveBoxes.getBills().listenable(),
-                    builder: (context, box, _) {
-                      List<Bill> billList = box.values.toList();
+          child: ValueListenableBuilder<Box<Payment>>(
+              valueListenable: HiveBoxes.getExpenses().listenable(),
+            builder: (context, box, _) {
+              List<Payment> expenseList = box.values.toList();
+              return ValueListenableBuilder<Box<Order>>(
+                  valueListenable: HiveBoxes.getOrders().listenable(),
+                  builder: (context, box, _) {
+                    List<Order> orderList = box.values.toList();
+                    return ValueListenableBuilder<Box<Bill>>(
+                        valueListenable: HiveBoxes.getBills().listenable(),
+                        builder: (context, box, _) {
+                          List<Bill> billList = box.values.toList();
 
-                      bool chartCondition =
-                         ( billList.length < 2 && orderList.length < 2);
-                      getData(billList, orderList);
-                      getUserSale(orderList);
-                      calculateSum();
-                      return SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(height: 60,),
-                            ///show when we have more than 2 data
-                            if (chartCondition)
-                              const EmptyHolder(
-                                height: 400,
-                                icon:Icons.analytics_outlined,
-                                text: "برای نمایش نمودار نیاز به داده بیشتری است ! ",
-                                color: Colors.white60,
-                              )
-                              ///line chart
-                            else
-                              Container(
-                                margin: const EdgeInsets.all(15),
-                                alignment: Alignment.center,
-                                height: MediaQuery.of(context).size.height*.6,
-                                width: 800,
-                                decoration: decoration,
-                                child: RangeSelectorLabelCustomization(
-                                  saleSum: saleData,
-                                  income: paysData,
-                                  startDate: startDate,
-                                  endDate: endDate,
-                                  onChange: (val) {
-                                    startDate = val.start;
-                                    endDate = val.end;
-                                    //calculateSum(val.start, val.end,false);
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                            Container(
-                                margin: const EdgeInsets.all(15),
-                                alignment: Alignment.center,
-                                width: 800,
-                                decoration: decoration,
-                                child: CustomDateRangeSelector(
-                                  onChange: (val) {
-                                    startDate = val.start;
-                                    endDate = val.end;
-                                    //calculateSum(val.start, val.end,false);
-                                    setState(() {});
-                                  }, startDate: startDate,
-                                  endDate: endDate,
-                                  saleSum: saleData,
-                                  income: paysData,
-                                ),
-                              ),
-
-                            Wrap(
+                          bool chartCondition =
+                             ( billList.length < 2 && orderList.length < 2);
+                          getData(billList, orderList,expenseList);
+                          getUserSale(orderList);
+                          calculateSum();
+                          return SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                ///pie chart
-                                Container(
-                                  margin: const EdgeInsets.all(8),
-                                  alignment: Alignment.center,
-                                  height: 200,
-                                  width: 400,
-                                  decoration: decoration,
-                                  child: SfCircularChart(
-                                      title: const ChartTitle(text: 'فروش هر کاربر'),
-                                      legend: const Legend(isVisible: true),
-                                      series: <PieSeries<_PieData, String>>[
-                                        PieSeries<_PieData, String>(
-                                            explode: true,
-                                            explodeIndex: 0,
-                                            dataSource: pieList,
-                                            xValueMapper: (_PieData data, _) => data.xData,
-                                            yValueMapper: (_PieData data, _) => data.yData,
-                                            dataLabelMapper: (_PieData data, _) => data.text,
-                                            dataLabelSettings:
-                                            const DataLabelSettings(isVisible: true)),
-                                      ]),
-                                ),
-                                ///numerical data part
-                                Container(
-                                  margin: const EdgeInsets.all(5),
-                                  padding: const EdgeInsets.all(5),
-                                  width: 250,
-                                  decoration: decoration,
-                                  child: Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: Column(
-                                      // mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        BuildRowText(
-                                            title: "فروش کل:",
-                                            value: addSeparator(saleSum)),
-                                        BuildRowText(
-                                            title: "هزینه ها:",
-                                            value: addSeparator(costSum)),
-                                        BuildRowText(
-                                            title: "درآمد کل:",
-                                            value: addSeparator(income)),
-                                        BuildRowText(
-                                            title: "درآمد از کارتخوان:",
-                                            value: addSeparator(atmIncome)),
-                                        BuildRowText(
-                                            title: "درآمد نقدی:",
-                                            value: addSeparator(cashIncome)),
-                                      BuildRowText(
-                                            title: "درآمد کارت به کارت:",
-                                            value: addSeparator(cardIncome)),
-                                      ],
+                                const SizedBox(height: 60,),
+                                ///show when we have more than 2 data
+                                if (chartCondition)
+                                  const EmptyHolder(
+                                    height: 400,
+                                    icon:Icons.analytics_outlined,
+                                    text: "برای نمایش نمودار نیاز به داده بیشتری است ! ",
+                                    color: Colors.white60,
+                                  )
+                                  ///line chart
+                                else
+                                  Container(
+                                    margin: const EdgeInsets.all(15),
+                                    alignment: Alignment.center,
+                                    height: MediaQuery.of(context).size.height*.6,
+                                    width: 800,
+                                    decoration: decoration,
+                                    child: RangeSelectorLabelCustomization(
+                                      saleSum: saleData,
+                                      income: paysData,
+                                      startDate: startDate,
+                                      endDate: endDate,
+                                      onChange: (val) {
+                                        startDate = val.start;
+                                        endDate = val.end;
+                                        //calculateSum(val.start, val.end,false);
+                                        setState(() {});
+                                      },
                                     ),
                                   ),
+                                Container(
+                                    margin: const EdgeInsets.all(15),
+                                    alignment: Alignment.center,
+                                    width: 800,
+                                    decoration: decoration,
+                                    child: CustomDateRangeSelector(
+                                      onChange: (val) {
+                                        startDate = val.start;
+                                        endDate = val.end;
+                                        //calculateSum(val.start, val.end,false);
+                                        setState(() {});
+                                      }, startDate: startDate,
+                                      endDate: endDate,
+                                      saleSum: saleData,
+                                      income: paysData,
+                                    ),
+                                  ),
+
+                                Wrap(
+                                  children: [
+                                    ///pie chart
+                                    Container(
+                                      margin: const EdgeInsets.all(8),
+                                      alignment: Alignment.center,
+                                      height: 200,
+                                      width: 400,
+                                      decoration: decoration,
+                                      child: SfCircularChart(
+                                          title: const ChartTitle(text: 'فروش هر کاربر'),
+                                          legend: const Legend(isVisible: true),
+                                          series: <PieSeries<_PieData, String>>[
+                                            PieSeries<_PieData, String>(
+                                                explode: true,
+                                                explodeIndex: 0,
+                                                dataSource: pieList,
+                                                xValueMapper: (_PieData data, _) => data.xData,
+                                                yValueMapper: (_PieData data, _) => data.yData,
+                                                dataLabelMapper: (_PieData data, _) => data.text,
+                                                dataLabelSettings:
+                                                const DataLabelSettings(isVisible: true)),
+                                          ]),
+                                    ),
+                                    ///main numerical data part
+                                    Container(
+                                      margin: const EdgeInsets.all(5),
+                                      padding: const EdgeInsets.all(5),
+                                      width: 250,
+                                      decoration: decoration,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Column(
+                                          // mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            BuildRowText(
+                                                title: "فروش کل:",
+                                                value: addSeparator(saleSum)),
+                                            BuildRowText(
+                                                title: "هزینه کل:",
+                                                value: addSeparator(costSum+expenseSum)),
+                                            BuildRowText(
+                                                title: "درآمد کل:",
+                                                value: addSeparator(income)),
+                                            BuildRowText(
+                                                title: "سود یا زیان کل:",
+                                                value: addSeparator(benefitOrLoss)),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                      ///numerical data part
+                                    Container(
+                                      margin: const EdgeInsets.all(5),
+                                      padding: const EdgeInsets.all(5),
+                                      width: 250,
+                                      decoration: decoration,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Column(
+                                          // mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            BuildRowText(
+                                                title: "هزینه های متفرقه:",
+                                                value: addSeparator(expenseSum)),
+                                            BuildRowText(
+                                                title: "فاکتور های خرید:",
+                                                value: addSeparator(costSum)),
+                                            BuildRowText(
+                                                title: "درآمد از کارتخوان:",
+                                                value: addSeparator(atmIncome)),
+                                            BuildRowText(
+                                                title: "درآمد نقدی:",
+                                                value: addSeparator(cashIncome)),
+                                          BuildRowText(
+                                                title: "درآمد کارت به کارت:",
+                                                value: addSeparator(cardIncome)),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
+
+                                const Gap(70)
                               ],
                             ),
-
-                            const Gap(70)
-                          ],
-                        ),
-                      );
-                    });
-              }),
+                          );
+                        });
+                  });
+            }
+          ),
         ),
       ),
     );

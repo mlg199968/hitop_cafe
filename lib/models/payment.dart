@@ -19,32 +19,55 @@ class Payment extends HiveObject{
   bool isChecked=false;
   @HiveField(5)
   String? description;
-
+  @HiveField(6)
+  DateTime? chequeDate;
+  @HiveField(7)
+  String? chequeSerial="";
+  @HiveField(8)
+  String? ownerName;
+  @HiveField(9)
+  String? ownerPhone;
+  @HiveField(10)
+  bool? isDone=false;
 
   Map<String, dynamic> toMap() {
     return {
       'amount': amount,
       'method': method,
-      'description': description,
       'paymentId': paymentId,
       'deliveryDate': deliveryDate.toIso8601String(),
+      'chequeDate': chequeDate?.toIso8601String(),
+      'chequeSerial': chequeSerial,
+      'ownerName': ownerName,
+      'ownerPhone': ownerPhone,
+      'description': description,
+      'isDone': isDone==true ?1:0,
       'isChecked': isChecked?1:0,
     };
   }
 
-  Payment fromMap(Map<String,dynamic> map) {
+  Payment fromMap(Map<String, dynamic> map) {
     Payment payment= Payment()
-     ..amount= map['amount'] ?? 0
-     ..method= map['method'] ?? ""
-     ..description= map['description']
-     ..paymentId= map['paymentId'] ?? "0"
-     ..deliveryDate=map['deliveryDate']==null?DateTime.now(): DateTime.parse(map['deliveryDate'])
-     ..isChecked= map['isChecked']==1?true:false;
+      ..amount= map['amount'] ?? 0
+      ..method= map['method'] ?? ""
+      ..paymentId= map['paymentId'] ?? ""
+      ..deliveryDate= map['deliveryDate']==null?DateTime.now(): DateTime.parse(map['deliveryDate'])
+      ..chequeDate= map['chequeDate']==null?DateTime.now(): DateTime.parse(map['chequeDate'])
+      ..chequeSerial= map['chequeSerial']
+      ..ownerName= map['ownerName']
+      ..ownerPhone= map['ownerPhone']
+      ..description= map['description']
+      ..isDone= map['isDone']==1?true:false
+      ..isChecked= map['isChecked']==1?true:false;
+
     return payment;
   }
 
+
+
   String toJson()=>jsonEncode(toMap());
-  Payment fromJson(String source)=>Payment().fromMap(jsonDecode(source));
+  Payment fromJson(String source)=>fromMap(jsonDecode(source));
+
 }
 
 

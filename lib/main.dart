@@ -71,6 +71,7 @@ Future main() async {
   await Hive.openBox<Pack>("pack_db",path: await Address.hiveDirectory());
   await Hive.openBox<Notice>("notice_db",path: await Address.hiveDirectory());
   await Hive.openBox<Note>("note_db",path: await Address.hiveDirectory());
+  await Hive.openBox<Payment>("expense_db",path: await Address.hiveDirectory());
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => WareProvider()),

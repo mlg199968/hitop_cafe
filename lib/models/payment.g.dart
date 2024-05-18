@@ -22,13 +22,18 @@ class PaymentAdapter extends TypeAdapter<Payment> {
       ..paymentId = fields[2] as String
       ..deliveryDate = fields[3] as DateTime
       ..isChecked = fields[4] as bool
-      ..description = fields[5] as String?;
+      ..description = fields[5] as String?
+      ..chequeDate = fields[6] as DateTime?
+      ..chequeSerial = fields[7] as String?
+      ..ownerName = fields[8] as String?
+      ..ownerPhone = fields[9] as String?
+      ..isDone = fields[10] as bool?;
   }
 
   @override
   void write(BinaryWriter writer, Payment obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.amount)
       ..writeByte(1)
@@ -40,7 +45,17 @@ class PaymentAdapter extends TypeAdapter<Payment> {
       ..writeByte(4)
       ..write(obj.isChecked)
       ..writeByte(5)
-      ..write(obj.description);
+      ..write(obj.description)
+      ..writeByte(6)
+      ..write(obj.chequeDate)
+      ..writeByte(7)
+      ..write(obj.chequeSerial)
+      ..writeByte(8)
+      ..write(obj.ownerName)
+      ..writeByte(9)
+      ..write(obj.ownerPhone)
+      ..writeByte(10)
+      ..write(obj.isDone);
   }
 
   @override

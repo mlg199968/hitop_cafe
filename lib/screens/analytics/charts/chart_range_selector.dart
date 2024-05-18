@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_toggle_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
@@ -56,12 +57,12 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
   DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime endDate = DateTime.now();
 
-  List<String> dateTypes=[
+ final List<String> dateTypes=[
     "بازه دلخواه",
     "امروز",
     "دیروز",
   ];
-  String selectedDateType="امروز";
+  String selectedDateType="بازه دلخواه";
   ///
   void getDateRange() {
     ///get max and min date for chart range
@@ -122,18 +123,54 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
             }
             else if(isYesterday){
               startDate=DateTime.now().subtract(const Duration(days: 1)).copyWith(hour: 0,minute: 0,second: 0);
-              endDate=DateTime.now().subtract(const Duration(days: 1));
+              endDate=DateTime.now().subtract(const Duration(days: 1)).copyWith(hour: 23,minute: 59,second: 59,millisecond: 9);
             }
             else{
               getDateRange();
             }
             min=startDate;
             max=endDate;
+            rangeController.start = min;
+            rangeController.end = max;
             widget.onChange(slider.SfRangeValues(startDate,endDate));
             setState(() {});
             },
           ),
           ///date range picker part
+          if(selectedDateType=="امروز" || selectedDateType=="دیروز")
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "از ساعت",
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                  Text(
+                    TimeTools.showHour(min),
+                    style: const TextStyle(color: Colors.black87),
+                  ),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    " تا ساعت",
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                  Text(
+                    TimeTools.showHour(max),
+                    style: const TextStyle(color: Colors.black87),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          ///date range picker part
+          if(selectedDateType=="بازه دلخواه")
           InkWell(
             onTap: () async {
               var picked = await showPersianDateRangePicker(
@@ -146,16 +183,13 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
                 lastDate: Jalali(1450, 9),
               );
               if (picked != null) {
-                min = picked.start.toDateTime();
-                max = picked.end.toDateTime();
                 startDate = picked.start.toDateTime();
                 endDate = picked.end.toDateTime();
+                min = startDate;
+                max = endDate;
                 rangeController.start = min;
                 rangeController.end = max;
-                // rangeController = RangeController(
-                //   start:startDate,
-                //   end: endDate,
-                // );
+                widget.onChange(slider.SfRangeValues(startDate,endDate));
                 setState(() {});
               }
             },
@@ -234,8 +268,8 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
                     return label;
                   },
                   onChanged: (slider.SfRangeValues values) {
-                    max = values.start;
-                    min = values.end;
+                    min = values.start;
+                    max = values.end;
                     widget.onChange(values);
                     setState(() {});
                   },

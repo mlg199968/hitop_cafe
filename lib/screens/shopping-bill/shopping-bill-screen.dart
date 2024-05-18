@@ -23,7 +23,6 @@ class ShoppingBillScreen extends StatefulWidget {
   @override
   State<ShoppingBillScreen> createState() => _CustomerListScreenState();
 }
-
 class _CustomerListScreenState extends State<ShoppingBillScreen> {
   FocusNode focusNode = FocusNode();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -138,6 +137,8 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
   }
 }
 
+
+///
 class CreditListPart extends StatefulWidget {
   const CreditListPart({super.key, required this.billList});
   final List<Bill> billList;
@@ -145,7 +146,6 @@ class CreditListPart extends StatefulWidget {
   @override
   State<CreditListPart> createState() => _CreditListPartState();
 }
-
 class _CreditListPartState extends State<CreditListPart> {
   Bill? selectedOrder;
   @override

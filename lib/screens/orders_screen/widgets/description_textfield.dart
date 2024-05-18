@@ -12,17 +12,21 @@ class DescriptionField extends StatelessWidget {
     required this.show,
     required this.onPress, this.label, this.id,
     this.soloDes=false,
+    this.showDropButton=true, this.maxLine=3,
   });
   final TextEditingController controller;
   final String? label;
   final String? id;
   final bool show;
+  final bool showDropButton;
   final bool soloDes;
   final VoidCallback onPress;
+  final int maxLine;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if(showDropButton)
         Align(
           alignment: Alignment.bottomLeft,
           child: TextButton.icon(
@@ -50,7 +54,7 @@ class DescriptionField extends StatelessWidget {
             controller: controller,
             label: label ?? "توضیحات",
             width: double.maxFinite,
-            maxLine: 3,
+            maxLine: maxLine,
             maxLength: 300,
           ),
       ],

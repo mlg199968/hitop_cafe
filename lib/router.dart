@@ -10,6 +10,7 @@ import 'package:hitop_cafe/screens/customer_screen/customer_list_screen.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/add_item_screen.dart';
 import 'package:hitop_cafe/screens/items_screen/items_screen.dart';
+import 'package:hitop_cafe/screens/other_expenses_screen/other_expenses_screen.dart';
 import 'package:hitop_cafe/screens/note_list_screen/note_list_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/add_order_screen.dart';
 import 'package:hitop_cafe/screens/orders_screen/order_screen.dart';
@@ -68,6 +69,10 @@ Route generateRoute(RouteSettings routeSetting) {
     case ShoppingBillScreen.id:
       Key? key = routeSetting.arguments as Key?;
       return MaterialPageRoute(builder: (_) => ShoppingBillScreen(key: key));
+
+    case OtherExpensesScreen.id:
+      Key? key = routeSetting.arguments as Key?;
+      return MaterialPageRoute(builder: (_) => OtherExpensesScreen(key: key));
 
     case WareListScreen.id:
       Key? key = routeSetting.arguments as Key?;
