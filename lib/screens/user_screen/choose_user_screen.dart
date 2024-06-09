@@ -53,12 +53,10 @@ class _ChooseUserScreenState extends State<ChooseUserScreen> {
     setState(() {});
     try {
       String phoneVal = selectedUser!.phone!;
-      print(phoneVal);
       if (phoneVal.isNotEmpty && phoneVal[0] == "0") {
         phoneVal = phoneVal.replaceFirst("0", "");
         selectedUser!.phone = phoneVal;
       }
-      print(phoneVal);
       if (phoneVal.isNotEmpty && phoneVal.length == 10 && phoneVal[0] == "9") {
         Map? phoneAuthData =
         await PayamitoApi.sentMessage(context, selectedUser!.phone!,bodyId:PrivateKeys.bodyIdEntry);
@@ -73,8 +71,8 @@ class _ChooseUserScreenState extends State<ChooseUserScreen> {
         isRightNumber=false;
       }
 
-    } catch (error) {
-      ErrorHandler.errorManger(context, error,
+    } catch (error,stack) {
+      ErrorHandler.errorManger(context, error,stacktrace: stack,
           title: "خطا در ارسال کد!",
           route: "AuthorityScreen sendCode button function error",
           showSnackbar: true);

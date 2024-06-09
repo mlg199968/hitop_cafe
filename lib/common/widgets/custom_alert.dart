@@ -162,7 +162,7 @@ class CustomAlert extends StatelessWidget {
                       ActionButton(
                         bgColor: Colors.redAccent,
                         icon: Icons.close,
-                        onPress: onNo, // this line dismisses the dialog
+                        onPress: onNo ?? (){Navigator.pop(context,false);}, // this line dismisses the dialog
                         label: 'خیر',
                       )
                     ],)),

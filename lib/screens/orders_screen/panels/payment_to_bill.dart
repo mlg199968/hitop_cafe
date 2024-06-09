@@ -35,12 +35,7 @@ bool showDes=false;
     PayMethod.cardPersian,
     PayMethod.discountPersian,
   ];
-   List<bool> payBool = [
-    true,
-    false,
-    false,
-    false,
-  ];
+
 
   String pMethod =PayMethod.atmPersian ;
 

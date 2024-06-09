@@ -29,8 +29,8 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
   List<Item> selectedItems = [];
 
   ///call message on pop to previous page function
-  Future<bool> willPop() async {
-    return await showDialog(
+  void willPop(bool didPop) async {
+     await showDialog(
         context: context,
         builder: (context) => CustomAlert(
             title: "آیتم های انتخاب شده به فاکتور افزوده شود؟",
@@ -58,8 +58,9 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: selectedItems.isNotEmpty ? willPop : null,
+    return PopScope(
+      canPop:selectedItems.isNotEmpty ,
+      onPopInvoked:willPop,
       child: HideKeyboard(
         child: Scaffold(
           floatingActionButton: CustomFloatActionButton(

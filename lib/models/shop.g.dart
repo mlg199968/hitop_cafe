@@ -46,7 +46,7 @@ class ShopAdapter extends TypeAdapter<Shop> {
       ..subscription = fields[26] as Subscription?
       ..descriptionList = (fields[27] as List?)
           ?.map((dynamic e) => (e as Map).cast<dynamic, dynamic>())
-          ?.toList();
+          .toList();
   }
 
   @override

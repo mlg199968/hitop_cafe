@@ -1,19 +1,15 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/time/day_slider.dart';
+import 'package:hitop_cafe/common/time/month_slider.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_toggle_button.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/bill.dart';
-import 'package:hitop_cafe/models/item.dart';
-import 'package:hitop_cafe/models/order.dart';
-import 'package:hitop_cafe/models/payment.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
-///Chart import
-import 'package:syncfusion_flutter_charts/charts.dart' hide LabelPlacement;
 
 ///Core import
 import 'package:syncfusion_flutter_core/core.dart';
@@ -42,6 +38,7 @@ class CustomDateRangeSelector extends StatefulWidget {
   final List<ChartData> income;
   final DateTime startDate;
   final DateTime endDate;
+
   @override
   State<CustomDateRangeSelector> createState() =>
       _CustomDateRangeSelectorState();
@@ -49,7 +46,7 @@ class CustomDateRangeSelector extends StatefulWidget {
 class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
     with SingleTickerProviderStateMixin {
   _CustomDateRangeSelectorState();
-
+  DateTime selectedDay=DateTime.now();
   DateTime min = DateTime(2022, 4), max = DateTime(2023, 5);
   late RangeController rangeController;
   late slider.EdgeLabelPlacement _edgeLabelPlacement;
@@ -59,8 +56,8 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
 
  final List<String> dateTypes=[
     "بازه دلخواه",
-    "امروز",
-    "دیروز",
+    "روزانه",
+    "ماهانه",
   ];
   String selectedDateType="بازه دلخواه";
   ///
@@ -103,8 +100,8 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
     final ThemeData themeData = Theme.of(context);
     final bool isLightTheme =
         themeData.colorScheme.brightness == Brightness.light;
-    bool isToday=selectedDateType=="امروز";
-    bool isYesterday=selectedDateType=="دیروز";
+    bool isDays=selectedDateType=="روزانه";
+    bool isMonths=selectedDateType=="ماهانه";
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -115,15 +112,15 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
             selected: selectedDateType,
             onPress:(val){
             selectedDateType=dateTypes[val];
-            isToday=selectedDateType=="امروز";
-            isYesterday=selectedDateType=="دیروز";
-            if(isToday){
+            isDays=selectedDateType=="روزانه";
+            isMonths=selectedDateType=="ماهانه";
+            if(isDays){
               startDate=DateTime.now().copyWith(hour: 0,minute: 0,second: 0);
               endDate=DateTime.now();
             }
-            else if(isYesterday){
-              startDate=DateTime.now().subtract(const Duration(days: 1)).copyWith(hour: 0,minute: 0,second: 0);
-              endDate=DateTime.now().subtract(const Duration(days: 1)).copyWith(hour: 23,minute: 59,second: 59,millisecond: 9);
+            else if(isMonths){
+              startDate=DateTime.now().toJalali().copy(day:1,hour: 0,minute: 0,second: 0).toDateTime();
+              endDate=DateTime.now().toJalali().addMonths(1).copy(day:1,hour: 0,minute: 0,second: 0).toDateTime();
             }
             else{
               getDateRange();
@@ -136,8 +133,40 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
             setState(() {});
             },
           ),
-          ///date range picker part
-          if(selectedDateType=="امروز" || selectedDateType=="دیروز")
+
+          ///month range picker part
+          if(selectedDateType=="ماهانه")
+          MonthSlider(
+              date: selectedDay,
+              onChange: (current,begin,end){
+            selectedDay=current;
+            startDate=begin;
+            endDate=end;
+
+            min=startDate;
+            max=endDate;
+            rangeController.start = min;
+            rangeController.end = max;
+            widget.onChange(slider.SfRangeValues(startDate,endDate));
+            setState(() {});
+          }),
+          ///day range picker part
+          if(selectedDateType=="روزانه")
+          DaySlider(
+              date: selectedDay,
+              onChange: (current,begin,end){
+            selectedDay=current;
+            startDate=begin;
+            endDate=end;
+
+            min=startDate;
+            max=endDate;
+            rangeController.start = min;
+            rangeController.end = max;
+            widget.onChange(slider.SfRangeValues(startDate,endDate));
+            setState(() {});
+          }),
+          if(selectedDateType=="روزانه")
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -170,7 +199,7 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
             ],
           ),
           ///date range picker part
-          if(selectedDateType=="بازه دلخواه")
+          if(selectedDateType=="بازه دلخواه" || selectedDateType=="ماهانه")
           InkWell(
             onTap: () async {
               var picked = await showPersianDateRangePicker(
@@ -200,11 +229,11 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      " تا تاریخ",
+                      "از تاریخ",
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     Text(
-                      max.toPersianDate(),
+                      min.toPersianDate(),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ],
@@ -213,11 +242,11 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "از تاریخ",
+                      " تا تاریخ",
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     Text(
-                      min.toPersianDate(),
+                      max.toPersianDate(),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ],

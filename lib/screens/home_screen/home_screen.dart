@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -50,6 +49,7 @@ bool showAlertNotice=true;
     const WareListScreen(),
     const ShoppingBillScreen(),
     const AnalyticsScreen(),
+    const CustomerListScreen(),
     const OtherExpensesScreen(),
   ];
   int screenIndex = 0;
@@ -269,9 +269,7 @@ bool showAlertNotice=true;
                               ),
                             ],
                           ),
-
-                          ///ware house button raw wares and main items
-
+                          ///ware house button raw wares and main items and customers
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -283,7 +281,7 @@ bool showAlertNotice=true;
                                   image: "customers-v.jpg",
                                   onTap: () {
                                     onTapFunction(
-                                      3,
+                                      6,
                                           () {
                                         Navigator.pushNamed(
                                             context, CustomerListScreen.id);
@@ -329,51 +327,50 @@ bool showAlertNotice=true;
                               ),
                             ],
                           ),
-
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SmallCardButton(
-                                      label: "هزینه و درآمد فرعی",
-                                      image: "expense.png",
-                                      onTap: () {
-                                        onTapFunction(6, () {
-                                            Navigator.pushNamed(
-                                              context, OtherExpensesScreen.id);
-                                        },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
-                                      }),
-                                  SmallCardButton(
-                                      label: "فاکتور خرید",
-                                      image: "bill.png",
-                                      onTap: () {
-                                        onTapFunction(4, () {
-                                            Navigator.pushNamed(
-                                              context, ShoppingBillScreen.id);
-                                        },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
-                                      }),
-                                  SmallCardButton(
-                                      label: "آنالیز",
-                                      image: "analytics3.png",
-                                      onTap: () {
-                                        onTapFunction(5, () {
-                                            Navigator.pushNamed(
-                                                context, AnalyticsScreen.id);
-                                        },permission: UserTools.userPermission(context,userTypes: kupAnalyticsScreen));
-                                      }),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 100,
-                          ),
+                          ///circle buttons
                         ],
                       )),
                     ),
+                    ///circle buttons
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SmallCardButton(
+                                label: "هزینه و درآمد فرعی",
+                                image: "expense.png",
+                                onTap: () {
+                                  onTapFunction(7, () {
+                                    Navigator.pushNamed(
+                                        context, OtherExpensesScreen.id);
+                                  },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
+                                }),
+                            SmallCardButton(
+                                label: "فاکتور خرید",
+                                image: "bill.png",
+                                onTap: () {
+                                  onTapFunction(4, () {
+                                    Navigator.pushNamed(
+                                        context, ShoppingBillScreen.id);
+                                  },permission: UserTools.userPermission(context,userTypes: kupBillScreen));
+                                }),
+                            SmallCardButton(
+                                label: "آنالیز",
+                                image: "analytics3.png",
+                                onTap: () {
+                                  onTapFunction(5, () {
+                                    Navigator.pushNamed(
+                                        context, AnalyticsScreen.id);
+                                  },permission: UserTools.userPermission(context,userTypes: kupAnalyticsScreen));
+                                }),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Gap(100),
                   ],
                 ),
               ),

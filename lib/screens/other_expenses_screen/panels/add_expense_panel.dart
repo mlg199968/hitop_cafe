@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/note.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/screens/orders_screen/widgets/description_textfield.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/widgets/custom_dialog.dart';

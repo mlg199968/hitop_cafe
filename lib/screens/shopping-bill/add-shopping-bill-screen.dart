@@ -184,8 +184,8 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
   }
 
   ///call message on pop to previous page function
-  Future<bool> willPop() async {
-    return await showDialog(context: context, builder: (context)=>CustomAlert(
+  void willPop(bool didPop) async{
+     await showDialog(context: context, builder: (context)=>CustomAlert(
         title: "تغییرات داده شده ذخیره شود؟",
         onYes: () {
           saveBillOnLocalStorage(
@@ -203,8 +203,9 @@ class _AddOrderScreenState extends State<AddShoppingBillScreen>
 ///******************************************* widget ***************************************************
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: didUpdateData() ? willPop : null,
+    return PopScope(
+      canPop: didUpdateData(),
+      onPopInvoked: willPop,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         ///save float action button

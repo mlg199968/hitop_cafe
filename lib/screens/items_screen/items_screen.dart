@@ -138,15 +138,13 @@ class _ListPartState extends State<ListPart> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return PopScope(
       //if action bottom bar is shown,on will pop first close the action bar then on the second press close the screen
-      onWillPop: selectedItems.isEmpty
-          ? null
-          : () async {
-              selectedItems.clear();
-              setState(() {});
-              return false;
-            },
+      canPop: selectedItems.isEmpty,
+      onPopInvoked: (didPop){
+        selectedItems.clear();
+        setState(() {});
+      },
       child: Expanded(
         child: LayoutBuilder(builder: (context, constraint) {
           bool widthCondition = constraint.maxWidth > 500;

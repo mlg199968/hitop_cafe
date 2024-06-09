@@ -34,7 +34,6 @@ class _SetPasswordPanelState extends State<SetPasswordPanel> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.oldPass);
     return CustomDialog(
       opacity: .8,
       title: "تنظیم رمزعبور",

@@ -102,10 +102,28 @@ class Address{
     }
     return newDirectory.path;
   }
+  ///data base directory directory
+  static Future<String> appDirectory()async{
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final newDirectory = Directory("${directory.path}/hitop_cafe");
+    if (!await newDirectory.exists()) {
+      newDirectory.create(recursive: true);
+    }
+    return newDirectory.path;
+  }
   ///items image directory
   static Future<String> itemsImage()async{
     final Directory directory = await getApplicationDocumentsDirectory();
     final newDirectory = Directory("${directory.path}/hitop_cafe/items/images");
+    if (!await newDirectory.exists()) {
+      newDirectory.create(recursive: true);
+    }
+    return newDirectory.path;
+  }
+  ///items  directory
+  static Future<String> itemsDirectory()async{
+    final Directory directory = await getApplicationDocumentsDirectory();
+    Directory newDirectory = Directory("${directory.path}/hitop_cafe/items");
     if (!await newDirectory.exists()) {
       newDirectory.create(recursive: true);
     }
@@ -120,10 +138,10 @@ class Address{
     }
     return newDirectory.path;
   }
-  ///items  directory
-  static Future<String> itemsDirectory()async{
+  ///customer directory
+  static Future<String> customersDirectory() async{
     final Directory directory = await getApplicationDocumentsDirectory();
-    Directory newDirectory = Directory("${directory.path}/hitop_cafe/items");
+    final newDirectory = Directory("${directory.path}/hitop_cafe/customers");
     if (!await newDirectory.exists()) {
       newDirectory.create(recursive: true);
     }

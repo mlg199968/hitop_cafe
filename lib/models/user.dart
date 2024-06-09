@@ -75,11 +75,15 @@ class User extends HiveObject {
       'phoneNumbers': phoneNumbers,
       'preDiscount': preDiscount,
       'address': address,
-      'isChecked': isChecked! ? 1 : 0,
+      'isChecked': isChecked==true ? 1 : 0,
     };
   }
 
   User fromMap(Map<String, dynamic> map) {
+
+    List<String> phoneNumbers =
+    List<String>.from((map['phoneNumbers'] ?? []) as List);
+
     User user= User()
       ..name= map['name'] ?? ""
       ..userName= map['userName']
@@ -99,7 +103,7 @@ class User extends HiveObject {
       ..lastName= map['lastName']
       ..nickName= map['nickName']
       ..preDiscount= map['preDiscount'] ?? 0
-      ..phoneNumbers= map['phoneNumbers']
+      ..phoneNumbers= phoneNumbers
       ..address= map['address']
 
       ..isChecked= map['isChecked']==1?true:false

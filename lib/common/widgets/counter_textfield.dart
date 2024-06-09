@@ -123,12 +123,12 @@ class CounterTextfield extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(width: .5, color: kMainColor2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: .5, color: kMainColor2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                enabledBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(borderRadius * .5),
-                    borderSide:
-                        const BorderSide(color: Colors.blueGrey, width: 1)),
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(borderRadius * .8),
                     borderSide: const BorderSide(color: Colors.red)),

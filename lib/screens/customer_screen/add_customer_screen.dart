@@ -17,7 +17,7 @@ import '../../constants/constants.dart';
 
 class AddCustomerScreen extends StatefulWidget {
   static const String id = "/addCustomerScreen";
-  const AddCustomerScreen({Key? key, this.oldCustomer}) : super(key: key);
+  const AddCustomerScreen({super.key, this.oldCustomer});
   final User? oldCustomer;
 
   @override

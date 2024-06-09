@@ -9,25 +9,36 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/database.dart';
 import 'package:hitop_cafe/models/item.dart';
+import 'package:hitop_cafe/models/note.dart';
 import 'package:hitop_cafe/models/order.dart';
+import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/raw_ware.dart';
+import 'package:hitop_cafe/models/user.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 
 import 'package:intl/intl.dart' as intl;
 import 'package:path_provider/path_provider.dart';
 
 class BackupTools {
+  BackupTools({this.quickBackup = false});
+  final bool quickBackup;
   static const String _outPutName = "data-file.mlg";
+  final String formattedDate =
+      intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
+  String get zipFileName => quickBackup
+      ? "hitop-cafe$formattedDate-database.chc"
+      : "hitop-cafe$formattedDate-full.chc";
 
   static Future<String?> chooseDirectory() async {
     String? result = await FilePicker.platform
         .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
-    if(result!=null){
+    if (result != null) {
       return result;
-    }else{
+    } else {
       return null;
     }
   }
+
   static Future<void> _restoreJsonData(File json, context) async {
     try {
       String jsonFile = await json.readAsString();
@@ -49,48 +60,71 @@ class BackupTools {
         HiveBoxes.getBills()
             .put(restoredDb.bills[i].billId, restoredDb.bills[i]);
       }
+      if (restoredDb.customers != null) {
+        for (int i = 0; i < restoredDb.customers!.length; i++) {
+          HiveBoxes.getCustomers()
+              .put(restoredDb.customers![i].userId, restoredDb.customers![i]);
+        }
+      }
+      if (restoredDb.notes != null) {
+        for (int i = 0; i < restoredDb.notes!.length; i++) {
+          HiveBoxes.getNotes()
+              .put(restoredDb.notes![i].noteId, restoredDb.notes![i]);
+        }
+      }
+      if (restoredDb.expenses != null) {
+        for (int i = 0; i < restoredDb.expenses!.length; i++) {
+          HiveBoxes.getExpenses()
+              .put(restoredDb.expenses![i].paymentId, restoredDb.expenses![i]);
+        }
+      }
 
       showSnackBar(context, "فایل پشتیبان با موفقیت بارگیری شد !",
           type: SnackType.success);
-    } catch (e) {
+    } catch (e, stack) {
       ErrorHandler.errorManger(context, e,
-          title: "BackupTools - restoreJsonData error", showSnackbar: true);
+          stacktrace: stack,
+          title: "BackupTools - restoreJsonData error",
+          showSnackbar: true);
     }
   }
-///create backup zip file
-  static Future<void> createBackup(context,{String? directory}) async {
-    try {
-      List<Bill> bills = HiveBoxes.getBills().values.toList();
-      List<Item> items = HiveBoxes.getItem().values.toList();
-      List<RawWare> wares = HiveBoxes.getRawWare().values.toList();
-      List<Order> orders = HiveBoxes.getOrders().values.toList();
 
-      DB database = DB()
-        ..wares = wares
-        ..items = items
-        ..orders = orders
-        ..bills = bills;
+  ///create backup zip file
+  Future<void> createBackup(context, {String? directory}) async {
+    List<Bill> bills = HiveBoxes.getBills().values.toList();
+    List<Item> items = HiveBoxes.getItem().values.toList();
+    List<RawWare> wares = HiveBoxes.getRawWare().values.toList();
+    List<Order> orders = HiveBoxes.getOrders().values.toList();
+    List<User> customers = HiveBoxes.getCustomers().values.toList();
+    List<Note> notes = HiveBoxes.getNotes().values.toList();
+    List<Payment> expenses = HiveBoxes.getExpenses().values.toList();
 
-      // await _saveJson(database.toJson(),context);
-      if(directory!=null && directory!="") {
-        await createZipFile(
-            await Address.itemsImage(), database.toJson(), context,
-            directory: directory);
-      }else{
-        showSnackBar(context, "مسیر ذخیره سازی انتخاب نشده است!",type: SnackType.warning);
-      }
-    } catch (e) {
-      ErrorHandler.errorManger(context, e,
-          title: "BackupTools - createBackup error", showSnackbar: true);
+    DB database = DB()
+      ..wares = wares
+      ..items = items
+      ..orders = orders
+      ..expenses = expenses
+      ..customers = customers
+      ..notes = notes
+      ..bills = bills;
+
+    // await _saveJson(database.toJson(),context);
+    if (directory != null && directory != "") {
+      await createZipFile(database.toJson(), context, directory: directory);
+    } else {
+      showSnackBar(context, "مسیر ذخیره سازی انتخاب نشده است!",
+          type: SnackType.warning);
     }
   }
+
   ///read backup zip file
   static Future<void> readZipFile(context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null) {
         await Address.itemsImage();
-        String imagesPath = await Address.itemsDirectory();
+        await Address.customersImage();
+        String appPath = await Address.appDirectory();
         String directory = (await getApplicationDocumentsDirectory()).path;
         String path = result.files.single.path!;
         final bytes = File(path).readAsBytesSync();
@@ -107,48 +141,55 @@ class BackupTools {
               ..writeAsBytesSync(data);
             if (filename == _outPutName) {
               await _restoreJsonData(extractedFile, context);
-            } else {
-              await extractedFile.copy("$imagesPath/$filename");
+            } else if (filename.contains("items")) {
+              await extractedFile.copy("$appPath/$filename");
+            } else if (filename.contains("customers")) {
+              await extractedFile.copy("$appPath/$filename");
             }
           } else {
             await Directory('$directory/$filename').create(recursive: true);
           }
         }
       }
-     await updateImagePath();
-    } catch (e) {
+      await updateImagePath();
+    } catch (e, stacktrace) {
       ErrorHandler.errorManger(context, e,
-          title: "BackupTools - readZipFile error", showSnackbar: true);
+          route: stacktrace.toString(),
+          title: "BackupTools - readZipFile error",
+          showSnackbar: true);
     }
   }
-///create zip file
-  static createZipFile(String imagesDir, String json, context,{required String directory}) async {
+
+  ///create zip file
+  createZipFile(String json, context, {required String directory}) async {
     try {
-      String formattedDate =
-          intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
+      String itemDir = await Address.itemsDirectory();
+      String customerDir = await Address.customersDirectory();
 
+      // Zip a directory to out.zip using the zipDirectory convenience method
+      var encoder = ZipFileEncoder();
+      // encoder.zipDirectory(Directory(result),
+      //     filename: 'hitop-cafe$formattedDate.zip');
 
-        // Zip a directory to out.zip using the zipDirectory convenience method
-        var encoder = ZipFileEncoder();
-        // encoder.zipDirectory(Directory(result),
-        //     filename: 'hitop-cafe$formattedDate.zip');
-
-        // Manually create a zip of a directory and individual files.
-        encoder.create('$directory/hitop-cafe$formattedDate.zip');
-        encoder.addDirectory(Directory(imagesDir));
-        File jsonFile = await _createJsonFile(json, directory);
-        encoder.addFile(jsonFile);
-        encoder.close();
-        await jsonFile.delete(recursive: true);
-        showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
-            type: SnackType.success);
-
+      // Manually create a zip of a directory and individual files.
+      encoder.create('$directory/$zipFileName');
+      if (quickBackup == false) {
+        encoder.addDirectory(Directory(itemDir));
+        encoder.addDirectory(Directory(customerDir));
+      }
+      File jsonFile = await _createJsonFile(json, directory);
+      encoder.addFile(jsonFile);
+      encoder.close();
+      await jsonFile.delete(recursive: true);
+      showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
+          type: SnackType.success);
     } catch (e) {
       ErrorHandler.errorManger(context, e,
           title: "BackupTools - createZipFile error", showSnackbar: true);
     }
   }
 
+  ///create json file
   static Future<File> _createJsonFile(String json, String path) async {
     File createdFile = File("$path/$_outPutName");
     await createdFile.create(recursive: true);
@@ -156,38 +197,31 @@ class BackupTools {
     return createdFile;
   }
 
-
-///
- static Future<void> updateImagePath()async{
-   String directoryPath=await Address.itemsImage();
-    List<Item> itemsList=HiveBoxes.getItem().values.toList();
-   for (int i = 0; i < itemsList.length; i++) {
-     String id=itemsList[i].itemId;
-     String imagePath="$directoryPath/$id.jpg";
-     if(await File(imagePath).exists()) {
-       itemsList[i].imagePath=imagePath;
-     }else{
-       itemsList[i].imagePath=null;
-     }
-     HiveBoxes.getItem()
-         .put(id,itemsList[i]);
-   }
-
+  /// update image path if device change
+  static Future<void> updateImagePath() async {
+    String itemsImagePath = await Address.itemsImage();
+    String customerImagePath = await Address.customersImage();
+    List<Item> itemsList = HiveBoxes.getItem().values.toList();
+    List<User> customerList = HiveBoxes.getCustomers().values.toList();
+    //item update image path *****
+    for (Item item in itemsList) {
+      String imagePath = "$itemsImagePath/${item.itemId}.jpg";
+      if (await File(imagePath).exists()) {
+        item.imagePath = imagePath;
+      } else {
+        item.imagePath = null;
+      }
+      HiveBoxes.getItem().put(item.itemId, item);
+    }
+    //customers update image path *****
+    for (User customer in customerList) {
+      String imagePath = "$customerImagePath/${customer.userId}.jpg";
+      if (await File(imagePath).exists()) {
+        customer.image = imagePath;
+      } else {
+        customer.image = null;
+      }
+      HiveBoxes.getCustomers().put(customer.userId, customer);
+    }
   }
-  // static Future<void> _saveJson(String json, context) async {
-  //   String formattedDate =
-  //       intl.DateFormat('yyyyMMdd-kkmmss').format(DateTime.now());
-  //
-  //   String? result = await FilePicker.platform
-  //       .getDirectoryPath(dialogTitle: "انتخاب مکان ذخیره فایل پشتیبان");
-  //   if (result != null) {
-  //     String path = result;
-  //     File createdFile = File("$path/$formattedDate.mlg");
-  //     createdFile.create(recursive: true);
-  //     createdFile.writeAsString(json);
-  //
-  //     showSnackBar(context, "فایل پشتیبان با موفقیت ذخیره شد !",
-  //         type: SnackType.success);
-  //   }
-  // }
 }

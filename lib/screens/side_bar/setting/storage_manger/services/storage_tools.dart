@@ -21,7 +21,6 @@ class StorageTools {
   ///delete Items
   static deleteItems({DateTime? begin, DateTime? end}) {
     List<Item> items = HiveBoxes.getItem().values.toList();
-    print(items.length);
     if (begin != null && end != null) {
       for (Item element in items) {
         if (element.createDate.isBefore(end) &&
@@ -30,7 +29,6 @@ class StorageTools {
         }
       }
     }
-    print(HiveBoxes.getItem().values.length);
   }
 
   ///delete Wares

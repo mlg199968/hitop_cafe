@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/time/time.dart';
 import 'package:hitop_cafe/common/widgets/check_button.dart';
@@ -222,8 +223,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 
   ///call message on pop to previous page function
-  Future<bool> willPop() async {
-    return await showDialog(
+  void willPop(bool didPop) async {
+    await showDialog(
         context: context,
         builder: (context) => CustomAlert(
             title: "تغییرات داده شده ذخیره شود؟",
@@ -247,8 +248,9 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   ///********************************** widget *********************************************
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: didUpdateData() ? willPop : null,
+    return PopScope(
+      canPop: didUpdateData(),
+      onPopInvoked:willPop,
       child: HideKeyboard(
         child: Scaffold(
           extendBodyBehindAppBar: true,
@@ -310,129 +312,117 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                         child: Padding(
                           padding:const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 20),
-                          child: Wrap(
-
-                            alignment: WrapAlignment.spaceBetween,
-                            spacing: 10,
-                            runSpacing: 5,
+                          child: Column(
                             children: [
-                              const Gap(30,),
-
-                              ///orderBill date and orderBill number section
-                              SizedBox(
-
-                                child: Column(
-                                  children: [
-                                    const Gap(20),
-                                    ///user name
-                                    Wrap(
-                                      children: [
-                                        const CText(
-                                          "کاربر:",
-                                        ),
-                                        CText(
-                                          user?.name ?? "نامشخص",
-                                          fontSize: 15,
-                                        ),
-                                      ],
+                              const Gap(30),
+                              ///user name
+                              Wrap(
+                                children: [
+                                  const CText(
+                                    "کاربر:",
+                                  ),
+                                  CText(
+                                    user?.name ?? "نامشخص",
+                                    fontSize: 15,
+                                  ),
+                                ],
+                              ),
+                              const Gap(10),
+                              ///customer desktop
+                              CustomerInfoHolder(
+                                  customer: customer,
+                                  onChange: (val){
+                                    customer=val;
+                                    setState(() {});
+                                  }),
+                              ///order details info desktop
+                              Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text("شماره میز:"),
+                                  SizedBox(
+                                    width: 100,
+                                    child: CounterTextfield(
+                                      decimal: false,
+                                      controller: tableNumberController,
                                     ),
-                                    const Gap(10),
-                                    CustomerInfoHolder(
-                                      customer: customer,
-                                        onChange: (val){
-                                      customer=val;
-                                      setState(() {});
-                                    }),
-                                    const Gap(10),
-                                    ///order details info desktop
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        const Text("شماره میز:"),
-                                        SizedBox(
-                                          width: 100,
-                                          child: CounterTextfield(
-                                            decimal: false,
-                                            controller: tableNumberController,
-                                          ),
-                                        ),
-                                        const Gap(10 ),
+                                  ),
+                                  const Gap(10 ),
 
-                                        ///invoice number
-                                        TitleButton(
-                                          title: "شماره فاکتور:",
-                                          value: billNumber.toString(),
-                                          onPress: () {
-                                            showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        const DialogTextField())
-                                                .then((value) {
-                                              if (value != null) {
-                                                billNumber = value.round();
-                                              }
-                                              setState(() {});
-                                            });
-                                          },
-                                        ),
-                                        const Divider(
-                                          thickness: 1,
-                                          height: 5,
-                                        ),
-                                        ///choose orderBill date desktop
-                                        TitleButton(
-                                          title: "تاریخ فاکتور:",
-                                          value: date.formatCompactDate(),
-                                          onPress: () async {
-                                            Jalali? picked =
-                                                await TimeTools.chooseDate(
-                                                    context);
-                                            if (picked != null) {
-                                              setState(() {
-                                                date = picked;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                        const Divider(
-                                          thickness: 1,
-                                          height: 5,
-                                        ),
-                                        ///choose due date desktop
-                                        TitleButton(
-                                          title: "تاریخ تسویه:",
-                                          value: dueDate.toPersianDate(),
-                                          onPress: () async {
-                                            Jalali? picked =
-                                                await TimeTools.chooseDate(
-                                                    context);
-                                            if (picked != null) {
-                                              setState(() {
-                                                dueDate = picked.toDateTime();
-                                              });
-                                            }
-                                          },
-                                        ),
-                                        ///takeaway check box
-                                        CheckButton(
-                                          label:"بیرون بر",
-                                          icon: Icons.delivery_dining_rounded,
-                                          value:takeaway,
-                                          onChange:(val){
-                                            takeaway=val!;
-                                            setState(() {});},
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                  ///invoice number
+                                  TitleButton(
+                                    title: "شماره فاکتور:",
+                                    value: billNumber.toString(),
+                                    onPress: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                          const DialogTextField())
+                                          .then((value) {
+                                        if (value != null) {
+                                          billNumber = value.round();
+                                        }
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                  const Divider(
+                                    thickness: 1,
+                                    height: 5,
+                                  ),
+                                  ///choose orderBill date desktop
+                                  TitleButton(
+                                    title: "تاریخ فاکتور:",
+                                    value: date.formatCompactDate(),
+                                    onPress: () async {
+                                      Jalali? picked =
+                                      await TimeTools.chooseDate(
+                                          context);
+                                      if (picked != null) {
+                                        setState(() {
+                                          date = picked;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  const Divider(
+                                    thickness: 1,
+                                    height: 5,
+                                  ),
+                                  ///choose due date desktop
+                                  TitleButton(
+                                    title: "تاریخ تسویه:",
+                                    value: dueDate.toPersianDate(),
+                                    onPress: () async {
+                                      Jalali? picked =
+                                      await TimeTools.chooseDate(
+                                          context);
+                                      if (picked != null) {
+                                        setState(() {
+                                          dueDate = picked.toDateTime();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  ///takeaway check box
+                                  CheckButton(
+                                    label:"بیرون بر",
+                                    icon: Icons.delivery_dining_rounded,
+                                    value:takeaway,
+                                    onChange:(val){
+                                      takeaway=val!;
+                                      setState(() {});},
+                                  ),
+                                ],
                               ),
                               const Gap(40),
+                              ///add item desktop
                               ActionButton(
                                 width: 200,
+                                borderRadius: 5,
                                 label: "افزودن آیتم",
                                 icon: CupertinoIcons.cart_badge_plus,
                                 bgColor: Colors.blueGrey,
@@ -448,9 +438,11 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   });
                                 },
                               ),
+                              ///quick add desktop
                               ActionButton(
                                 label: "افزودن سریع",
                                 width: 200,
+                                borderRadius: 5,
                                 icon: CupertinoIcons.cart_badge_plus,
                                 bgColor: Colors.deepOrangeAccent,
                                 onPress: () {
@@ -464,9 +456,11 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   });
                                 },
                               ),
+                              ///add payment desktop
                               ActionButton(
                                 width: 200,
                                 label: "پرداخت جدید",
+                                borderRadius: 5,
                                 icon: Icons.add_card_rounded,
                                 bgColor: Colors.teal,
                                 onPress: () {
@@ -481,11 +475,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
                                   });
                                 },
                               ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-
-                              ///sidebar desktop description textField
+                              const Gap(10),
+                              ///description textField sidebar desktop
                               if (screenType(context) != ScreenType.mobile)
                                 DescriptionField(
                                   label: "توضیحات سفارش",

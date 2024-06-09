@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:hitop_cafe/constants/consts_class.dart';
-import 'package:hitop_cafe/models/customer.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/models/user.dart';

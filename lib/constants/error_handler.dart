@@ -7,11 +7,12 @@ import 'package:uuid/uuid.dart';
 
 class ErrorHandler {
  static errorManger(BuildContext? context, var errorObject,
-      {String? title, String? errorText, String? route,bool showSnackbar=false}) {
+      {String? title,var stacktrace, String? errorText, String? route,bool showSnackbar=false}) {
     String? routeDir=context!=null ?ModalRoute.of(context)?.settings.name:null;
     debugPrint("title: $title");
     debugPrint("error route :${route ?? routeDir }");
     debugPrint("error content :${errorText ?? errorObject.toString()}");
+    debugPrint("stacktrace :$stacktrace");
 
     Bug bug = Bug()
       ..title = title

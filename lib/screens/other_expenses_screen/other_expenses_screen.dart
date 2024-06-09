@@ -9,20 +9,12 @@ import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/bill.dart';
 import 'package:hitop_cafe/models/payment.dart';
-import 'package:hitop_cafe/providers/filter_provider.dart';
-import 'package:hitop_cafe/screens/orders_screen/panels/filter_panel.dart';
 import 'package:hitop_cafe/screens/other_expenses_screen/panels/add_expense_panel.dart';
 import 'package:hitop_cafe/screens/other_expenses_screen/panels/expense_info_panel.dart';
 import 'package:hitop_cafe/screens/other_expenses_screen/services/expense_tools.dart';
-import 'package:hitop_cafe/screens/shopping-bill/add-shopping-bill-screen.dart';
-import 'package:hitop_cafe/screens/shopping-bill/panels/bill_info_panel.dart';
-import 'package:hitop_cafe/screens/shopping-bill/services/bill_tools.dart';
-import 'package:hitop_cafe/screens/shopping-bill/widgets/bill_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:provider/provider.dart';
 
 
 

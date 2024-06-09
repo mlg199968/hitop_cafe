@@ -5,7 +5,6 @@ import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/bill.dart';
-import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/models/order.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
@@ -164,12 +163,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   startupTimeLine(){
     List<DateTime> createDateList = [];
    List<Order> orders=HiveBoxes.getOrders().values.toList();
+   List<Payment> expenses=HiveBoxes.getExpenses().values.toList();
    List<Payment> payments=[];
    List<Bill> bills=HiveBoxes.getBills().values.toList();
    for(Order order in orders){
      payments.addAll(order.payments);
    }
    createDateList.addAll(orders.map((e) => e.orderDate));
+   createDateList.addAll(expenses.map((e) => e.deliveryDate));
    createDateList.addAll(payments.map((e) =>e.deliveryDate));
    createDateList.addAll(bills.map((e) => e.billDate));
     startDate = findMinDate(createDateList);

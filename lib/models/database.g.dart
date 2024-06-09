@@ -21,13 +21,16 @@ class DBAdapter extends TypeAdapter<DB> {
       ..bills = (fields[1] as List).cast<Bill>()
       ..items = (fields[2] as List).cast<Item>()
       ..wares = (fields[3] as List).cast<RawWare>()
-      ..databaseId = fields[4] as String;
+      ..databaseId = fields[4] as String
+      ..customers = (fields[5] as List?)?.cast<User>()
+      ..notes = (fields[6] as List?)?.cast<Note>()
+      ..expenses = (fields[7] as List?)?.cast<Payment>();
   }
 
   @override
   void write(BinaryWriter writer, DB obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.orders)
       ..writeByte(1)
@@ -37,7 +40,13 @@ class DBAdapter extends TypeAdapter<DB> {
       ..writeByte(3)
       ..write(obj.wares)
       ..writeByte(4)
-      ..write(obj.databaseId);
+      ..write(obj.databaseId)
+      ..writeByte(5)
+      ..write(obj.customers)
+      ..writeByte(6)
+      ..write(obj.notes)
+      ..writeByte(7)
+      ..write(obj.expenses);
   }
 
   @override

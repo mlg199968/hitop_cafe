@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
-import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/item.dart';
 import 'package:hitop_cafe/providers/ware_provider.dart';
 import 'package:hitop_cafe/screens/orders_screen/quick_add_screen.dart';

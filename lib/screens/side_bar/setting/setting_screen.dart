@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
@@ -137,8 +138,9 @@ class _SettingScreenState extends State<SettingScreen> {
                               children: [
                                 Flexible(
                                   child: DynamicButton(
-                                    label: "پشتیبان گیری",
+                                    label: "پشتیبان گیری کامل",
                                     icon: Icons.backup,
+
                                     bgColor: Colors.red.withRed(250),
                                     onPress: () async {
                                       await storagePermission(
@@ -147,7 +149,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                       await storagePermission(
                                           context, Allow.storage);
                                       if (context.mounted) {
-                                        await BackupTools.createBackup(context,
+                                        await BackupTools().createBackup(context,
                                             directory: backupDirectory);
                                       }
                                     },
@@ -172,6 +174,27 @@ class _SettingScreenState extends State<SettingScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                          ///database backup
+                          Align(
+                            child: DynamicButton(
+                              label: "پشتیبان گیری سریع",
+                              icon: Icons.backup,
+                              borderRadius: 5,
+                              iconColor: Colors.red,
+                              bgColor: Colors.black87,
+                              onPress: () async {
+                                await storagePermission(
+                                    context, Allow.externalStorage);
+                                // ignore: use_build_context_synchronously
+                                await storagePermission(
+                                    context, Allow.storage).then((value) => null);
+                                if (context.mounted) {
+                                  await BackupTools(quickBackup: true).createBackup(context,
+                                      directory: backupDirectory);
+                                }
+                              },
                             ),
                           ),
                           Container(

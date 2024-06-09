@@ -114,11 +114,11 @@ class _CustomerListPartState extends State<CustomerListPart> {
   User? selectedCustomer;
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop:selectedItems.isEmpty?null: ()async{
+    return PopScope(
+      canPop:selectedItems.isEmpty ,
+      onPopInvoked:(didPop)async{
         selectedItems.clear();
         setState(() {});
-        return false;
       },
       child: LayoutBuilder(
         builder: (context,constraint){
