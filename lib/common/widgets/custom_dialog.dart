@@ -62,7 +62,7 @@ class CustomDialog extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    ///image holder part with faded button,
+                    ///image holder part with faded bottom,
                     if(image != null && image != "")
                     Opacity(
                       opacity: .9,

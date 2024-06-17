@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -43,7 +44,7 @@ class _SettingScreenState extends State<SettingScreen> {
   String selectedFont = kFonts[0];
   late UserProvider provider;
   String? backupDirectory;
-
+  bool saveBackupOnExist=true;
   ///printer
   Printer? selectedPrinter;
   Printer? selectedPrinter2;
@@ -65,6 +66,7 @@ class _SettingScreenState extends State<SettingScreen> {
       ..printerIp2 =
           printerIp2Controller.text == "" ? null : printerIp2Controller.text
       ..printTemplate = printTemplate
+      ..saveBackupOnExist=saveBackupOnExist
       ..backupDirectory = backupDirectory;
     provider.getData(shopInfo);
     HiveBoxes.getShopInfo().put(0, shopInfo);
@@ -87,6 +89,7 @@ class _SettingScreenState extends State<SettingScreen> {
           : null;
       printTemplate = shopInfo.printTemplate ?? PrintType.p80mm.value;
       backupDirectory = shopInfo.backupDirectory;
+      saveBackupOnExist=shopInfo.saveBackupOnExist ?? false;
       setState(() {});
     }
   }
@@ -197,6 +200,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               },
                             ),
                           ),
+                          ///choose directory path
                           Container(
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.all(10),
@@ -246,9 +250,19 @@ class _SettingScreenState extends State<SettingScreen> {
                                   ],
                                 )),
                           ),
-                          const SizedBox(
-                            height: 30,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Transform.scale(
+                                scale: 0.6,
+                                  child: Switch(
+                                      value: saveBackupOnExist,
+                                      activeColor: Colors.tealAccent,
+                                      onChanged: (val){saveBackupOnExist=val;setState(() {});})),
+                              const CText("پشتیبانگیری اتوماتیک در موقع خروج از برنامه",color: Colors.white,),
+                            ],
                           ),
+                          const Gap(30),
 
                           ///currency unit
                           DropListItem(

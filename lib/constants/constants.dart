@@ -5,7 +5,7 @@ const String kAppName = "hitop-cafe";
 const String hostUrl = "https://mlggrand.ir/db";
 const String kPriceOptionKey="hitop_cafe_price";
 const kMainGradiant2 = LinearGradient(
-  colors: [Colors.brown, Colors.deepOrangeAccent],
+  colors: [Colors.deepOrangeAccent,Colors.brown],
 );
 const kMainGradiant = LinearGradient(colors: [
   Color(0XFF543000),

@@ -38,7 +38,6 @@ class NoteCarouselSlider extends StatelessWidget {
                           Container(
                             width: width,
                             alignment: Alignment.centerRight,
-                            margin: const EdgeInsets.only(top: 20),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             decoration: BoxDecoration(
                               gradient: kMainGradiant,
@@ -46,7 +45,7 @@ class NoteCarouselSlider extends StatelessWidget {
                                       screenType(context) == ScreenType.mobile)
                                   ? null
                                   : const BorderRadius.horizontal(
-                                      left: Radius.circular(18)),
+                                      left: Radius.circular(10)),
                             ),
                             child: Center(
                               child: ToDoTools.getCurrentDayToDoList(

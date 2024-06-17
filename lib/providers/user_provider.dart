@@ -37,6 +37,10 @@ class UserProvider extends ChangeNotifier {
   User? get activeUser => _user;
   String? _appType;
   String? get appType => _appType;
+  String? _backupDirectory;
+  String? get backupDirectory=>_backupDirectory;
+
+  bool saveBackupOnExist=false;
 
   //*****
   Shop sampleShop = Shop()
@@ -75,7 +79,6 @@ class UserProvider extends ChangeNotifier {
   String printerIp = "192.168.1.1";
   String printerIp2 = "192.168.1.2";
 
-
   void getData(Shop shop) {
     shopName = shop.shopName;
     address = shop.address;
@@ -104,6 +107,8 @@ class UserProvider extends ChangeNotifier {
     if(shop.descriptionList!=null) {
       descriptionList=shop.descriptionList!;
     }
+    saveBackupOnExist=shop.saveBackupOnExist ?? false;
+    _backupDirectory=shop.backupDirectory;
     ///this for just use complete for debug app
     if (kDebugMode) {
       _userLevel = 0;
@@ -152,7 +157,11 @@ class UserProvider extends ChangeNotifier {
     }
     return null;
   }
-
+  ///set backup directory
+setBackupDirectory(String? directory){
+    _backupDirectory=directory;
+    notifyListeners();
+}
   ///user functions
   setUser(User? user) {
     _user = user;

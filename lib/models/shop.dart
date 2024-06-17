@@ -64,6 +64,8 @@ class Shop extends HiveObject {
   Subscription? subscription;
  @HiveField(27)
   List<Map>? descriptionList=[];
+ @HiveField(28)
+  bool? saveBackupOnExist;
 
 
 }

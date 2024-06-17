@@ -21,6 +21,8 @@ import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'notice_screen/services/notice_tools.dart';
+
 class SideBarPanel extends StatelessWidget {
   const SideBarPanel({super.key});
 
@@ -113,6 +115,14 @@ class SideBarPanel extends StatelessWidget {
                                   Navigator.pushNamed(
                                       context, UserListScreen.id);
                                 }},
+                            ),
+                            BarButton(
+                              text: "اطلاع رسانی ها",
+                              active:NoticeTools.checkNewNotifications(),
+                              icon: Icons.notifications_active_rounded,
+                              onPress: () {
+                                Navigator.pushNamed(context, NoticeScreen.id);
+                              },
                             ),
                             BarButton(
                               text: "تنظیمات",
@@ -320,36 +330,30 @@ class PurchaseButton extends StatelessWidget {
 ///
 class BarButton extends StatelessWidget {
   const BarButton(
-      {super.key, required this.text, required this.onPress, this.icon, this.enable=true});
+      {super.key, required this.text, required this.onPress, this.icon, this.enable=true,this.active=false});
   final String text;
   final bool enable;
   final IconData? icon;
   final VoidCallback onPress;
+  final bool active;
   @override
   Widget build(BuildContext context) {
     //decelerations
-    Color textColor = Colors.black.withOpacity(.7);
-    Color borderColor = kMainColor;
+    Color textColor = Colors.white;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 1),
       decoration: BoxDecoration(
-        borderRadius:BorderRadius.circular(10),
-        boxShadow: const [BoxShadow(color: Colors.black45,blurRadius: 3,offset: Offset(2, 3))]
+        borderRadius:BorderRadius.circular(5),
+        // boxShadow: const [BoxShadow(color: Colors.black45,blurRadius: 3,offset: Offset(2, 3))]
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
         child: Container(
           // margin: EdgeInsets.symmetric(horizontal: 8,vertical: 1),
             padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              gradient: kBlackWhiteGradiant,
-              border: Border(
-                bottom: BorderSide(
-                  width: 2,
-                  color: borderColor,
-                ),
-              ),
+            decoration:  BoxDecoration(
+              color: Colors.black,
+              gradient: kMainGradiant2.scale(.7),
             ),
             child: TextButtonTheme(
               data: const TextButtonThemeData(
@@ -363,6 +367,15 @@ class BarButton extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      if(active)
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Icon(Icons.circle,
+                            size: 15
+                            ,color: Colors.red,
+                          ),
+                        ),
+                      const Expanded(child: SizedBox()),
                       CText(
                         text,
                         fontSize: 15, color: textColor,
@@ -370,9 +383,8 @@ class BarButton extends StatelessWidget {
                       const SizedBox(
                         width: 5,
                       ),
-                      SizedBox(
-                          child:
-                          icon == null ? null : Icon(icon, color: kMainColor)),
+                      if(icon!=null)
+                        Icon(icon, color: Colors.amber.withOpacity(.7),size: 20,),
                     ],
                   )),
             )),

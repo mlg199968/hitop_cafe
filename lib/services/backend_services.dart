@@ -99,6 +99,7 @@ class BackendServices {
           Uri.parse("$hostUrl/notification/read_notice.php"),
           body: {"app-name": appName}).timeout(Duration(seconds: timeout));
       if (res.statusCode == 200) {
+        // print(res.body);
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
           List<Notice> notices = (backData["notification-list"] as List)

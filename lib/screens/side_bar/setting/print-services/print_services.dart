@@ -5,11 +5,11 @@ import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
-import 'package:image/image.dart' as img;
-import 'package:pdfx/pdfx.dart' as pdfx;
+// import 'package:image/image.dart' as img;
+// import 'package:pdfx/pdfx.dart' as pdfx;
 import 'package:printing/printing.dart' as printing;
 import 'package:provider/provider.dart';
-import 'package:thermal_printer/thermal_printer.dart';
+// import 'package:thermal_printer/thermal_printer.dart';
 
 class PrintServices {
   const PrintServices(
@@ -57,35 +57,36 @@ class PrintServices {
   Future<void> escPosPrint(
       {PaperSize paperSize = PaperSize.mm80, required String ip}) async {
     try {
-      //at first we convert unit8file to Image then we give it to the printer
-      final document = await pdfx.PdfDocument.openData(unit8File);
-      final page = await document.getPage(1);
-      final pageImage =
-          await page.render(width: page.width * 10, height: page.height * 10);
-      await page.close();
-
-      List<int> bytes = [];
-      final profile = await CapabilityProfile.load();
-      final generator = Generator(paperSize, profile);
+      // //at first we convert unit8file to Image then we give it to the printer
+      // final document = await pdfx.PdfDocument.openData(unit8File);
+      // final page = await document.getPage(1);
+      // final pageImage =
+      //     await page.render(width: page.width * 10, height: page.height * 10);
+      // await page.close();
       //
-      img.Image? image = img.decodeImage(pageImage!.bytes);
-      image = img.copyResize(image!, width: 500);
-      bytes += generator.image(image);
-      bytes += generator.feed(2);
-      bytes += generator.cut();
-      _scan(PrinterType.network);
-      await PrinterManager.instance.connect(type: PrinterType.network, model: TcpPrinterInput(ipAddress: ip));
-      await PrinterManager.instance.tcpPrinterConnector
-          .connect(TcpPrinterInput(ipAddress: ip))
-          .catchError((error, stackTrace) => ErrorHandler.errorManger(
-              context, error,
-              route: stackTrace.toString(),
-              title: "connect to printer ip address error",
-              showSnackbar: true));
-      await PrinterManager.instance
-          .send(type: PrinterType.network, bytes: bytes);
-      await PrinterManager.instance.tcpPrinterConnector.disconnect();
-    } catch (e) {
+      // List<int> bytes = [];
+      // final profile = await CapabilityProfile.load();
+      // final generator = Generator(paperSize, profile);
+      // //
+      // img.Image? image = img.decodeImage(pageImage!.bytes);
+      // image = img.copyResize(image!, width: 500);
+      // bytes += generator.image(image);
+      // bytes += generator.feed(2);
+      // bytes += generator.cut();
+      // _scan(PrinterType.network);
+      // await PrinterManager.instance.connect(type: PrinterType.network, model: TcpPrinterInput(ipAddress: ip));
+      // await PrinterManager.instance.tcpPrinterConnector
+      //     .connect(TcpPrinterInput(ipAddress: ip))
+      //     .catchError((error, stackTrace) => ErrorHandler.errorManger(
+      //         context, error,
+      //         route: stackTrace.toString(),
+      //         title: "connect to printer ip address error",
+      //         showSnackbar: true));
+      // await PrinterManager.instance
+      //     .send(type: PrinterType.network, bytes: bytes);
+      // await PrinterManager.instance.tcpPrinterConnector.disconnect();
+    }
+    catch (e) {
       ErrorHandler.errorManger(
         null,
         e,
@@ -113,14 +114,14 @@ class PrintServices {
 
   ///
   static List devices = [];
-  _scan(PrinterType type, {bool isBle = false}) {
-    // Find printers
-    PrinterManager.instance
-        .discovery(type: type, isBle: isBle)
-        .listen((device) {
-      devices.add(device);
-    });
-  }
+  // _scan(PrinterType type, {bool isBle = false}) {
+  //   // Find printers
+  //   PrinterManager.instance
+  //       .discovery(type: type, isBle: isBle)
+  //       .listen((device) {
+  //     devices.add(device);
+  //   });
+  // }
   ///
   // _connectDevice(PrinterDevice selectedPrinter, PrinterType type,
   //     {bool reconnect = false, bool isBle = false, String? ipAddress}) async {

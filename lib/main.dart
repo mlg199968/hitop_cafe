@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hitop_cafe/common/widgets/custom_alert.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/consts_class.dart';
 import 'package:hitop_cafe/constants/global.dart';
@@ -30,6 +31,7 @@ import 'package:hitop_cafe/router.dart';
 import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,8 +94,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp>{
   @override
   void initState() {
     ///set font family
