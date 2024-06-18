@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
@@ -125,6 +124,7 @@ class CustomerInfoPanel extends StatelessWidget {
         actionsPadding: EdgeInsets.zero,
       content: Container(
         height: 600,
+        width: 500,
         decoration: BoxDecoration(
             gradient: kBlackWhiteGradiant,
             borderRadius: BorderRadius.circular(10),

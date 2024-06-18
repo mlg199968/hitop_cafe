@@ -107,6 +107,7 @@ userProvider=Provider.of<UserProvider>(context,listen: false);
             FutureBuilder(
                 future:PackageInfo.fromPlatform() ,
                 builder: (context,futureInfo) {
+
                   String appVersion=(futureInfo.data?.version ??"");
                   String appName=(futureInfo.data?.appName ??"");
                   return Text("$appName $appVersion",style: const TextStyle(color: Colors.white70,fontSize: 15,shadows: [kShadow]),);

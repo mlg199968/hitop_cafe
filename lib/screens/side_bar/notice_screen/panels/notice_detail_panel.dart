@@ -16,8 +16,8 @@ class NoticeDetailPanel extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: NotificationDialog(
+        height: 500,
         contentPadding: const EdgeInsets.all(0),
-
         borderRadius: 18,
         opacity: 1,
         image: notice.image,
@@ -40,35 +40,26 @@ class NoticeDetailPanel extends StatelessWidget {
             ),
           ),
         ]:null,
-        child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Text(
-                      notice.title,
-                      style: const TextStyle(fontSize: 16),
-                      maxLines: 4,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      notice.content ?? "",
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.black54),
-                      maxLines: 200,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
+              Text(
+                notice.title,
+                style: const TextStyle(fontSize: 16),
+                maxLines: 4,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                notice.content ?? "",
+                style: const TextStyle(
+                    fontSize: 12, color: Colors.black54),
+                maxLines: 200,
+              ),
+              const SizedBox(
+                height: 20,
               ),
             ],
           ),

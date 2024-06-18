@@ -1,9 +1,11 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hitop_cafe/common/widgets/custom_appbar.dart';
 import 'package:hitop_cafe/common/widgets/custom_float_action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_search_bar.dart';
+import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/models/bill.dart';
@@ -43,7 +45,6 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -120,9 +121,9 @@ class _CustomerListScreenState extends State<ShoppingBillScreen> {
                         return const Expanded(
                           child: Align(
                             alignment: Alignment.center,
-                            child: Text(
-                              "فاکتوری یافت نشد!",
-                              textDirection: TextDirection.rtl,
+                            child: EmptyHolder(
+                              text: "فاکتوری یافت نشد!",
+                              icon: FontAwesomeIcons.fileInvoice,
                             ),
                           ),
                         );

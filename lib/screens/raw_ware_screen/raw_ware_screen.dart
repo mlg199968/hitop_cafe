@@ -176,11 +176,10 @@ class _ListPartState extends State<ListPart> {
                         width: 400,
                         child: selectedWare == null
                             ? null
-                            : WareInfoPanel(context, wareInfo: selectedWare!)
-                                .staticPanel(onReload: () {
-                                selectedWare = null;
-                                setState(() {});
-                              }),
+                            : InfoPanelDesktop(ware:selectedWare!,onReload: () {
+                          selectedWare = null;
+                          setState(() {});
+                        }),
                       ),
                     ),
               Expanded(
@@ -211,9 +210,8 @@ class _ListPartState extends State<ListPart> {
                                           : showDialog(
                                               context: context,
                                               builder: (context) =>
-                                                  WareInfoPanel(context,
-                                                          wareInfo: ware)
-                                                      .dialogPanel());
+                                                  WareInfoPanel(ware: ware)
+                                                      );
                                     }
                                   } else {
                                     if (selectedItems.contains(index)) {

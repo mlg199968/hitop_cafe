@@ -39,6 +39,9 @@ class UserProvider extends ChangeNotifier {
   String? get appType => _appType;
   String? _backupDirectory;
   String? get backupDirectory=>_backupDirectory;
+  String _appVersion="0";
+  String get appVersion=>_appVersion;
+
 
   bool saveBackupOnExist=false;
 
@@ -223,4 +226,9 @@ setBackupDirectory(String? directory){
    });
    // notifyListeners();
   }
+///
+setAppVersion(String version){
+    _appVersion=version;
+    notifyListeners();
+}
 }

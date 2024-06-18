@@ -39,7 +39,7 @@ class NotificationDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 20,
       surfaceTintColor: Colors.white,
-      scrollable: true,
+      scrollable: false,
       insetPadding: EdgeInsets.zero,
       content: GestureDetector(
         onTap: (){Navigator.pop(context);},
@@ -49,80 +49,83 @@ class NotificationDialog extends StatelessWidget {
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ///close button
-                IconButton.outlined(
-                  color: Colors.white,
-                    onPressed: (){Navigator.pop(context);},
-                    icon: const Icon(Icons.close_rounded),
-                ),
-                Container(
-                  width: width,
-                  height: height,
-                  margin: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ///close button
+                  IconButton.outlined(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(borderRadius),
-                    boxShadow: const [BoxShadow(color: Colors.black54,blurRadius: 5,offset: Offset(1, 2))]
-
+                      onPressed: (){Navigator.pop(context);},
+                      icon: const Icon(Icons.close_rounded),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(borderRadius),
-                    child: Stack(
-                      children: [
-                        ///top bar
-                        Container(
-                          margin: const EdgeInsets.all(10),
-                            child: title == null
-                                ? null
-                                : Text(
-                              title!,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  shadows: [kShadow]),
-                            )),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ///image holder part
-                            AspectRatio(
-                              aspectRatio: 16/9,
-                              child: Container(
-                                width: width,
-                                height: 250,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(borderRadius)
-                                ),
-                                child:(image == null || image == "")
-                                    ? null
-                                    :  Image(image: NetworkImage(image!),fit: BoxFit.fitHeight),
-                              ),
-                            ),
-                            Directionality(
-                              textDirection: textDirection,
-                              child: Flexible(
+                  ///child
+                  Container(
+                    width: width,
+                    height: height,
+                    margin: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      boxShadow: const [BoxShadow(color: Colors.black54,blurRadius: 5,offset: Offset(1, 2))]
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      child: Stack(
+                        children: [
+                          ///top bar
+                          Container(
+                            margin: const EdgeInsets.all(10),
+                              child: title == null
+                                  ? null
+                                  : Text(
+                                title!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    shadows: [kShadow]),
+                              )),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ///image holder part
+                              AspectRatio(
+                                aspectRatio: 16/9,
                                 child: Container(
-                                    height: height,
-                                    width: width,
-                                    padding: contentPadding ??
-                                        const EdgeInsets.all(20).copyWith(top: 10),
-                                    child: child),
+                                  width: width,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(borderRadius)
+                                  ),
+                                  child:(image == null || image == "")
+                                      ? null
+                                      :  Image(image: NetworkImage(image!),fit: BoxFit.fitHeight),
+                                ),
                               ),
-                            ),
-                            if(actions!=null)
-                              Row(children: actions!,),
-                            const SizedBox(height: 10,),
-                          ],
-                        ),
-                      ].reversed.toList(),
+                              Directionality(
+                                textDirection: textDirection,
+                                child: Flexible(
+                                  child: Container(
+                                      height: height,
+                                      width: width,
+                                      padding: contentPadding ??
+                                          const EdgeInsets.all(20).copyWith(top: 10),
+                                      child: child),
+                                ),
+                              ),
+                              if(actions!=null)
+                                Row(children: actions!,),
+                              const SizedBox(height: 10,),
+                            ],
+                          ),
+                        ].reversed.toList(),
+                      ),
                     ),
                   ),
-                ),
-
-              ],
+              
+                ],
+              ),
             ),
           ),
         ),

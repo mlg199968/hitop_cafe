@@ -52,6 +52,8 @@ class Order extends HiveObject {
   //
   num get atmSum =>payments.isEmpty?0: payments.map((e) => e.method==PayMethod.atm? e.amount:0).reduce((a, b) => a + b);
   //
+  num get cardSum =>payments.isEmpty?0: payments.map((e) => e.method==PayMethod.card? e.amount:0).reduce((a, b) => a + b);
+  //
   num get itemsDiscount => items.isEmpty
       ? 0
       : items.map((e) => e.discount! * .01 * e.sum).reduce((a, b) => a + b);

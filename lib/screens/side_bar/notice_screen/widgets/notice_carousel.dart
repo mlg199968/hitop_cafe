@@ -22,7 +22,7 @@ class NoticeCarousel extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child:  LayoutBuilder(builder: (context, constraint) {
           double maxWidth = constraint.maxWidth;
-            return Container(
+            return SizedBox(
               width: width,
               child: ValueListenableBuilder(
                 valueListenable: HiveBoxes.getNotice().listenable(),

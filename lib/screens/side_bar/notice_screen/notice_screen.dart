@@ -1,9 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
-import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/models/notice.dart';
@@ -12,7 +8,6 @@ import 'package:hitop_cafe/screens/side_bar/notice_screen/services/notice_tools.
 import 'package:hitop_cafe/screens/side_bar/notice_screen/widgets/notice_tile.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:persian_number_utility/persian_number_utility.dart';
 
 class NoticeScreen extends StatefulWidget {
   static const String id = "/notification-screen";
@@ -65,7 +60,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
             child: Container(
               width: 500,
               height: 800,
-              margin: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 gradient: kBlackWhiteGradiant,
                 borderRadius: BorderRadius.circular(10),

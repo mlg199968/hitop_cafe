@@ -10,6 +10,7 @@ import 'package:hitop_cafe/screens/side_bar/notice_screen/services/notice_tools.
 import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:hitop_cafe/services/hive_boxes.dart';
 import 'package:hitop_cafe/services/storage_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class GlobalTask {
@@ -26,10 +27,14 @@ class GlobalTask {
     if(HiveBoxes.getShopInfo().values.isNotEmpty){
       shop = HiveBoxes.getShopInfo().values.single;
       Provider.of<UserProvider>(context, listen: false).getData(shop);
-    }else{
+    }
+    else{
       HiveBoxes.getShopInfo().add(shop);
     }
-
+    ///get app version
+   final deviceInfo=await PackageInfo.fromPlatform();
+    Provider.of<UserProvider>(context, listen: false).setAppVersion(deviceInfo.version);
+    ///
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi ||

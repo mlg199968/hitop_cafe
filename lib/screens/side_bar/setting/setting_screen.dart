@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/custom_alert.dart';
@@ -125,7 +124,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 textDirection: TextDirection.rtl,
                 child: Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
+                  // padding: const EdgeInsets.all(10),
                   decoration: const BoxDecoration(gradient: kMainGradiant),
                   child: SingleChildScrollView(
                     child: SizedBox(
