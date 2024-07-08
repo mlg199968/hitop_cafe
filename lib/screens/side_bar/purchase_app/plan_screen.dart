@@ -1,15 +1,20 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
+import 'package:hitop_cafe/common/widgets/custom_text.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
+import 'package:hitop_cafe/common/widgets/dynamic_button.dart';
 import 'package:hitop_cafe/common/widgets/empty_holder.dart';
 import 'package:hitop_cafe/common/widgets/hide_keyboard.dart';
 import 'package:hitop_cafe/constants/constants.dart';
+import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
 import 'package:hitop_cafe/constants/utils.dart';
-import 'package:hitop_cafe/models/price.dart';
 import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
@@ -19,10 +24,12 @@ import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 import 'package:provider/provider.dart';
 
-class PurchaseAppScreen extends StatefulWidget {
-  static const String id = "/purchase-app-screen";
+import '../../../models/plan.dart';
 
-  const PurchaseAppScreen({
+class PlanScreen extends StatefulWidget {
+  static const String id = "/plan-screen";
+
+  const PlanScreen({
     super.key,
     required this.phone,
     this.subsId,
@@ -30,17 +37,17 @@ class PurchaseAppScreen extends StatefulWidget {
   final String phone;
   final int? subsId;
   @override
-  State<PurchaseAppScreen> createState() => _PurchaseAppScreenState();
+  State<PlanScreen> createState() => _PlanScreenState();
 }
 
-class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
+class _PlanScreenState extends State<PlanScreen> {
   final phoneNumberController = TextEditingController();
   final emailController = TextEditingController();
   final userFullNameController = TextEditingController();
   final authCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  late Future _getPriceFromHost;
-  bool loading = false;
+  late Future _getPlansFromHost;
+ Plan? selectedPlan;
 
   List<String> warningList=[
     "اگر شرایط پرداخت آنلاین را ندارید با پشتیبانی تماس بگیرید",
@@ -50,16 +57,14 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
     "اگر در حین مراحل خرید و فعال سازی مشکلی رخ داد بلافاصله به پشتیبانی اطلاع دهید",
   ];
   ///button function
-  purchaseButtonFunc(context, int price) async {
-    loading = true;
-    setState(() {});
+  purchaseButtonFunc(context, Plan plan) async {
     try {
       Device? device = await getDeviceInfo();
       Subscription subs = Subscription()
         ..phone = widget.phone
         ..name = userFullNameController.text
         ..level = 0
-        ..amount = price
+        ..amount = plan.price.toInt()
         ..device = device
         ..appName=kAppName
         ..fetchDate = DateTime.now()
@@ -68,26 +73,37 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
         ..id = widget.subsId;
 
       String? subsId = await BackendServices.createSubs(context, subs: subs);
+      print("subsId ***********");
+      print(subsId);
+      print("plan.id***");
+      print(plan.id);
       if (subsId!=null) {
         Provider.of<UserProvider>(context, listen: false).setSubscription(subs);
-        // await ZarinpalApi.payment(context,
+        await ZarinpalApi.payment(
+            context,
+            amount: subs.amount!,
+            planId: plan.id,
+            subsId:subsId.toString(),
+            phone: subs.phone);
+        // await ZarinpalApi.tesPayment(
+        //     context,
         //     amount: subs.amount!,
+        //     planId: plan.id,
+        //     subsId:subsId.toString(),
         //     phone: subs.phone);
-        Navigator.pushReplacementNamed(context, HomeScreen.id);
+        // Navigator.pushReplacementNamed(context, HomeScreen.id);
       }
     } catch (error) {
       ErrorHandler.errorManger(context, error,
           title: "خطا در ایجاد و ورود به فرایند خرید",
-          route: "PurchaseAppScreen purchaseButtonFunc error",
+          route: "PlanScreen purchaseButtonFunc error",
           showSnackbar: true);
     }
-    loading = false;
-    setState(() {});
   }
 
   @override
   void initState() {
-    _getPriceFromHost = BackendServices().readOption(kPriceOptionKey);
+    _getPlansFromHost = BackendServices().readPlans();
     super.initState();
   }
 
@@ -117,54 +133,41 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
           child: Container(
             width: 450,
             height: 800,
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               gradient: kBlackWhiteGradiant,
               borderRadius: BorderRadius.circular(20),
             ),
             child: FutureBuilder(
-                future: _getPriceFromHost,
+                future: _getPlansFromHost,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.connectionState == ConnectionState.done &&
                       snapshot.hasData) {
-                    Price price = Price().fromJson(snapshot.data);
+                    List<Plan> plans=snapshot.data;
                     return SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ///top crown Icon
-                          Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: Colors.orangeAccent,
-                                  strokeAlign: BorderSide.strokeAlignCenter,
-                                  width: 5),
-                              shape: BoxShape.circle,
-                            ),
-                            child: ShaderMask(
-                              shaderCallback: (rect) => const LinearGradient(
-                                colors: [
-                                  Colors.orangeAccent,
-                                  Colors.yellow,
-                                  Colors.orangeAccent,
-                                ],
-                              ).createShader(rect),
-                              child: const Icon(
-                                FontAwesomeIcons.crown,
-                                size: 80,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-
+                          const CrownIcon(size: 70,),
+                          const Gap(20),
+                           Column(
+                             children: plans.map((plan) {
+                                 return PlanHolder(
+                                   selected: selectedPlan?.id==plan.id,
+                                   plan: plan,
+                                   onChange: (val){
+                                     selectedPlan=val;
+                                     setState(() {});
+                                   },
+                                 );
+                             },
+                           ).toList(),
+                           ),
                           ///info and purchase part
-                          Directionality(
+                           Directionality(
                             textDirection: TextDirection.rtl,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,26 +175,22 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                               children: [
                                 const Gap(50),
 
-                                /// app price
-                                PriceHolder(price: price),
-                                const Gap(20),
                                 const Center(
                                     child: Text(
-                                  "نکات مهم قبل و بعد از خرید:",
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 17),
-                                )),
-                                const Gap(20),
+                                      "نکات مهم قبل و بعد از خرید:",
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 17),
+                                    )),
                                 Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children:warningList.map((e) => TextWithIcon(
-                                      text:
-                                      e),).toList()
+                                    mainAxisSize: MainAxisSize.min,
+                                    children:warningList.map((e) => TextWithIcon(
+                                        text:
+                                        e),).toList()
                                 ),
-                                const Gap(25),
                               ],
                             ),
                           ),
+
                           const Gap(20),
                           Form(
                             key: _formKey,
@@ -211,14 +210,16 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                                     label: "ایمیل",
                                     controller: emailController),
                                 const Gap(20),
-                                CustomButton(
-                                    loading: loading,
-                                    text: "ادامه فرایند خرید",
-                                    color: Colors.orange,
-                                    onPressed: () async {
+                                DynamicButton(
+                                    label: "ادامه فرایند خرید",
+                                    bgColor: Colors.orange,
+                                    onPress: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        purchaseButtonFunc(
-                                            context, price.price.toInt());
+                                        if(selectedPlan!=null) {
+                                          purchaseButtonFunc(context, selectedPlan!);
+                                        }else{
+                                          showSnackBar(context, "اشتراک انتخاب نشده است!",type: SnackType.warning);
+                                        }
                                       }
                                     }),
                               ],
@@ -239,8 +240,8 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
                           icon: Icons.refresh_rounded,
                           label: "تلاش دوباره",
                           onPress: () async {
-                            _getPriceFromHost =
-                                BackendServices().readOption(kPriceOptionKey);
+                            _getPlansFromHost =
+                                BackendServices().readPlans();
                             setState(() {});
                           },
                         ),
@@ -254,6 +255,88 @@ class _PurchaseAppScreenState extends State<PurchaseAppScreen> {
     );
   }
 }
+
+class PlanHolder extends StatelessWidget {
+  const PlanHolder({
+    super.key,
+    required this.onChange,this.selected=false, required this.plan,
+  });
+
+  final Plan plan;
+  final Function(Plan plan) onChange;
+  final bool selected;
+  List<Color> get colors {
+    if(plan.type == "m1") {
+      return[Colors.indigo, Colors.teal];
+    }
+    else if(plan.type == "m6"){
+      return[Colors.indigo, Colors.deepOrangeAccent];
+    }
+    else if(plan.type == "m12"){
+      return[Colors.indigo, Colors.purple];
+    }
+    else if(plan.type == "free"){
+      return[Colors.indigo, Colors.teal];
+    }
+    else {
+      return[Colors.grey, Colors.blueGrey];
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: (){
+        onChange(plan);
+      },
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        width: 400,
+        height: 80,
+        decoration: BoxDecoration(
+            gradient: kBlackWhiteGradiant,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+              color: selected?Colors.orange:Colors.black54,
+            width: selected?2:0.5
+          ),
+          boxShadow:selected? [const BoxShadow(color: Colors.orange,blurRadius: 10)]:null
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PriceHolder(price: plan),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
+                gradient: LinearGradient(
+                  colors: colors,
+                ),
+
+              ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CText("اشتراک",fontSize: 10,color: Colors.amberAccent,),
+                    CText(plan.title,fontSize: 15,color: Colors.white,),
+                  ],
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
 ///
 class PriceHolder extends StatelessWidget {
   const PriceHolder({
@@ -261,13 +344,16 @@ class PriceHolder extends StatelessWidget {
     required this.price,
   });
 
-  final Price price;
+  final Plan price;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          mainAxisSize: MainAxisSize.min,
+          textDirection: TextDirection.rtl,
           textBaseline: TextBaseline.ideographic,
           crossAxisAlignment: CrossAxisAlignment.baseline,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -280,20 +366,20 @@ class PriceHolder extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(20)),
-                  child: Text(
+                  child: CText(
                     "${price.discount}%".toPersianDigit(),
-                    style: const TextStyle(color: Colors.white),
+                    color: Colors.white,
                   )),
-            Text(
+            CText(
               addSeparator(price.price),
-              style: const TextStyle(color: Colors.black, fontSize: 30),
+              color: Colors.black,
+              fontSize: 20,
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Text(
+            const Gap(5),
+            const CText(
               "تومان",
-              style: TextStyle(color: Colors.black45),
+              color: Colors.black45,
+              fontSize: 10,
             ),
           ],
         ),
@@ -305,11 +391,9 @@ class PriceHolder extends StatelessWidget {
             style: const TextStyle(
                 decoration: TextDecoration.lineThrough,
                 color: Colors.black38,
-                fontSize: 20),
+                fontSize: 14),
           ),
-        const SizedBox(
-          width: 5,
-        ),
+        const Gap(5),
       ],
     );
   }
@@ -348,6 +432,46 @@ class TextWithIcon extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+///
+class CrownIcon extends StatelessWidget {
+  const CrownIcon({
+    super.key, this.size=150,
+  });
+  final double size;
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(top: 20),
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+              color: Colors.orangeAccent,
+              strokeAlign: BorderSide.strokeAlignCenter,
+              width: 5),
+          shape: BoxShape.circle,
+        ),
+        child: ShaderMask(
+          shaderCallback: (rect) => const LinearGradient(
+            colors: [
+              Colors.orangeAccent,
+              Colors.yellow,
+              Colors.orangeAccent,
+            ],
+          ).createShader(rect),
+          child:  Icon(
+            FontAwesomeIcons.crown,
+            size: size*.5,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

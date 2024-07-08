@@ -14,6 +14,7 @@ import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/plan_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
@@ -215,13 +216,19 @@ class SideBarPanel extends StatelessWidget {
                               onPress: () async{
                                 Navigator.pushNamed(context, PurchaseAppScreen.id,
                                     // arguments: {"phone": "9910606073","subsId":868}
-                                    arguments: {"phone": "9152361766"}
+                                    arguments: {"phone": "9910606073"}
                                 );
-                                // List<Subscription>? subs= await BackendServices.readSubscription(context, "9152361766");
-                                // print(subs?.map((e) => e.toMap()));
-                                // Device testDevice=await getDeviceInfo();
-                                // Subscription subs= Subscription()..name="test"..phone="9152361766"..platform="Windows"..level=0..device=testDevice;
-                                // await BackendServices.createSubs(context, subs: subs);
+                              },
+                            ),
+                            if(kDebugMode)
+                            ActionButton(
+                              height: 25,
+                              icon: Icons.texture_sharp,
+                              onPress: () async{
+                                Navigator.pushNamed(context, PlanScreen.id,
+                                    // arguments: {"phone": "9910608888","subsId":909}
+                                    arguments: {"phone": "9910606073"}
+                                );
                               },
                             ),
                           ],

@@ -23,6 +23,7 @@ import 'package:hitop_cafe/screens/shopping-bill/shopping-bill-screen.dart';
 import 'package:hitop_cafe/screens/side_bar/bug_screen/bug_list_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/plan_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
@@ -116,6 +117,13 @@ Route generateRoute(RouteSettings routeSetting) {
       Map? args = routeSetting.arguments as Map?;
       return MaterialPageRoute(
           builder: (_) => PurchaseAppScreen(
+                phone: args?["phone"],
+                subsId: args?["subsId"],
+              ));
+    case PlanScreen.id:
+      Map? args = routeSetting.arguments as Map?;
+      return MaterialPageRoute(
+          builder: (_) => PlanScreen(
                 phone: args?["phone"],
                 subsId: args?["subsId"],
               ));

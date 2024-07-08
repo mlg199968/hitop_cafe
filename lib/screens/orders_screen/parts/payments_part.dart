@@ -9,7 +9,7 @@ import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/payment.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
 
-// ignore: camel_case_types
+
 class PaymentList extends StatefulWidget {
   const PaymentList(
       {super.key, required this.payments, required this.onChange});

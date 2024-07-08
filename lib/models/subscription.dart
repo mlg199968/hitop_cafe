@@ -1,5 +1,8 @@
 
 import 'dart:convert';
+import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/utils.dart';
+import 'package:hitop_cafe/models/plan.dart';
 import 'package:hive/hive.dart';
 
 import 'server_models/device.dart';
@@ -40,8 +43,17 @@ class Subscription extends HiveObject{
   String? appName;
   @HiveField(15)
   DateTime? fetchDate;
+  @HiveField(16)
+  List<Plan>? planList;
 
+int get userLevel {
+  if(endDate != null && DateTime.now().isAfter(endDate!)){
 
+    return 0;
+  } else{
+    return level;
+  }
+}
 
 
   Map<String, dynamic> toMap() {
@@ -62,10 +74,13 @@ class Subscription extends HiveObject{
      'id': id,
      'platform': platform,
      'app_name': appName,
+     'plan_list': (planList??[]).map((e) => e.toMap()).toList(),
     };
   }
 
   Subscription fromMap(Map<String, dynamic> map) {
+    List<Plan> plans =
+    List<Plan>.from((map['plan_list'] ?? []).map((e) => Plan().fromMap(e)));
 
      Subscription subscription=Subscription()
       ..name= map['name'] ?? ""
@@ -82,6 +97,7 @@ class Subscription extends HiveObject{
       ..device=map['device']!=null? Device.fromMap(map['device']):null
       ..description= map['description']
       ..appName= map['app_name']
+       ..planList=plans
        ..id= int.tryParse(map['id'] ?? "");
      return subscription;
   }

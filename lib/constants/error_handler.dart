@@ -19,6 +19,7 @@ class ErrorHandler {
       ..errorText = errorText ?? errorObject.toString()
       ..directory = routeDir
       ..bugDate=DateTime.now()
+      ..stacktrace=stacktrace?.toString()
       ..bugId = const Uuid().v1();
     HiveBoxes.getBugs().put(bug.bugId, bug);
     if(showSnackbar && title!=null && context!=null) {

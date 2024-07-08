@@ -222,8 +222,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   }
 
   ///call message on pop to previous page function
-  void willPop(bool didPop) async {
-    await showDialog(
+  Future<bool> willPop() async {
+    return await showDialog(
         context: context,
         builder: (context) => CustomAlert(
             title: "تغییرات داده شده ذخیره شود؟",
@@ -247,9 +247,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>
   ///********************************** widget *********************************************
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: didUpdateData(),
-      onPopInvoked:willPop,
+    return WillPopScope(
+      onWillPop: didUpdateData() ? willPop : null,
       child: HideKeyboard(
         child: Scaffold(
           extendBodyBehindAppBar: true,

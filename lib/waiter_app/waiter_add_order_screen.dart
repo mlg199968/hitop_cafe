@@ -39,6 +39,8 @@ import 'package:uuid/uuid.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 
+import '../common/widgets/check_button.dart';
+
 class WaiterAddOrderScreen extends StatefulWidget {
   static const String id = "/WaiterAddOrderScreen";
   const WaiterAddOrderScreen({super.key, this.oldOrder});
@@ -63,6 +65,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   DateTime modifiedDate = DateTime.now();
   User? user;
   bool showDescription = false;
+  bool takeaway = false;
   // String time = intl.DateFormat('kk:mm').format(DateTime.now());
 
   ///logic for add selected items to the list
@@ -109,6 +112,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
       ..dueDate = dueDate
       ..modifiedDate = DateTime.now()
       ..orderId = id ?? const Uuid().v1()
+      ..takeaway=takeaway
       ..description = descriptionController.text;
     return orderBill;
   }
@@ -154,6 +158,7 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
     tableNumberController.text = oldOrder.tableNumber!.toString();
     user = oldOrder.user ?? userProvider.activeUser;
     descriptionController.text = oldOrder.description ?? "";
+    takeaway=oldOrder.takeaway ?? false;
     if (oldOrder.description != "") {
       showDescription = true;
     }
@@ -208,8 +213,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   }
 
   ///call message on pop to previous page function
-  void willPop(bool didPop) async{
-    await showDialog(
+  Future<bool> willPop() async {
+    return await showDialog(
         context: context,
         builder: (context) => CustomAlert(
             title: "تغییرات داده شده ذخیره شود؟",
@@ -233,9 +238,8 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
   ///********************************** widget *********************************************
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: didUpdateData(),
-      onPopInvoked: willPop,
+    return WillPopScope(
+      onWillPop: didUpdateData() ? willPop : null,
       child: HideKeyboard(
         child: Scaffold(
           extendBodyBehindAppBar: true,
@@ -384,6 +388,15 @@ class _WaiterAddOrderScreenState extends State<WaiterAddOrderScreen>
                                               });
                                             }
                                           },
+                                        ),
+                                        ///takeaway check box
+                                        CheckButton(
+                                          label:"بیرون بر",
+                                          icon: Icons.delivery_dining_rounded,
+                                          value:takeaway,
+                                          onChange:(val){
+                                            takeaway=val!;
+                                            setState(() {});},
                                         ),
                                       ],
                                     ),

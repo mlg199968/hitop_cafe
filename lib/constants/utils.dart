@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hitop_cafe/common/shape/background_shape2.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
+import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_compression_flutter/image_compression_flutter.dart';
@@ -32,7 +33,7 @@ ScreenType screenType(BuildContext context){
 
 
 ///Show snake bar in active context
-void showSnackBar(BuildContext context, String title,
+void showSnackBar(BuildContext? context, String title,
     {SnackType type=SnackType.normal,double? height}) {
   Color? color;
   switch(type){
@@ -50,7 +51,7 @@ void showSnackBar(BuildContext context, String title,
       break;
 
   }
-  ScaffoldMessenger.of(context).showSnackBar(
+  ScaffoldMessenger.of(context ?? GlobalTask.navigatorState.currentContext!).showSnackBar(
     SnackBar(
         showCloseIcon: true,
         width: 350,

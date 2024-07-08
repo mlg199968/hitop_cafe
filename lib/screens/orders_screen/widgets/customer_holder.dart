@@ -67,7 +67,7 @@ class CustomerInfoHolder extends StatelessWidget {
               (value) {
                 if (value != null && value.runtimeType==User ) {
                   onChange(value as User);
-                }else{
+                }else if(value=='delete'){
                   onChange(null);
                 }
               },

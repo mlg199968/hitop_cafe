@@ -173,8 +173,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
    createDateList.addAll(expenses.map((e) => e.deliveryDate));
    createDateList.addAll(payments.map((e) =>e.deliveryDate));
    createDateList.addAll(bills.map((e) => e.billDate));
-    startDate = findMinDate(createDateList);
-    endDate = findMaxDate(createDateList);
+    startDate = createDateList.length<2?DateTime.now().subtract(const Duration(days: 5)):findMinDate(createDateList);
+    endDate =createDateList.length<2?DateTime.now(): findMaxDate(createDateList);
   }
   @override
   void initState() {

@@ -13,7 +13,7 @@ import 'package:printing/printing.dart';
 
 class UserProvider extends ChangeNotifier {
   int _userLevel = 0;
-  int get userLevel =>_subscription!=null?_subscription!.level: _userLevel;
+  int get userLevel =>_subscription!=null?_subscription!.userLevel: _userLevel;
   Subscription? _subscription;
   Subscription? get subscription=>_subscription;
   ///
