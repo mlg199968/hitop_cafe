@@ -35,6 +35,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../common/widgets/custom_alert.dart';
 import '../../common/widgets/custom_text.dart';
 import '../other_expenses_screen/other_expenses_screen.dart';
+import '../side_bar/purchase_app/widgets/subscription_timer.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "/home-screen";
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
                       children: [
                         ///show days
                         SubscriptionDeadLine(
-                            endDate: userProvider.subscription?.endDate),
+                            endDate: userProvider.subscription?.endDate,showDays: false,),
 
                         ///home screen header (show time)
                         Align(
@@ -420,44 +421,4 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
   }
 }
 
-class SubscriptionDeadLine extends StatelessWidget {
-  const SubscriptionDeadLine({
-    super.key,
-    required this.endDate,
-  });
 
-  final DateTime? endDate;
-
-  @override
-  Widget build(BuildContext context) {
-    if (endDate != null &&
-        endDate!.isAfter(DateTime.now().subtract(const Duration(days: 5))) ) {
-      ///left days
-      Duration leftDays=endDate!.difference(DateTime.now());
-      return Container(
-        padding: const EdgeInsets.all(5),
-        decoration: const BoxDecoration(color: Colors.red),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (endDate!.isBefore(DateTime.now()))
-               const CText(
-                "اشتراک شما به پایان رسیده است",
-                color: Colors.white,
-                fontSize: 11,
-              )
-            else if (endDate!
-                .isAfter(DateTime.now().subtract(const Duration(days: 5)))&&  endDate!.isBefore(DateTime.now()) )
-              CText(
-                "${leftDays.inDays}روز از اشتراک شما باقی مانده است",
-                color: Colors.white,
-                fontSize: 11,
-              ),
-          ],
-        ),
-      );
-    } else {
-      return const SizedBox();
-    }
-  }
-}

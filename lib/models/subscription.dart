@@ -74,13 +74,13 @@ int get userLevel {
      'id': id,
      'platform': platform,
      'app_name': appName,
-     'plan_list': (planList??[]).map((e) => e.toMap()).toList(),
+     'plans': (planList??[]).map((e) => e.toMap()).toList(),
     };
   }
 
   Subscription fromMap(Map<String, dynamic> map) {
     List<Plan> plans =
-    List<Plan>.from((map['plan_list'] ?? []).map((e) => Plan().fromMap(e)));
+    List<Plan>.from((map['plans'] ?? []).map((e) => Plan().fromMap(e)));
 
      Subscription subscription=Subscription()
       ..name= map['name'] ?? ""
@@ -110,4 +110,4 @@ int get userLevel {
 }
 
 //run this code for create adaptor:
-//flutter packages pub run build_runner build --delete-conflicting-outputs
+//dart run build_runner build --delete-conflicting-outputs

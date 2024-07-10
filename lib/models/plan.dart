@@ -31,6 +31,8 @@ class Plan extends HiveObject{
   late String type;
   @HiveField(11)
   late String platform;
+  @HiveField(12)
+  String? refId;
 
   num get price =>  discount != null
       ? mainPrice - mainPrice * discount! / 100
@@ -44,6 +46,7 @@ class Plan extends HiveObject{
     return {
       "title": title,
       "type": type,
+      "refId": refId,
       "appName": appName,
       "platform": platform,
       "mainPrice": mainPrice,
@@ -61,6 +64,7 @@ class Plan extends HiveObject{
      Plan plan=Plan()
      ..title= map["title"] ?? ""
      ..type= map["type"] ?? ""
+     ..refId= map["refId"]
      ..appName= map["appName"] ?? ""
      ..platform= map["platform"] ?? ""
      ..mainPrice= int.parse(map["mainPrice"]?? "-1")

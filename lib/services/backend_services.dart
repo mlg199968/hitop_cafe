@@ -52,11 +52,11 @@ class BackendServices {
   }
 
   ///read subscription data from host
-  static Future<List<Subscription>?> readSubscription(
+  static Future<Map> readSubscription(
       context, String phone,{String? subsId}) async {
+    Map map={"success":false,"subs":null};
     try {
       Device device = await getDeviceInfo();
-
       http.Response res = await http
           .post(Uri.parse("$hostUrl/user/read_subscription.php"), body: {
         "phone": phone,
@@ -68,20 +68,14 @@ class BackendServices {
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
-          List? subsMap = backData["subsData"];
-          List<Subscription>? subsList = (subsMap == null || subsMap.isEmpty)
-              ? null
-              : (backData["subsData"] as List)
-                  .map((e) => Subscription().fromMap(e))
-                  .toList();
+          map["success"]=true;
+          map["subs"]=backData["subsData"]==null?null:Subscription().fromMap(backData["subsData"]);
           debugPrint("Subscription successfully being read!");
-          return subsList;
-        } else if (backData["success"] == false) {
-          debugPrint("has not being purchase");
-          return null;
-        } else {
+          return map;
+        }
+        else {
           showSnackBar(context, "has not being read", type: SnackType.error);
-          return null;
+          return map;
         }
       }
     } catch (e,stacktrace) {
@@ -89,7 +83,7 @@ class BackendServices {
           stacktrace: stacktrace,
           title: "BackendServices-readSubscription error");
     }
-    return null;
+    return map;
   }
 
   ///read Notifications from host
@@ -185,24 +179,15 @@ class BackendServices {
     try {
       Subscription? storedSubs = HiveBoxes.getShopInfo().getAt(0)?.subscription;
       if (storedSubs != null) {
-        List<Subscription>? readSubs =
+        Map readSubs =
             await readSubscription(context, storedSubs.phone,subsId: storedSubs.id.toString());
-        if (readSubs != null && readSubs.isNotEmpty) {
-          for (Subscription subs in readSubs) {
-            if (subs.device?.id == storedSubs.device?.id &&
-                subs.appName == kAppName) {
+        if (readSubs["success"]==true) {
               Provider.of<UserProvider>(context, listen: false)
-                ..setSubscription(subs)
-                ..setUserLevel(subs.level);
-              await updateFetchDate(context, subs);
-              break;
-            } else {
-              storedSubs.level = 0;
-              Provider.of<UserProvider>(context, listen: false)
-                ..setSubscription(storedSubs)
-                ..setUserLevel(subs.level);
-            }
-          }
+                ..setSubscription(readSubs["subs"])
+                ..setUserLevel(readSubs["subs"]?.level ?? 0);
+              if(readSubs["subs"]!=null) {
+                await updateFetchDate(context, readSubs["subs"]);
+              }
         }
       }
     } catch (e,stacktrace) {

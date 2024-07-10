@@ -14,8 +14,10 @@ import 'package:hitop_cafe/models/server_models/device.dart';
 import 'package:hitop_cafe/models/subscription.dart';
 import 'package:hitop_cafe/providers/user_provider.dart';
 import 'package:hitop_cafe/screens/home_screen/home_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/plan_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/services/payamito_api.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/subscription_screen.dart';
 import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 import 'package:zarinpal/zarinpal.dart';
@@ -75,51 +77,29 @@ Future<void> sendCodeFunction(context)async{
     Device? device = await getDeviceInfo();
     final phone = phoneNumberController.text;
     try {
-      List<Subscription>? readSubs =
+      Map readSubs =
           await BackendServices.readSubscription(context, phone);
-      bool isPurchase=false;
-      int? existSubsId;
-      if (readSubs != null && readSubs.isNotEmpty) {
-        for (Subscription subs in readSubs) {
-          if (subs.level == 1 && subs.device?.id==device.id && subs.appName==kAppName) {
+
+      if (readSubs["success"]=true) {
+        Subscription? subs=readSubs["subs"];
+          if (subs!=null && subs.userLevel==1) {
             Provider.of<UserProvider>(context, listen: false)
               ..setUserLevel(1)..setSubscription(subs);
             BackendServices.updateFetchDate(context, subs);
-            isPurchase=true;
-            Navigator.pushReplacementNamed(context, HomeScreen.id);
-            break;
+            Navigator.pushReplacementNamed(context, SubscriptionScreen.id);
           }
           //if device is null but level is 1,we update the device with sending subs id.then activated the app
-          else if(subs.level==1 && subs.device == null && subs.appName==kAppName){
-            Subscription newSubs = Subscription()
-              ..phone = subs.phone
-              ..id=subs.id
-              ..device=device
-              ..fetchDate=DateTime.now()
-              ..level = 1;
-            await BackendServices.createSubs(context, subs: newSubs).whenComplete(() {
-              Provider.of<UserProvider>(context, listen: false)
-                ..setUserLevel(1)..setSubscription(subs);
-              Navigator.pushReplacementNamed(context, HomeScreen.id);
-            });
-            isPurchase=true;
-            break;
-          }
-          else if(subs.level == 0 &&( subs.device?.id==device.id || subs.device?.id==null) && subs.appName==kAppName){
-            existSubsId=subs.id;
+          else if(subs!=null && subs.userLevel==0){
+            // Navigator.pushReplacementNamed(context, PlanScreen.id,
+            //     arguments: {"phone": phone, "subsId": subs.id});
+            Navigator.pushReplacementNamed(context, SubscriptionScreen.id);
           }
           else{
-            isPurchase=false;
+            Navigator.pushReplacementNamed(context, PlanScreen.id,
+                arguments: {"phone": phone, "subsId": null});
           }
-        }
       }
-      else {
-        isPurchase=false;
-      }
-      if(!isPurchase){
-        Navigator.pushReplacementNamed(context, PurchaseAppScreen.id,
-            arguments: {"phone": phone, "subsId": existSubsId});
-      }
+
     } catch (error) {
       ErrorHandler.errorManger(context, error,
           title: "AuthorityScreen Authority button function error",

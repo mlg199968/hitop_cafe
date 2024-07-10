@@ -25,6 +25,7 @@ import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/plan_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/subscription_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/server_screen/local_server_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/storage_manger/storage_manage_screen.dart';
@@ -130,6 +131,9 @@ Route generateRoute(RouteSettings routeSetting) {
 
     case AuthorityScreen.id:
       return MaterialPageRoute(builder: (_) => const AuthorityScreen());
+
+    case SubscriptionScreen.id:
+      return MaterialPageRoute(builder: (_) => const SubscriptionScreen());
 
     ///user screens
     case AddUserScreen.id:

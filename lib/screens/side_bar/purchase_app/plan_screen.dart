@@ -73,10 +73,6 @@ class _PlanScreenState extends State<PlanScreen> {
         ..id = widget.subsId;
 
       String? subsId = await BackendServices.createSubs(context, subs: subs);
-      print("subsId ***********");
-      print(subsId);
-      print("plan.id***");
-      print(plan.id);
       if (subsId!=null) {
         Provider.of<UserProvider>(context, listen: false).setSubscription(subs);
         await ZarinpalApi.payment(
@@ -151,7 +147,14 @@ class _PlanScreenState extends State<PlanScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ///top crown Icon
-                          const CrownIcon(size: 70,),
+                          const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CText("خرید اشتراک",fontSize: 20,),
+                              CrownIcon(size: 40,),
+                            ],
+                          ),
+
                           const Gap(20),
                            Column(
                              children: plans.map((plan) {
@@ -440,35 +443,25 @@ class TextWithIcon extends StatelessWidget {
 ///
 class CrownIcon extends StatelessWidget {
   const CrownIcon({
-    super.key, this.size=150,
+    super.key, this.size=70,
   });
   final double size;
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        margin: const EdgeInsets.only(top: 20),
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-              color: Colors.orangeAccent,
-              strokeAlign: BorderSide.strokeAlignCenter,
-              width: 5),
-          shape: BoxShape.circle,
-        ),
-        child: ShaderMask(
-          shaderCallback: (rect) => const LinearGradient(
-            colors: [
-              Colors.orangeAccent,
-              Colors.yellow,
-              Colors.orangeAccent,
-            ],
-          ).createShader(rect),
-          child:  Icon(
-            FontAwesomeIcons.crown,
-            size: size*.5,
+      child: ShaderMask(
+        shaderCallback: (rect) => const LinearGradient(
+          colors: [
+            Colors.orangeAccent,
+            Colors.yellow,
+            Colors.orangeAccent,
+          ],
+        ).createShader(rect),
+        child:  Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Icon(
+            CupertinoIcons.star_circle_fill,
+            size: size,
             color: Colors.white,
           ),
         ),

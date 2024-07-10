@@ -31,6 +31,8 @@ import 'package:hitop_cafe/screens/splash_screen/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'models/plan.dart';
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GlobalTask.init();
@@ -57,6 +59,7 @@ Future main() async {
   Hive.registerAdapter(DBAdapter());
   Hive.registerAdapter(DeviceAdapter());
   Hive.registerAdapter(PriceAdapter());
+  Hive.registerAdapter(PlanAdapter());
   Hive.registerAdapter(NoteAdapter());
 
   //create box for store data

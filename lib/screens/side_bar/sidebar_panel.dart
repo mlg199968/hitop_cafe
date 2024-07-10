@@ -16,6 +16,7 @@ import 'package:hitop_cafe/screens/side_bar/notice_screen/notice_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/authority_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/plan_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/purchase_app/purchase_app_screen.dart';
+import 'package:hitop_cafe/screens/side_bar/purchase_app/subscription_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/setting/setting_screen.dart';
 import 'package:hitop_cafe/screens/side_bar/shop_info/shop_info_screen.dart';
 import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
@@ -205,21 +206,10 @@ class SideBarPanel extends StatelessWidget {
 
                             const Gap(20),
                             ///Purchase Button when app is level=0
-                            if(userProvider.userLevel == 0)
                                const PurchaseButton(),
 
 
                             ///a button just for test
-                            if(kDebugMode)
-                            ActionButton(
-                              icon: Icons.account_balance_outlined,
-                              onPress: () async{
-                                Navigator.pushNamed(context, PurchaseAppScreen.id,
-                                    // arguments: {"phone": "9910606073","subsId":868}
-                                    arguments: {"phone": "9910606073"}
-                                );
-                              },
-                            ),
                             if(kDebugMode)
                             ActionButton(
                               height: 25,
@@ -227,7 +217,7 @@ class SideBarPanel extends StatelessWidget {
                               onPress: () async{
                                 Navigator.pushNamed(context, PlanScreen.id,
                                     // arguments: {"phone": "9910608888","subsId":909}
-                                    arguments: {"phone": "9910606073"}
+                                    arguments: {"phone": "9910606073","subsId":939}
                                 );
                               },
                             ),
@@ -300,37 +290,45 @@ class PurchaseButton extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, AuthorityScreen.id);
-      },
-      child: Container(
-        width: 300,
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-            gradient: const LinearGradient(
-                colors: [Colors.yellow, Colors.orange],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(5),
-            boxShadow: const [
-              BoxShadow(blurRadius: 2, color: Colors.grey, offset: Offset(1, 1))
-            ]),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("خرید نسخه کامل"),
-            SizedBox(
-              width: 8,
+    return Consumer<UserProvider>(
+      builder: (context,userProvider,child) {
+        return InkWell(
+          onTap: () {
+            if(userProvider.subscription==null) {
+              Navigator.pushNamed(context, AuthorityScreen.id);
+            }else{
+              Navigator.pushNamed(context, SubscriptionScreen.id);
+            }
+          },
+          child: Container(
+            width: 300,
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Colors.amber, Colors.orange],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(blurRadius: 2, color: Colors.grey, offset: Offset(1, 1))
+                ]),
+            child:  Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CText(userProvider.subscription==null?"خرید نسخه کامل":"وضعیت اشتراک",
+                  color: Colors.white,
+                ),
+                const Gap(8),
+                const Icon(
+                  FontAwesomeIcons.crown,
+                  color: Colors.yellowAccent,
+                ),
+              ],
             ),
-            Icon(
-              FontAwesomeIcons.crown,
-              color: Colors.yellowAccent,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }
