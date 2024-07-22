@@ -1,9 +1,11 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:hitop_cafe/common/widgets/action_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_button.dart';
 import 'package:hitop_cafe/common/widgets/custom_textfield.dart';
@@ -21,6 +23,8 @@ import 'package:hitop_cafe/screens/side_bar/purchase_app/subscription_screen.dar
 import 'package:hitop_cafe/services/backend_services.dart';
 import 'package:provider/provider.dart';
 import 'package:zarinpal/zarinpal.dart';
+
+import '../../../constants/enums.dart';
 
 class AuthorityScreen extends StatefulWidget {
   static const String id = "/authority-screen";
@@ -74,12 +78,10 @@ Future<void> sendCodeFunction(context)async{
   Future<void> authorityFunction(context) async {
   authLoading=true;
   setState(() {});
-    Device? device = await getDeviceInfo();
     final phone = phoneNumberController.text;
     try {
       Map readSubs =
-          await BackendServices.readSubscription(context, phone);
-
+          await BackendServices.readSubs(context, phone);
       if (readSubs["success"]=true) {
         Subscription? subs=readSubs["subs"];
           if (subs!=null && subs.userLevel==1) {
@@ -88,10 +90,8 @@ Future<void> sendCodeFunction(context)async{
             BackendServices.updateFetchDate(context, subs);
             Navigator.pushReplacementNamed(context, SubscriptionScreen.id);
           }
-          //if device is null but level is 1,we update the device with sending subs id.then activated the app
           else if(subs!=null && subs.userLevel==0){
-            // Navigator.pushReplacementNamed(context, PlanScreen.id,
-            //     arguments: {"phone": phone, "subsId": subs.id});
+            Provider.of<UserProvider>(context, listen: false).setSubscription(subs);
             Navigator.pushReplacementNamed(context, SubscriptionScreen.id);
           }
           else{
@@ -99,9 +99,9 @@ Future<void> sendCodeFunction(context)async{
                 arguments: {"phone": phone, "subsId": null});
           }
       }
-
-    } catch (error) {
+    } catch (error,stacktrace) {
       ErrorHandler.errorManger(context, error,
+          stacktrace: stacktrace,
           title: "AuthorityScreen Authority button function error",
           showSnackbar: true);
     }
@@ -136,6 +136,7 @@ Future<void> sendCodeFunction(context)async{
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile=screenType(context)==ScreenType.mobile;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -143,60 +144,41 @@ Future<void> sendCodeFunction(context)async{
       ),
       body: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: const BoxDecoration(
           gradient: kMainGradiant,
         ),
-        child: Container(
-          width: 450,
-          height: 550,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-              gradient: kBlackWhiteGradiant,
-              borderRadius: BorderRadius.circular(20)),
-          child: Center(
-            child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Container(
+            width: 450,
+            height: 550,
+            margin:isMobile?const EdgeInsets.all(5).copyWith(top: 70):const EdgeInsets.all(15).copyWith(top: 70),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+                gradient: kBlackWhiteGradiant,
+                borderRadius: BorderRadius.circular(20)),
+            child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ///top Person Icon
-                  Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
+                  ShaderMask(
+                    shaderCallback: (rect) => const LinearGradient(
+                      colors: [
+                        Colors.black54,
+                        Colors.black,
+                        Colors.black12,
+                      ],
+                    ).createShader(rect),
+                    child: const Icon(
+                      Icons.person,
+                      size: 200,
                       color: Colors.white,
-                      border: Border.all(
-                          color: Colors.orangeAccent,
-                          strokeAlign: BorderSide.strokeAlignCenter,
-                          width: 5),
-                      shape: BoxShape.circle,
                     ),
-                    child: ShaderMask(
-                      shaderCallback: (rect) => const LinearGradient(
-                        colors: [
-                          Colors.orangeAccent,
-                          Colors.yellow,
-                          Colors.orangeAccent,
-                        ],
-                      ).createShader(rect),
-                      child: const Icon(
-                        Icons.person,
-                        size: 120,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 50,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        height: 50,
-                      ),
                       ///phone number field and auth button
                       Form(
                         key: _formKey,
@@ -205,7 +187,7 @@ Future<void> sendCodeFunction(context)async{
                           controller: phoneNumberController,
                           textFormat: TextFormatter.number,
                           maxLength: 11,
-                          borderRadius: 50,
+                          borderRadius: 10,
                           validate: true,
                           extraValidate: (val) {
                             String newVal = val!;
@@ -223,8 +205,11 @@ Future<void> sendCodeFunction(context)async{
                               loading: msgLoading,
                               label: "ارسال کد",
                               icon: Icons.send,
-                              height: 40,
-                              bgColor: kSecondaryColor,
+                              margin: const EdgeInsets.all(3).copyWith(left: 6),
+                              height: 35,
+                              borderRadius: 8,
+                              bgColor: Colors.black87,
+                              iconColor: Colors.amber,
                               onPress: () async {
                                 if (_formKey.currentState!.validate()) {
                                   await sendCodeFunction(context);
@@ -232,9 +217,7 @@ Future<void> sendCodeFunction(context)async{
                               }),
                         ),
                       ),
-                      const SizedBox(
-                        height: 50,
-                      ),
+                      const Gap(50),
 
                       ///show code textfield when authorization code has been sent
                       if (isRightNumber)
@@ -252,14 +235,14 @@ Future<void> sendCodeFunction(context)async{
                             },
                           ),
                         ),
-                      const SizedBox(
-                        height: 18,
-                      ),
+                      const Gap(8),
                       if (isRightNumber)
                         CustomButton(
                           loading: authLoading,
                             text: "احراز هویت",
-                            color: Colors.green,
+                            icon: const Icon(Icons.person_search_rounded,color: Colors.tealAccent,),
+                            color: Colors.teal,
+                            radius: 10,
                             onPressed: () async {
                               if (_codeFormKey.currentState!.validate()) {
                                 authorityFunction(context);
@@ -270,6 +253,15 @@ Future<void> sendCodeFunction(context)async{
                   const SizedBox(
                     height: 50,
                   ),
+                  //TODO:my debug widget
+                  ///just for debug mode
+                  if(kDebugMode)
+                  ActionButton(icon: Icons.gps_fixed_sharp,
+                    onPress: (){
+                    phoneNumberController.text="9910606073";
+                    authorityFunction(context);
+                    },
+                  )
                 ],
               ),
             ),

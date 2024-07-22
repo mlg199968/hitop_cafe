@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hitop_cafe/constants/constants.dart';
 import 'package:hitop_cafe/constants/enums.dart';
 import 'package:hitop_cafe/constants/error_handler.dart';
+import 'package:hitop_cafe/constants/global.dart';
 import 'package:hitop_cafe/constants/utils.dart';
 import 'package:hitop_cafe/models/notice.dart';
 import 'package:hitop_cafe/models/plan.dart';
@@ -24,6 +25,40 @@ class BackendServices {
       http.Response res = await http.post(
           Uri.parse("$hostUrl/user/create_subscription.php"),
           body: subs.toJson());
+      print(res.body);
+      if (res.statusCode == 200) {
+        var backData = jsonDecode(res.body);
+        if (backData["success"] == true) {
+          showSnackBar(null, backData["message"] ?? "success",
+              type: SnackType.success);
+          return backData["id"].toString();
+        } else {
+          showSnackBar(context, backData["message"] ?? "not success",
+              type: SnackType.warning);
+          if (backData["error"] != null) {
+            ErrorHandler.errorManger(
+              null,
+              backData["error"],
+              title: backData["message"] ?? "backData success is false",
+            );
+          }
+          return null;
+        }
+      }
+    } catch (e,stacktrace) {
+      ErrorHandler.errorManger(null, e,
+          stacktrace: stacktrace,
+          title: "BackendServices createSubs error");
+    }
+    return null;
+  }
+  ///create new subscription data in host
+  static Future<String?> updateSubs(context, {required Subscription subs}) async {
+    try {
+      http.Response res = await http.post(
+          Uri.parse("$hostUrl/user/update_subscription.php"),
+          body: subs.toJson());
+      print(res.body);
       if (res.statusCode == 200) {
         var backData = jsonDecode(res.body);
         if (backData["success"] == true) {
@@ -46,13 +81,13 @@ class BackendServices {
     } catch (e,stacktrace) {
       ErrorHandler.errorManger(context, e,
           stacktrace: stacktrace,
-          title: "BackendServices createSubs error");
+          title: "BackendServices updateSubs error");
     }
     return null;
   }
 
   ///read subscription data from host
-  static Future<Map> readSubscription(
+  static Future<Map> readSubs(
       context, String phone,{String? subsId}) async {
     Map map={"success":false,"subs":null};
     try {
@@ -62,6 +97,7 @@ class BackendServices {
         "phone": phone,
         "device": device.toJson(),
         "appName": kAppName,
+        if(subsId!=null)
         "subsId": subsId,
       });
       print(res.body);
@@ -81,7 +117,7 @@ class BackendServices {
     } catch (e,stacktrace) {
       ErrorHandler.errorManger(context, e,
           stacktrace: stacktrace,
-          title: "BackendServices-readSubscription error");
+          title: "BackendServices-readSubs error");
     }
     return map;
   }
@@ -118,7 +154,7 @@ class BackendServices {
         null,
         e,
         stacktrace:stacktrace,
-        title: "BackendServices-readSubscription error",
+        title: "BackendServices-readSubs error",
       );
     }
     return null;
@@ -175,12 +211,12 @@ class BackendServices {
   }
 
   ///fetch subscription
-  Future<void> fetchSubscription(context) async {
+  Future<void> fetchSubs(context) async {
     try {
       Subscription? storedSubs = HiveBoxes.getShopInfo().getAt(0)?.subscription;
       if (storedSubs != null) {
         Map readSubs =
-            await readSubscription(context, storedSubs.phone,subsId: storedSubs.id.toString());
+            await BackendServices.readSubs(context, storedSubs.phone,subsId: storedSubs.id.toString());
         if (readSubs["success"]==true) {
               Provider.of<UserProvider>(context, listen: false)
                 ..setSubscription(readSubs["subs"])
@@ -193,7 +229,7 @@ class BackendServices {
     } catch (e,stacktrace) {
       ErrorHandler.errorManger(null, e,
           stacktrace: stacktrace,
-          title: "BackendServices fetchSubscription function error");
+          title: "BackendServices fetchSubs function error");
     }
   }
 

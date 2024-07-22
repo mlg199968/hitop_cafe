@@ -23,6 +23,7 @@ import 'package:hitop_cafe/screens/user_screen/services/user_tools.dart';
 import 'package:hitop_cafe/screens/user_screen/user_list_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../../restart_widget.dart';
 import 'notice_screen/services/notice_tools.dart';
 
 class SideBarPanel extends StatelessWidget {
@@ -98,9 +99,12 @@ class SideBarPanel extends StatelessWidget {
                           const AvatarHolder()
                         ]),
                         ///buttons
-                        const Gap(20),
+                        const Gap(10),
                         Column(
                           children: [
+                            ///Purchase  or Subscription Button
+                            const PurchaseButton(),
+                            const Gap(10),
                             BarButton(
                               text: "مشخصات فروشگاه",
                               icon: Icons.storefront_outlined,
@@ -147,11 +151,11 @@ class SideBarPanel extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       CText(
-                                        "ارتباط با ما",
+                                        " ارتباط با ما ",
                                         color: Colors.white,
                                         fontSize: 15,
                                       ),
-                                      Icon(Icons.support_agent_outlined,color: Colors.white,)
+                                      Icon(Icons.support_agent_outlined,color: Colors.amber,)
                                     ],
                                   ),
                                 ),
@@ -204,21 +208,17 @@ class SideBarPanel extends StatelessWidget {
                               ],),
                             ),
 
-                            const Gap(20),
-                            ///Purchase Button when app is level=0
-                               const PurchaseButton(),
-
-
                             ///a button just for test
                             if(kDebugMode)
                             ActionButton(
                               height: 25,
                               icon: Icons.texture_sharp,
                               onPress: () async{
-                                Navigator.pushNamed(context, PlanScreen.id,
-                                    // arguments: {"phone": "9910608888","subsId":909}
-                                    arguments: {"phone": "9910606073","subsId":939}
-                                );
+                                // Navigator.pushNamed(context, PlanScreen.id,
+                                //     // arguments: {"phone": "9910608888","subsId":909}
+                                //     arguments: {"phone": "9910606073","subsId":937}
+                                // );
+                                RestartWidget.restartApp(context);
                               },
                             ),
                           ],
@@ -301,12 +301,11 @@ class PurchaseButton extends StatelessWidget {
             }
           },
           child: Container(
-            width: 300,
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(5).copyWith(left: 8),
             decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                    colors: [Colors.amber, Colors.orange],
+                gradient:  const LinearGradient(
+                    colors:[Colors.pink,Colors.deepPurple],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight),
                 borderRadius: BorderRadius.circular(20),
@@ -314,14 +313,14 @@ class PurchaseButton extends StatelessWidget {
                   BoxShadow(blurRadius: 2, color: Colors.grey, offset: Offset(1, 1))
                 ]),
             child:  Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CText(userProvider.subscription==null?"خرید نسخه کامل":"وضعیت اشتراک",
+                CText(userProvider.subscription==null?"خرید اشتراک":"وضعیت اشتراک",
                   color: Colors.white,
                 ),
                 const Gap(8),
-                const Icon(
-                  FontAwesomeIcons.crown,
+                 Icon(
+                  userProvider.subscription!=null?Icons.person_4 :Icons.stars,
                   color: Colors.yellowAccent,
                 ),
               ],
@@ -389,7 +388,7 @@ class BarButton extends StatelessWidget {
                         width: 5,
                       ),
                       if(icon!=null)
-                        Icon(icon, color: Colors.amber.withOpacity(.7),size: 20,),
+                        Icon(icon, color: Colors.amber.withOpacity(.8),size: 20,),
                     ],
                   )),
             )),

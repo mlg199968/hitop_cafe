@@ -39,7 +39,7 @@ class Plan extends HiveObject{
       : fixDiscount != null
       ? mainPrice - fixDiscount!
       :mainPrice;
-  bool get hasDiscount =>fixDiscount==null && discount==null?false:
+  bool get hasDiscount =>(fixDiscount==0 || fixDiscount==null )&& (discount==null || discount==0)?false:
   endDate != null ? DateTime.now().isBefore(endDate!) : true;
 
   Map<String, dynamic> toMap() {
@@ -64,13 +64,13 @@ class Plan extends HiveObject{
      Plan plan=Plan()
      ..title= map["title"] ?? ""
      ..type= map["type"] ?? ""
-     ..refId= map["refId"]
+     ..refId= map["refId"]?.toString()
      ..appName= map["appName"] ?? ""
      ..platform= map["platform"] ?? ""
-     ..mainPrice= int.parse(map["mainPrice"]?? "-1")
-     ..discount= int.parse(map["discount"] ?? "0")
-     ..fixDiscount= int.parse(map["fixDiscount"] ?? "0")
-     ..days=int.parse(map["days"] ?? "0")
+     ..mainPrice= int.parse(map["mainPrice"]?.toString() ?? "-1")
+     ..discount= int.parse(map["discount"]?.toString() ?? "0")
+     ..fixDiscount= int.parse(map["fixDiscount"]?.toString() ?? "0")
+     ..days=int.parse(map["days"]?.toString() ?? "0")
      ..startDate= DateTime.tryParse(map["startDate"] ?? "0")
      ..endDate= DateTime.tryParse(map["endDate"] ?? "0")
      ..description= map["description"]

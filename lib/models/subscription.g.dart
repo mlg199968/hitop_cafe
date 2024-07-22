@@ -33,13 +33,14 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       ..platform = fields[13] as String?
       ..appName = fields[14] as String?
       ..fetchDate = fields[15] as DateTime?
-      ..planList = (fields[16] as List?)?.cast<Plan>();
+      ..planList = (fields[16] as List?)?.cast<Plan>()
+      ..plan = fields[17] as Plan?;
   }
 
   @override
   void write(BinaryWriter writer, Subscription obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -73,7 +74,9 @@ class SubscriptionAdapter extends TypeAdapter<Subscription> {
       ..writeByte(15)
       ..write(obj.fetchDate)
       ..writeByte(16)
-      ..write(obj.planList);
+      ..write(obj.planList)
+      ..writeByte(17)
+      ..write(obj.plan);
   }
 
   @override

@@ -43,7 +43,7 @@ class GlobalTask {
 
       /// fetch subscription data
       if(Provider.of<UserProvider>(context, listen: false).appType!=AppType.waiter.value) {
-        BackendServices().fetchSubscription(navigatorState.currentContext);
+        BackendServices().fetchSubs(navigatorState.currentContext);
       }
       ///get notifications
       runZonedGuarded(() => NoticeTools.readNotifications(navigatorState.currentContext,timeout: 5),(e,trace){});

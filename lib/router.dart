@@ -127,6 +127,7 @@ Route generateRoute(RouteSettings routeSetting) {
           builder: (_) => PlanScreen(
                 phone: args?["phone"],
                 subsId: args?["subsId"],
+                oldSubs: args?["oldSubs"],
               ));
 
     case AuthorityScreen.id:

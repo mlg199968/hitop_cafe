@@ -45,10 +45,11 @@ class Subscription extends HiveObject{
   DateTime? fetchDate;
   @HiveField(16)
   List<Plan>? planList;
+  @HiveField(17)
+  Plan? plan;
 
 int get userLevel {
-  if(endDate != null && DateTime.now().isAfter(endDate!)){
-
+  if(endDate == null || (endDate != null && DateTime.now().isAfter(endDate!))){
     return 0;
   } else{
     return level;
@@ -74,13 +75,14 @@ int get userLevel {
      'id': id,
      'platform': platform,
      'app_name': appName,
+     'plan': plan?.toMap(),
      'plans': (planList??[]).map((e) => e.toMap()).toList(),
     };
   }
 
   Subscription fromMap(Map<String, dynamic> map) {
-    List<Plan> plans =
-    List<Plan>.from((map['plans'] ?? []).map((e) => Plan().fromMap(e)));
+    List<Plan>? plans =(map['plans']==null || map['plans']=="")?null:
+    List<Plan>.from((map['plans']).map((e) => Plan().fromMap(e)));
 
      Subscription subscription=Subscription()
       ..name= map['name'] ?? ""
@@ -97,12 +99,13 @@ int get userLevel {
       ..device=map['device']!=null? Device.fromMap(map['device']):null
       ..description= map['description']
       ..appName= map['app_name']
+       ..plan=map["plan"]!=null?Plan().fromMap(map["plan"]):null
        ..planList=plans
        ..id= int.tryParse(map['id'] ?? "");
      return subscription;
   }
 
-  String toJson() => json.encode(toMap());
+  String toJson() => jsonEncode(toMap());
 
   Subscription fromJson(String source) => fromMap(
     jsonDecode(source),

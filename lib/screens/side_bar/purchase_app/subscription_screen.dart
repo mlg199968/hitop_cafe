@@ -29,12 +29,37 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
+late UserProvider provider;
+  @override
+  void initState() {
+    provider=Provider.of<UserProvider>(context,listen: false);
+    fetchSubs(provider.subscription, provider);
+    super.initState();
+  }
+  ///
+ Future<void> fetchSubs(Subscription? subs,UserProvider uProvider) async {
+    if(subs!=null) {
+      Map map = await BackendServices.readSubs(context, subs.phone,
+          subsId: subs.id.toString());
+      if (map["success"] == true) {
+        uProvider.setSubscription(map["subs"]);
+        if (context.mounted) {
+          BackendServices.updateFetchDate(context, map["subs"]);
+        }
+        setState(() {});
+      }
+    }
+    else{
+      showSnackBar(context, "حساب کاربری یافت نشد");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(builder: (context, userProvider, child) {
       Subscription? subs = userProvider.subscription;
       return Scaffold(
         extendBodyBehindAppBar: true,
+        ///appbar
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: const Text("وضعیت اشتراک"),
@@ -46,105 +71,117 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               bgColor: Colors.black12,
               iconColor: Colors.teal,
               onPress: () async {
-                Map map = await BackendServices.readSubscription(
-                    context, subs!.phone,
-                    subsId: subs.id.toString());
-                if (map["success"] == true) {
-                  userProvider.setSubscription(map["subs"]);
-                  setState(() {});
-                }
+                await fetchSubs(subs, userProvider);
               },
             ),
           ],
         ),
+        ///body
         body: Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
             padding: const EdgeInsets.only(top: 80),
-            alignment: Alignment.center,
+            alignment: Alignment.topCenter,
             decoration: const BoxDecoration(gradient: kMainGradiant),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ///subs user detail
-                  Container(
-                      margin: const EdgeInsets.all(10),
-                      width: 500,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        gradient: kBlackWhiteGradiant,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const Flexible(
-                            child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 180,
-                                )),
-                          ),
-                          Flexible(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CText(subs?.name,
-                                    fontSize: 17, color: Colors.black87),
-                                CText(subs?.phone),
-                                CText(subs?.email, color: Colors.black87),
-                                CText(
-                                  "تاریخ ثبت: ${subs?.startDate?.toPersianDateStr()}",
-                                  color: Colors.black54,
-                                  fontSize: 10,
-                                ),
-                                const Gap(10),
-                                SubscriptionDeadLine(
-                                  endDate: subs!.endDate,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                  Wrap(
+            child: Builder(
+              builder: (context) {
+                if(subs!=null) {
+                  return SingleChildScrollView(
+                  child: Column(
                     children: [
-                      ActionButton(
-                        label: "خروج از حساب اشتراکی",
-                        icon: Icons.logout,
-                        borderRadius: 5,
-                        bgColor: Colors.redAccent,
-                        onPress: (){
-                          showDialog(context: context, builder: (_)=>CustomAlert(
-                            title: "آیا از خروج از حساب اشتراکی مطمئن هستید؟",
-                            onYes: (){
-                              userProvider.setSubscription(null);
-                              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.id, (route) => false);
-                              setState(() {});
+                      ///subs user detail
+                      Container(
+                          margin: const EdgeInsets.all(10),
+                          width: 500,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            gradient: kBlackWhiteGradiant,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                               Flexible(
+                                child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Stack(
+                                      alignment: Alignment.bottomCenter,
+                                      children: [
+                                        const Icon(
+                                          Icons.person,
+                                          size: 180,
+                                        ),
+                                        ///subs id
+                                        CText(subs.id.toString(),color: Colors.white70,),
+                                      ],
+                                    )),
+                              ),
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CText(subs.name,
+                                        fontSize: 17, color: Colors.black87),
+                                    CText(subs.phone),
+                                    CText(subs.email, color: Colors.black87),
+                                    CText(
+                                      "تاریخ ثبت: ${subs.startDate?.toPersianDateStr()}",
+                                      color: Colors.black54,
+                                      fontSize: 10,
+                                    ),
+                                    const Gap(10),
+                                    SubscriptionDeadLine(
+                                      endDate: subs.endDate,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )),
+                      ///action buttons
+                      Wrap(
+                        children: [
+                          ActionButton(
+                            label: "خروج از حساب اشتراکی",
+                            icon: Icons.logout,
+                            borderRadius: 5,
+                            bgColor: Colors.redAccent,
+                            onPress: (){
+                              showDialog(context: context, builder: (_)=>CustomAlert(
+                                title: "آیا از خروج از حساب اشتراکی مطمئن هستید؟",
+                                onYes: (){
+                                  userProvider.setSubscription(null);
+                                  setState(() {});
+                                  Navigator.pushNamedAndRemoveUntil(context, HomeScreen.id, (route) => false);
+                                },),
+                              );
                             },
                           ),
-                          );
-                        },
+                          ActionButton(
+                            label: "خرید اشتراک جدید",
+                            icon: Icons.stars,
+                            borderRadius: 5,
+                            bgColor: Colors.deepPurple.withOpacity(.8),
+                            iconColor: Colors.amberAccent,
+                            onPress: (){
+                              Navigator.pushNamed(context, PlanScreen.id,arguments: {"phone": subs.phone,"subsId":subs.id,"oldSubs":subs});
+                            },
+                          ),
+                        ],
                       ),
-                      ActionButton(
-                        label: "خرید اشتراک جدید",
-                        icon: Icons.stars,
-                        borderRadius: 5,
-                        bgColor: Colors.deepPurple.withOpacity(.8),
-                        iconColor: Colors.amberAccent,
-                        onPress: (){
-                          Navigator.pushNamed(context, PlanScreen.id,arguments: {"phone": subs.phone,"subsId":subs.id});
-                        },
-                      ),
+                      ///plans list
+                      PlanListPart(planList: subs.planList),
                     ],
                   ),
-                  ///plans list
-                  PlanListPart(planList: subs.planList),
-                ],
-              ),
+                );
+                }
+                else{
+                  return const EmptyHolder(text: "حساب کاربری یافت نشد", icon: Icons.person_search_rounded,color: Colors.white70,iconSize: 50);
+                }
+              }
             ),
           ),
         ),
@@ -169,7 +206,7 @@ class _PlanListPartState extends State<PlanListPart> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 450,
+      width: 500,
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         gradient: kBlackWhiteGradiant,
@@ -227,7 +264,7 @@ class _PlanListPartState extends State<PlanListPart> {
                                 color: Colors.white),
                             child: ListTile(
                               leading: const Icon(
-                                Icons.star_rounded,
+                                Icons.stars,
                                 color: Colors.amber,
                               ),
                               title: CText("اشتراک ${plan.title}"),
